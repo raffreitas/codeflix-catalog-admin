@@ -138,4 +138,91 @@ public class CategoryTests
 
         Assert.False(category.IsActive);
     }
+
+    [Fact(DisplayName = nameof(Update))]
+    [Trait("Domain", "Category - Aggregates")]
+    public void Update()
+    {
+        var category = new Category("Category Name", "Category Description");
+        var newValues = new
+        {
+            Name = "New Category Name",
+            Description = "New Category Description"
+        };
+
+        category.Update(newValues.Name, newValues.Description);
+
+        Assert.Equal(newValues.Name, category.Name);
+        Assert.Equal(newValues.Description, category.Description);
+    }
+
+    [Fact(DisplayName = nameof(UpdateOnlyName))]
+    [Trait("Domain", "Category - Aggregates")]
+    public void UpdateOnlyName()
+    {
+        var category = new Category("Category Name", "Category Description");
+        var newValues = new { Name = "New Category Name" };
+        var currentDescription = category.Description;
+
+        category.Update(newValues.Name);
+
+        Assert.Equal(newValues.Name, category.Name);
+        Assert.Equal(currentDescription, category.Description);
+    }
+
+    [Theory(DisplayName = nameof(UpdateErrorWhenNameIsEmpty))]
+    [Trait("Domain", "Category - Aggregates")]
+    [InlineData("")]
+    [InlineData(null)]
+    [InlineData(" ")]
+    public void UpdateErrorWhenNameIsEmpty(string? name)
+    {
+        var category = new Category("Category Name", "Category Description");
+
+        var action = () => category.Update(name!);
+
+        var exception = Assert.Throws<EntityValidationException>(action);
+        Assert.Equal("Name should not be empty or null.", exception.Message);
+    }
+
+    [Theory(DisplayName = nameof(InstantiateErrorWhenNameIsLessThen3Characters))]
+    [Trait("Domain", "Category - Aggregates")]
+    [InlineData("C")]
+    [InlineData("Ca")]
+    public void UpdateErrorWhenNameIsLessThen3Characters(string invalidName)
+    {
+        var category = new Category("Category Name", "Category Description");
+
+        var action = () => category.Update(invalidName!);
+
+        var exception = Assert.Throws<EntityValidationException>(action);
+        Assert.Equal("Name should have at least 3 characters.", exception.Message);
+    }
+
+    [Fact(DisplayName = nameof(UpdateErrorWhenNameIsGreaterThen255Characters))]
+    [Trait("Domain", "Category - Aggregates")]
+    public void UpdateErrorWhenNameIsGreaterThen255Characters()
+    {
+        var invalidName = new string('A', 256);
+        var category = new Category("Category Name", "Category Description");
+
+        var action = () => category.Update(invalidName!);
+
+        var exception = Assert.Throws<EntityValidationException>(action);
+        Assert.Equal("Name should be less or equal 255 characters.", exception.Message);
+    }
+
+    [Fact(DisplayName = nameof(UpdateErrorWhenDescriptionIsGreaterThen10_000Characters))]
+    [Trait("Domain", "Category - Aggregates")]
+    public void UpdateErrorWhenDescriptionIsGreaterThen10_000Characters()
+    {
+        var invalidDescription = new string('A', 10_001);
+        var category = new Category("Category Name", "Category Description");
+
+        var action = () => category.Update("Category Name", invalidDescription);
+
+        var exception = Assert.Throws<EntityValidationException>(action);
+
+        Assert.Equal("Description should be less or equal 10000 characters.", exception.Message);
+    }
 }
