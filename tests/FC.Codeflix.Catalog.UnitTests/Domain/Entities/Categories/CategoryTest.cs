@@ -4,7 +4,7 @@ using FluentAssertions;
 
 namespace FC.Codeflix.Catalog.UnitTests.Domain.Entities.Categories;
 
-public class CategoryTests
+public class CategoryTest
 {
     [Fact(DisplayName = nameof(Instantiate))]
     [Trait("Domain", "Category - Aggregates")]
