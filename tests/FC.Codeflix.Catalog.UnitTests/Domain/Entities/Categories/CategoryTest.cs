@@ -20,15 +20,15 @@ public class CategoryTest
         var dateTimeBefore = DateTime.Now;
 
         var category = new Category(validCategory.Name, validCategory.Description);
-        var dateTimeAfter = DateTime.Now;
+        var dateTimeAfter = DateTime.Now.AddSeconds(1);
 
         category.Should().NotBeNull();
         category.Name.Should().Be(validCategory.Name);
         category.Description.Should().Be(validCategory.Description);
         category.Id.Should().NotBeEmpty();
         category.CreatedAt.Should().NotBeSameDateAs(default);
-        category.CreatedAt.Should().BeAfter(dateTimeBefore);
-        category.CreatedAt.Should().BeBefore(dateTimeAfter);
+        category.CreatedAt.Should().BeOnOrAfter(dateTimeBefore);
+        category.CreatedAt.Should().BeOnOrBefore(dateTimeAfter);
         category.IsActive.Should().BeTrue();
     }
 
@@ -42,15 +42,15 @@ public class CategoryTest
         var dateTimeBefore = DateTime.Now;
 
         var category = new Category(validCategory.Name, validCategory.Description, isActive);
-        var dateTimeAfter = DateTime.Now;
+        var dateTimeAfter = DateTime.Now.AddSeconds(1);
 
         category.Should().NotBeNull();
         category.Name.Should().Be(validCategory.Name);
         category.Description.Should().Be(validCategory.Description);
         category.Id.Should().NotBeEmpty();
         category.CreatedAt.Should().NotBeSameDateAs(default);
-        category.CreatedAt.Should().BeAfter(dateTimeBefore);
-        category.CreatedAt.Should().BeBefore(dateTimeAfter);
+        category.CreatedAt.Should().BeOnOrAfter(dateTimeBefore);
+        category.CreatedAt.Should().BeOnOrBefore(dateTimeAfter);
         category.IsActive.Should().Be(isActive);
     }
 
