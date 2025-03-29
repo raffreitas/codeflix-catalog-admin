@@ -66,7 +66,7 @@ public class CategoryTest
         var action = () => new Category(name!, validCategory.Description);
 
         action.Should().Throw<EntityValidationException>()
-            .WithMessage("Name should not be empty or null.");
+            .WithMessage("Name should not be null or empty.");
     }
 
     [Fact(DisplayName = nameof(InstantiateErrorWhenDescriptionIsNull))]
@@ -201,7 +201,7 @@ public class CategoryTest
         var action = () => category.Update(name!);
 
         action.Should().Throw<EntityValidationException>()
-            .WithMessage("Name should not be empty or null.");
+            .WithMessage("Name should not be null or empty.");
     }
 
     [Theory(DisplayName = nameof(InstantiateErrorWhenNameIsLessThen3Characters))]
