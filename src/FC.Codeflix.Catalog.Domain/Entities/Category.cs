@@ -25,8 +25,13 @@ public class Category
     {
         if (string.IsNullOrWhiteSpace(Name))
             throw new EntityValidationException($"{nameof(Name)} should not be empty or null.");
-
+        if (Name.Length < 3)
+            throw new EntityValidationException($"{nameof(Name)} should have at least 3 characters.");
+        if (Name.Length > 255)
+            throw new EntityValidationException($"{nameof(Name)} should be less or equal 255 characters.");
         if (Description is null)
             throw new EntityValidationException($"{nameof(Description)} should not be null.");
+        if (Description.Length > 10_000)
+            throw new EntityValidationException($"{nameof(Description)} should be less or equal 10000 characters.");
     }
 }
