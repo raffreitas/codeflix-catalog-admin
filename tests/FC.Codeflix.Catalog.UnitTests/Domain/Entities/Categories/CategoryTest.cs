@@ -81,10 +81,21 @@ public class CategoryTest
             .WithMessage("Description should not be null.");
     }
 
+    public static IEnumerable<object[]> GetNamesWithLessThen3Characters(int numberOfTests = 6)
+    {
+        var fixture = new CategoryTestFixture();
+        for (var i = 0; i < numberOfTests; i++)
+        {
+            var isOdd = i % 2 == 1;
+            yield return new object[] {
+                fixture.GetValidCategoryName()[..(isOdd ? 1 : 2)]
+            };
+        }
+    }
+
     [Theory(DisplayName = nameof(InstantiateErrorWhenNameIsLessThen3Characters))]
     [Trait("Domain", "Category - Aggregates")]
-    [InlineData("C")]
-    [InlineData("Ca")]
+    [MemberData(nameof(GetNamesWithLessThen3Characters), parameters: 10)]
     public void InstantiateErrorWhenNameIsLessThen3Characters(string invalidName)
     {
         var validCategory = _categoryTestFixture.GetValidCategory();
