@@ -154,8 +154,8 @@ public class CategoryTest
         var category = _categoryTestFixture.GetValidCategory();
         var newValues = new
         {
-            Name = "New Category Name",
-            Description = "New Category Description"
+            Name = _categoryTestFixture.GetValidCategoryName(),
+            Description = _categoryTestFixture.GetValidCategoryDescription(),
         };
 
         category.Update(newValues.Name, newValues.Description);
@@ -169,12 +169,12 @@ public class CategoryTest
     public void UpdateOnlyName()
     {
         var category = _categoryTestFixture.GetValidCategory();
-        var newValues = new { Name = "New Category Name" };
+        var newName = _categoryTestFixture.GetValidCategoryName();
         var currentDescription = category.Description;
 
-        category.Update(newValues.Name);
+        category.Update(newName);
 
-        category.Name.Should().Be(newValues.Name);
+        category.Name.Should().Be(newName);
         category.Description.Should().Be(currentDescription);
     }
 
@@ -211,7 +211,7 @@ public class CategoryTest
     [Trait("Domain", "Category - Aggregates")]
     public void UpdateErrorWhenNameIsGreaterThen255Characters()
     {
-        var invalidName = new string('A', 256);
+        var invalidName = _categoryTestFixture.Faker.Lorem.Letter(256);
         var category = _categoryTestFixture.GetValidCategory();
 
         var action = () => category.Update(invalidName!);
@@ -225,7 +225,9 @@ public class CategoryTest
     public void UpdateErrorWhenDescriptionIsGreaterThen10_000Characters()
     {
         var category = _categoryTestFixture.GetValidCategory();
-        var invalidDescription = new string('A', 10_001);
+        var invalidDescription = _categoryTestFixture.Faker.Commerce.ProductDescription();
+        while (invalidDescription.Length <= 10_001)
+            invalidDescription = $"{invalidDescription} {_categoryTestFixture.Faker.Commerce.ProductDescription()}";
 
         var action = () => category.Update(category.Name, invalidDescription);
 
