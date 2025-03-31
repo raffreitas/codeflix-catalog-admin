@@ -1,26 +1,25 @@
-﻿using FC.Codeflix.Catalog.Application.Interfaces;
-using FC.Codeflix.Catalog.Application.UseCases.Categories.CreateCategory;
+﻿using FC.Codeflix.Catalog.Application.UseCases.Categories.CreateCategory;
 using FC.Codeflix.Catalog.Domain.Entities;
-using FC.Codeflix.Catalog.Domain.Repositories;
 using FluentAssertions;
 using Moq;
 
 namespace FC.Codeflix.Catalog.UnitTests.Application.CreateCategory;
 
+[Collection(nameof(CreateCategoryTestFixture))]
 public class CreateCategoryTest
 {
+    private readonly CreateCategoryTestFixture _fixture;
+    public CreateCategoryTest(CreateCategoryTestFixture fixture)
+        => _fixture = fixture;
+
     [Fact(DisplayName = nameof(CreateCategory))]
     [Trait("Application", "CreateCategory - Use Cases")]
     public async Task CreateCategory()
     {
-        var repositoryMock = new Mock<ICategoryRepository>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
+        var repositoryMock = _fixture.GetCategoryRepositoryMock();
+        var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
+        var input = _fixture.GetInput();
         var useCase = new CreateCategoryUseCase(repositoryMock.Object, unitOfWorkMock.Object);
-        var input = new CreateCategoryInput(
-            "Category Name",
-            "Category Description",
-            true
-        );
 
         var output = await useCase.Handle(input, CancellationToken.None);
 
