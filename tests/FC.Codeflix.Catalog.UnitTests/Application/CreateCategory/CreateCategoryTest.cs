@@ -41,42 +41,24 @@ public class CreateCategoryTest
         output.CreatedAt.Should().NotBeSameDateAs(default);
     }
 
-    public static IEnumerable<object[]> GetInvalidInputs()
-    {
-        var fixture = new CreateCategoryTestFixture();
-
-        var invalidInputShortName = fixture.GetInput();
-        invalidInputShortName.Name = invalidInputShortName.Name[..2];
-        var inputLongName = fixture.GetInput();
-        inputLongName.Name = new string('a', 256);
-
-        var invalidInputNullDescription = fixture.GetInput();
-        invalidInputNullDescription.Description = null!;
-        var invalidInputTooLongDescription = fixture.GetInput();
-        invalidInputTooLongDescription.Description = new string('a', 10_001);
-
-        return
-        [
-            [invalidInputShortName, "Name should have at least 3 characters."],
-            [inputLongName, "Name should be less or equal 255 characters."],
-            [invalidInputNullDescription, "Description should not be null."],
-            [invalidInputTooLongDescription, "Description should be less or equal 10000 characters."]
-        ];
-    }
-
-    [Theory(DisplayName = nameof(ThrowsWenCantInstantiateAggregate))]
+    [Theory(DisplayName = nameof(ThrowsWenCantInstantiateCategory))]
     [Trait("Application", "CreateCategory - Use Cases")]
-    [MemberData(nameof(GetInvalidInputs))]
-    public async Task ThrowsWenCantInstantiateAggregate(CreateCategoryInput input, string exceptionMessage)
+    [MemberData(
+        nameof(CreateCategoryTestDataGenerator.GetInvalidInputs),
+        parameters: 24,
+        MemberType = typeof(CreateCategoryTestDataGenerator)
+    )]
+    public async Task ThrowsWenCantInstantiateCategory(CreateCategoryInput input, string exceptionMessage)
     {
         var useCase = new CreateCategoryUseCase(
             _fixture.GetCategoryRepositoryMock().Object,
             _fixture.GetUnitOfWorkMock().Object
         );
 
-        var action = async () => await useCase.Handle(input, CancellationToken.None);
+        Func<Task> act = async () => await useCase.Handle(input, CancellationToken.None);
 
-        await action.Should().ThrowAsync<EntityValidationException>()
+        await act.Should()
+            .ThrowAsync<EntityValidationException>()
             .WithMessage(exceptionMessage);
     }
 
