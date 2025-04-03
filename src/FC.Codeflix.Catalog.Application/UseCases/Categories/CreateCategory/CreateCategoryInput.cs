@@ -1,7 +1,8 @@
-﻿using MediatR;
+﻿using FC.Codeflix.Catalog.Application.UseCases.Categories.Common;
+using MediatR;
 
 namespace FC.Codeflix.Catalog.Application.UseCases.Categories.CreateCategory;
-public record CreateCategoryInput : IRequest<CreateCategoryOutput>
+public record CreateCategoryInput : IRequest<CategoryModelOutput>
 {
     public string Name { get; set; }
     public string Description { get; set; }

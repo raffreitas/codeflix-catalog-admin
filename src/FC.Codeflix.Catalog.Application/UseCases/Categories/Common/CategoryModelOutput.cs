@@ -1,17 +1,18 @@
 ﻿using FC.Codeflix.Catalog.Domain.Entities;
 
-namespace FC.Codeflix.Catalog.Application.UseCases.Categories.CreateCategory;
-public record CreateCategoryOutput
+namespace FC.Codeflix.Catalog.Application.UseCases.Categories.Common;
+
+public record CategoryModelOutput
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; }
     public string Name { get; }
     public string Description { get; }
     public bool IsActive { get; }
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; }
 
-    public CreateCategoryOutput(
+    public CategoryModelOutput(
         Guid id,
-        string name, 
+        string name,
         string description,
         bool isActive,
         DateTime createdAt)
@@ -23,11 +24,11 @@ public record CreateCategoryOutput
         CreatedAt = createdAt;
     }
 
-    public static CreateCategoryOutput FromCategory(Category category)
+    public static CategoryModelOutput FromCategory(Category category)
         => new(
             id: category.Id,
             name: category.Name,
             description: category.Description,
             isActive: category.IsActive,
             createdAt: category.CreatedAt);
-};
+}
