@@ -1,7 +1,9 @@
 ﻿using FC.Codeflix.Catalog.Application.UseCases.Categories.CreateCategory;
 using FC.Codeflix.Catalog.Domain.Entities;
 using FC.Codeflix.Catalog.Domain.Exceptions;
+
 using FluentAssertions;
+
 using Moq;
 
 namespace FC.Codeflix.Catalog.UnitTests.Application.CreateCategory;

@@ -1,6 +1,7 @@
 ﻿using FC.Codeflix.Catalog.Domain.Entities;
 using FC.Codeflix.Catalog.Domain.Repositories;
 using FC.Codeflix.Catalog.UnitTests.Common;
+
 using Moq;
 
 namespace FC.Codeflix.Catalog.UnitTests.Application.GetCategory;

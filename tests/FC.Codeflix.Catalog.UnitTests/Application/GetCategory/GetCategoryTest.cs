@@ -1,6 +1,8 @@
 ﻿using FC.Codeflix.Catalog.Application.Exceptions;
 using FC.Codeflix.Catalog.Application.UseCases.Categories.GetCategory;
+
 using FluentAssertions;
+
 using Moq;
 
 namespace FC.Codeflix.Catalog.UnitTests.Application.GetCategory;

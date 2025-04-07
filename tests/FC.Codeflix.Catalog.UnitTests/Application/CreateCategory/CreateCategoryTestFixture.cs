@@ -2,6 +2,7 @@
 using FC.Codeflix.Catalog.Application.UseCases.Categories.CreateCategory;
 using FC.Codeflix.Catalog.Domain.Repositories;
 using FC.Codeflix.Catalog.UnitTests.Common;
+
 using Moq;
 
 namespace FC.Codeflix.Catalog.UnitTests.Application.CreateCategory;

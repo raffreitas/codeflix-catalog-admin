@@ -1,4 +1,5 @@
 ﻿using FC.Codeflix.Catalog.Application.UseCases.Categories.GetCategory;
+
 using FluentAssertions;
 
 namespace FC.Codeflix.Catalog.UnitTests.Application.GetCategory;
