@@ -15,7 +15,7 @@ public class CategoryRepository(CodeflixCatalogDbContext context) : ICategoryRep
     public async Task<Category> Get(Guid id, CancellationToken cancellationToken = default)
         => await _categories
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken) 
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
         ?? throw new NotFoundException($"Category '{id}' not found.");
 
     public Task Update(Category aggregate, CancellationToken cancellationToken = default)
@@ -24,8 +24,39 @@ public class CategoryRepository(CodeflixCatalogDbContext context) : ICategoryRep
     public Task Delete(Category aggregate, CancellationToken cancellationToken = default)
         => Task.FromResult(_categories.Remove(aggregate));
 
-    public Task<SearchOutput<Category>> Search(SearchInput input, CancellationToken cancellationToken = default)
+    public async Task<SearchOutput<Category>> Search(SearchInput input, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var toSkip = (input.Page - 1) * input.PerPage;
+        var query = _categories.AsNoTracking();
+
+        query = AddOrderToQuery(query, input.OrderBy, input.Order);
+
+        if (!string.IsNullOrWhiteSpace(input.Search))
+            query = query.Where(x => x.Name.Contains(input.Search));
+
+        var total = await query.CountAsync(cancellationToken);
+        var items = await query
+            .Skip(toSkip)
+            .Take(input.PerPage)
+            .ToListAsync(cancellationToken);
+
+        return new SearchOutput<Category>(
+            currentPage: input.Page,
+            perPage: input.PerPage,
+            total: total,
+            items: items
+        );
     }
+
+    private static IQueryable<Category> AddOrderToQuery(IQueryable<Category> query, string orderProperty, SearchOrder order)
+        => (orderProperty.ToLower(), order) switch
+        {
+            ("name", SearchOrder.Asc) => query.OrderBy(x => x.Name),
+            ("name", SearchOrder.Desc) => query.OrderByDescending(x => x.Name),
+            ("id", SearchOrder.Asc) => query.OrderBy(x => x.Id),
+            ("id", SearchOrder.Desc) => query.OrderByDescending(x => x.Id),
+            ("createdat", SearchOrder.Asc) => query.OrderBy(x => x.CreatedAt),
+            ("createdat", SearchOrder.Desc) => query.OrderByDescending(x => x.CreatedAt),
+            _ => query.OrderBy(x => x.Name)
+        };
 }
