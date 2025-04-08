@@ -22,9 +22,7 @@ public class CategoryRepository(CodeflixCatalogDbContext context) : ICategoryRep
         => Task.FromResult(_categories.Update(aggregate));
 
     public Task Delete(Category aggregate, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
+        => Task.FromResult(_categories.Remove(aggregate));
 
     public Task<SearchOutput<Category>> Search(SearchInput input, CancellationToken cancellationToken = default)
     {
