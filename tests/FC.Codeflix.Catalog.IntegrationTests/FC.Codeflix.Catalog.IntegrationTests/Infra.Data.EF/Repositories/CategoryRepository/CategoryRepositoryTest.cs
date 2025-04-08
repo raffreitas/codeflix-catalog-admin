@@ -28,7 +28,7 @@ public class CategoryRepositoryTest
         await categoryRepository.Insert(exampleCategory, CancellationToken.None);
         await dbContext.SaveChangesAsync(CancellationToken.None);
 
-        var dbCategory = await dbContext.Categories
+        var dbCategory = await _fixture.CreateDbContext().Categories
             .SingleAsync((x) => x.Id == exampleCategory.Id, CancellationToken.None);
 
         dbCategory.Should().NotBeNull();
@@ -93,7 +93,7 @@ public class CategoryRepositoryTest
         await categoryRepository.Update(exampleCategory, CancellationToken.None);
         await dbContext.SaveChangesAsync(CancellationToken.None);
 
-        var dbCategory = await dbContext.Categories
+        var dbCategory = await _fixture.CreateDbContext().Categories
             .SingleAsync((x) => x.Id == exampleCategory.Id, CancellationToken.None);
 
         dbCategory.Should().NotBeNull();
