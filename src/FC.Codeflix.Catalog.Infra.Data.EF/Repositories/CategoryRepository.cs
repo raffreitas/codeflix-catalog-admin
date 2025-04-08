@@ -13,7 +13,10 @@ public class CategoryRepository(CodeflixCatalogDbContext context) : ICategoryRep
         => await _categories.AddAsync(aggregate, cancellationToken);
 
     public async Task<Category> Get(Guid id, CancellationToken cancellationToken = default)
-        => await _categories.FindAsync([id], cancellationToken) ?? throw new NotFoundException($"Category '{id}' not found.");
+        => await _categories
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken) 
+        ?? throw new NotFoundException($"Category '{id}' not found.");
 
     public Task Update(Category aggregate, CancellationToken cancellationToken = default)
         => Task.FromResult(_categories.Update(aggregate));

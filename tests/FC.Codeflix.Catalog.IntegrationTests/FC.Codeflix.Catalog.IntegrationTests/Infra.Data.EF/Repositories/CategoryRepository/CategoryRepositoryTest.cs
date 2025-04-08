@@ -48,7 +48,7 @@ public class CategoryRepositoryTest
         exampleCategoryList.Add(exampleCategory);
         await dbContext.AddRangeAsync(exampleCategoryList, CancellationToken.None);
         await dbContext.SaveChangesAsync(CancellationToken.None);
-        var categoryRepository = new Repository.CategoryRepository(dbContext);
+        var categoryRepository = new Repository.CategoryRepository(_fixture.CreateDbContext());
 
         var dbCategory = await categoryRepository.Get(exampleCategory.Id, CancellationToken.None);
 
