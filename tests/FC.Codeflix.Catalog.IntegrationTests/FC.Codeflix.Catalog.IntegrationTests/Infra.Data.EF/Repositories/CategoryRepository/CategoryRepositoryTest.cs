@@ -75,4 +75,32 @@ public class CategoryRepositoryTest
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage($"Category '{exampleId}' not found.");
     }
+
+    [Fact(DisplayName = nameof(Update))]
+    [Trait("Integration/Infra.Data", "CategoryRepository - Repositories")]
+    public async Task Update()
+    {
+        CodeflixCatalogDbContext dbContext = _fixture.CreateDbContext();
+        var newCategoryValues = _fixture.GetExampleCategory();
+        var exampleCategory = _fixture.GetExampleCategory();
+        var exampleCategoryList = _fixture.GetExampleCategoryList();
+        exampleCategoryList.Add(exampleCategory);
+        await dbContext.AddRangeAsync(exampleCategoryList, CancellationToken.None);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var categoryRepository = new Repository.CategoryRepository(dbContext);
+
+        exampleCategory.Update(newCategoryValues.Name, newCategoryValues.Description);
+        await categoryRepository.Update(exampleCategory, CancellationToken.None);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+
+        var dbCategory = await dbContext.Categories
+            .SingleAsync((x) => x.Id == exampleCategory.Id, CancellationToken.None);
+
+        dbCategory.Should().NotBeNull();
+        dbCategory.Id.Should().Be(exampleCategory.Id);
+        dbCategory.Name.Should().Be(newCategoryValues.Name);
+        dbCategory.Description.Should().Be(newCategoryValues.Description);
+        dbCategory.IsActive.Should().Be(exampleCategory.IsActive);
+        dbCategory.CreatedAt.Should().Be(exampleCategory.CreatedAt);
+    }
 }

@@ -15,17 +15,15 @@ public class CategoryRepository(CodeflixCatalogDbContext context) : ICategoryRep
     public async Task<Category> Get(Guid id, CancellationToken cancellationToken = default)
         => await _categories.FindAsync([id], cancellationToken) ?? throw new NotFoundException($"Category '{id}' not found.");
 
+    public Task Update(Category aggregate, CancellationToken cancellationToken = default)
+        => Task.FromResult(_categories.Update(aggregate));
+
     public Task Delete(Category aggregate, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
     public Task<SearchOutput<Category>> Search(SearchInput input, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task Update(Category aggregate, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
