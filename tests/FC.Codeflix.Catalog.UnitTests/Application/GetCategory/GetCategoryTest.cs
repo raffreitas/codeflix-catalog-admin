@@ -19,7 +19,7 @@ public class GetCategoryTest
     [Trait("Application", "GetCategory - Use Cases")]
     public async Task GetCategory()
     {
-        var exampleCategory = _fixture.GetValidCategory();
+        var exampleCategory = _fixture.GetExampleCategory();
         var repositoryMock = _fixture.GetCategoryRepositoryMock();
         repositoryMock.Setup(x => x.Get(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(exampleCategory);

@@ -19,7 +19,7 @@ public class DeleteCategoryTest
     [Trait("Application", "DeleteCategory - Use Cases")]
     public async Task DeleteCategory()
     {
-        var categoryExample = _fixture.GetValidCategory();
+        var categoryExample = _fixture.GetExampleCategory();
         var repositoryMock = _fixture.GetCategoryRepositoryMock();
         var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
 
