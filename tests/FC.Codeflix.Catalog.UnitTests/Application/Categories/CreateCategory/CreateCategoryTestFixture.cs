@@ -1,7 +1,7 @@
 ﻿using FC.Codeflix.Catalog.Application.UseCases.Categories.CreateCategory;
 using FC.Codeflix.Catalog.UnitTests.Application.Common;
 
-namespace FC.Codeflix.Catalog.UnitTests.Application.CreateCategory;
+namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.CreateCategory;
 
 [CollectionDefinition(nameof(CreateCategoryTestFixture))]
 public class CreateCategoryTestFixtureCollection : ICollectionFixture<CreateCategoryTestFixture>

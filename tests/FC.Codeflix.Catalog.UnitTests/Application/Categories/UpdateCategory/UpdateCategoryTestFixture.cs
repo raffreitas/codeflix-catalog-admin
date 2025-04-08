@@ -3,7 +3,7 @@
 using FC.Codeflix.Catalog.Application.UseCases.Categories.UpdateCategory;
 using FC.Codeflix.Catalog.UnitTests.Application.Common;
 
-namespace FC.Codeflix.Catalog.UnitTests.Application.UpdateCategory;
+namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.UpdateCategory;
 
 [CollectionDefinition(nameof(UpdateCategoryTestFixtureCollection))]
 public class UpdateCategoryTestFixtureCollection : ICollectionFixture<UpdateCategoryTestFixture> { }

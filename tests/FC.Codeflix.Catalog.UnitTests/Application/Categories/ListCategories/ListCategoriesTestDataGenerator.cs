@@ -1,7 +1,7 @@
 ﻿using FC.Codeflix.Catalog.Application.UseCases.Categories.ListCategories;
 using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 
-namespace FC.Codeflix.Catalog.UnitTests.Application.ListCategories;
+namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.ListCategories;
 public class ListCategoriesTestDataGenerator
 {
     public static IEnumerable<object[]> GetInputsWithoutAllParameters(int times = 14)

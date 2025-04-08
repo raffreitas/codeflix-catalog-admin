@@ -3,7 +3,7 @@ using FC.Codeflix.Catalog.Domain.Entities;
 using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 using FC.Codeflix.Catalog.UnitTests.Application.Common;
 
-namespace FC.Codeflix.Catalog.UnitTests.Application.ListCategories;
+namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.ListCategories;
 
 [CollectionDefinition(nameof(ListCategoriesTestFixtureCollection))]
 public class ListCategoriesTestFixtureCollection : ICollectionFixture<ListCategoriesTestFixture>

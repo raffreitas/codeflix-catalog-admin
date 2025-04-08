@@ -5,7 +5,7 @@ using FluentAssertions;
 
 using Moq;
 
-namespace FC.Codeflix.Catalog.UnitTests.Application.DeleteCategory;
+namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.DeleteCategory;
 
 [Collection(nameof(DeleteCategoryTestFixture))]
 public class DeleteCategoryTest

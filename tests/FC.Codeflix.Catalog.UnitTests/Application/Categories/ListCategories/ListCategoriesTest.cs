@@ -6,7 +6,7 @@ using FluentAssertions;
 
 using Moq;
 
-namespace FC.Codeflix.Catalog.UnitTests.Application.ListCategories;
+namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.ListCategories;
 
 [Collection(nameof(ListCategoriesTestFixtureCollection))]
 public class ListCategoriesTest

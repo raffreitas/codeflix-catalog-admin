@@ -8,7 +8,7 @@ using FluentAssertions;
 
 using Moq;
 
-namespace FC.Codeflix.Catalog.UnitTests.Application.UpdateCategory;
+namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.UpdateCategory;
 
 [Collection(nameof(UpdateCategoryTestFixtureCollection))]
 public class UpdateCategoryTest

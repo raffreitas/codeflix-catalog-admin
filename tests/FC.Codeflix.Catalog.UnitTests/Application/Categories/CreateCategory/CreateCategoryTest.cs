@@ -6,7 +6,7 @@ using FluentAssertions;
 
 using Moq;
 
-namespace FC.Codeflix.Catalog.UnitTests.Application.CreateCategory;
+namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.CreateCategory;
 
 [Collection(nameof(CreateCategoryTestFixture))]
 public class CreateCategoryTest
