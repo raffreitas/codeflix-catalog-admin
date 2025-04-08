@@ -1,4 +1,5 @@
-﻿using FC.Codeflix.Catalog.Domain.Entities;
+﻿using FC.Codeflix.Catalog.Application.Exceptions;
+using FC.Codeflix.Catalog.Domain.Entities;
 using FC.Codeflix.Catalog.Domain.Repositories;
 using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 
@@ -12,7 +13,7 @@ public class CategoryRepository(CodeflixCatalogDbContext context) : ICategoryRep
         => await _categories.AddAsync(aggregate, cancellationToken);
 
     public async Task<Category> Get(Guid id, CancellationToken cancellationToken = default)
-        => await _categories.FindAsync([id], cancellationToken);
+        => await _categories.FindAsync([id], cancellationToken) ?? throw new NotFoundException($"Category '{id}' not found.");
 
     public Task Delete(Category aggregate, CancellationToken cancellationToken = default)
     {
