@@ -1,9 +1,6 @@
 ﻿using FC.Codeflix.Catalog.Domain.Entities;
 using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
-using FC.Codeflix.Catalog.Infra.Data.EF;
 using FC.Codeflix.Catalog.IntegrationTests.Base;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace FC.Codeflix.Catalog.IntegrationTests.Infra.Data.EF.Repositories.CategoryRepository;
 
@@ -64,19 +61,5 @@ public class CategoryRepositoryTestFixture : BaseFixture
             ("createdat", SearchOrder.Desc) => [.. listClone.OrderByDescending(x => x.CreatedAt)],
             _ => [.. listClone.OrderBy(x => x.Name)],
         };
-    }
-
-    public CodeflixCatalogDbContext CreateDbContext(bool preserveData = false)
-    {
-        var dbContext = new CodeflixCatalogDbContext(
-            new DbContextOptionsBuilder<CodeflixCatalogDbContext>()
-                .UseInMemoryDatabase("integration-tests-db")
-                .Options
-        );
-
-        if (preserveData == false)
-            dbContext.Database.EnsureDeleted();
-
-        return dbContext;
     }
 }
