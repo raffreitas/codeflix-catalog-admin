@@ -32,7 +32,7 @@ public class GetCategoryTest(GetCategoryTestFixture fixture)
     }
 
     [Fact(DisplayName = nameof(NotFoundExceptionWhenCategoryDoesntExists))]
-    [Trait("Application", "GetCategory - Use Cases")]
+    [Trait("Integration/Application", "GetCategory - Use Cases")]
     public async Task NotFoundExceptionWhenCategoryDoesntExists()
     {
         var exampleGuid = Guid.NewGuid();
