@@ -105,5 +105,13 @@ public class CreateCategoryTest(CreateCategoryTestFixture fixture)
         await act.Should()
             .ThrowAsync<EntityValidationException>()
             .WithMessage(exceptionMessage);
+
+        var dbCategoriesList = await fixture
+            .CreateDbContext(preserveData: true)
+            .Categories
+            .AsNoTracking()
+            .AnyAsync();
+
+        dbCategoriesList.Should().BeFalse();
     }
 }
