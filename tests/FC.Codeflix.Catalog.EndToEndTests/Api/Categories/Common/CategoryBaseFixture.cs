@@ -28,4 +28,24 @@ public abstract class CategoryBaseFixture : BaseFixture
 
     public bool GetRandomBoolean()
         => Faker.Random.Bool();
+
+
+    public string GetInvalidNameShort()
+        => GetValidCategoryName()[..2];
+
+    public string GetInvalidNameTooLong()
+    {
+        var tooLongNameForCategory = Faker.Commerce.ProductName();
+        while (tooLongNameForCategory.Length <= 255)
+            tooLongNameForCategory += Faker.Commerce.ProductName();
+        return tooLongNameForCategory;
+    }
+
+    public string GetInvalidDescriptionTooLong()
+    {
+        var tooLongDescriptionForCategory = Faker.Commerce.ProductDescription();
+        while (tooLongDescriptionForCategory.Length <= 10_000)
+            tooLongDescriptionForCategory += Faker.Commerce.ProductDescription();
+        return tooLongDescriptionForCategory;
+    }
 }
