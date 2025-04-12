@@ -1,4 +1,5 @@
-﻿using FC.Codeflix.Catalog.EndToEndTests.Base;
+﻿using FC.Codeflix.Catalog.Domain.Entities;
+using FC.Codeflix.Catalog.EndToEndTests.Base;
 
 namespace FC.Codeflix.Catalog.EndToEndTests.Api.Categories.Common;
 public abstract class CategoryBaseFixture : BaseFixture
@@ -47,5 +48,15 @@ public abstract class CategoryBaseFixture : BaseFixture
         while (tooLongDescriptionForCategory.Length <= 10_000)
             tooLongDescriptionForCategory += Faker.Commerce.ProductDescription();
         return tooLongDescriptionForCategory;
+    }
+
+    public Category GetExampleCategory()
+    {
+        return new(GetValidCategoryName(), GetValidCategoryDescription(), GetRandomBoolean());
+    }
+
+    public List<Category> GetExampleCategoriesList(int length = 10)
+    {
+        return [.. Enumerable.Range(1, length).Select(_ => GetExampleCategory())];
     }
 }

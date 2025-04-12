@@ -1,19 +1,17 @@
 ﻿using System.Net;
 
-using FC.Codeflix.Catalog.Application.UseCases.Categories.Common;
-
 using FluentAssertions;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace FC.Codeflix.Catalog.EndToEndTests.Api.Categories.GetCategory;
+namespace FC.Codeflix.Catalog.EndToEndTests.Api.Categories.DeleteCategory;
 
-[Collection(nameof(GetCategoryTestFixture))]
-public class GetCategoryTest(GetCategoryTestFixture fixture)
+[Collection(nameof(DeleteCategoryTestFixture))]
+public class DeleteCategoryTest(DeleteCategoryTestFixture fixture)
 {
-    [Fact(DisplayName = nameof(GetCategory))]
-    [Trait("E2E/API", "Category/Get - Endpoints")]
-    public async Task GetCategory()
+    [Fact(DisplayName = nameof(DeleteCategory))]
+    [Trait("E2E/API", "Category/Delete - Endpoints")]
+    public async Task DeleteCategory()
     {
         var exampleCategoriesList = fixture.GetExampleCategoriesList(20);
         await fixture.Persistence.InsertList(exampleCategoriesList);
@@ -21,20 +19,17 @@ public class GetCategoryTest(GetCategoryTestFixture fixture)
 
         var (response, output) = await fixture
             .ApiClient
-            .Get<CategoryModelOutput>($"/categories/{exampleCategory.Id}");
+            .Delete<object>($"/categories/{exampleCategory.Id}");
 
         response.Should().NotBeNull();
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        output.Should().NotBeNull();
-        output.Id.Should().Be(exampleCategory.Id);
-        output.Name.Should().Be(exampleCategory.Name);
-        output.Description.Should().Be(exampleCategory.Description);
-        output.IsActive.Should().Be(exampleCategory.IsActive);
-        output.CreatedAt.Should().NotBeSameDateAs(default);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        output.Should().BeNull();
+        var dbCategory = await fixture.Persistence.GetById(exampleCategory.Id);
+        dbCategory.Should().BeNull();
     }
 
     [Fact(DisplayName = nameof(ErrorWhenCategoryNotFound))]
-    [Trait("E2E/API", "Category/Get - Endpoints")]
+    [Trait("E2E/API", "Category/Delete - Endpoints")]
     public async Task ErrorWhenCategoryNotFound()
     {
         var exampleCategoriesList = fixture.GetExampleCategoriesList(20);
@@ -43,7 +38,7 @@ public class GetCategoryTest(GetCategoryTestFixture fixture)
 
         var (response, output) = await fixture
             .ApiClient
-            .Get<ProblemDetails>($"/categories/{randomGuid}");
+            .Delete<ProblemDetails>($"/categories/{randomGuid}");
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);

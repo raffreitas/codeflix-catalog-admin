@@ -7,13 +7,4 @@ namespace FC.Codeflix.Catalog.EndToEndTests.Api.Categories.GetCategory;
 public class GetCategoryTestFixtureCollection : ICollectionFixture<GetCategoryTestFixture> { }
 public class GetCategoryTestFixture : CategoryBaseFixture
 {
-    public Category GetExampleCategory()
-    {
-        return new(GetValidCategoryName(), GetValidCategoryDescription(), GetRandomBoolean());
-    }
-
-    public List<Category> GetExampleCategoriesList(int length = 10)
-    {
-        return [.. Enumerable.Range(1, length).Select(_ => GetExampleCategory())];
-    }
 }
