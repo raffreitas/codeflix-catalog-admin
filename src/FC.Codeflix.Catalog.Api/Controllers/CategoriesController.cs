@@ -2,6 +2,7 @@ using FC.Codeflix.Catalog.Application.UseCases.Categories.Common;
 using FC.Codeflix.Catalog.Application.UseCases.Categories.CreateCategory;
 using FC.Codeflix.Catalog.Application.UseCases.Categories.DeleteCategory;
 using FC.Codeflix.Catalog.Application.UseCases.Categories.GetCategory;
+using FC.Codeflix.Catalog.Application.UseCases.Categories.UpdateCategory;
 
 using MediatR;
 
@@ -35,7 +36,7 @@ public class CategoriesController(IMediator mediator) : ControllerBase
     [ProducesResponseType<CategoryModelOutput>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(
-        [FromRoute] Guid id, 
+        [FromRoute] Guid id,
         CancellationToken cancellationToken
     )
     {
@@ -53,5 +54,18 @@ public class CategoriesController(IMediator mediator) : ControllerBase
     {
         await mediator.Send(new DeleteCategoryInput(id), cancellationToken);
         return NoContent();
+    }
+
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType<CategoryModelOutput>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> Create(
+        [FromBody] UpdateCategoryInput input,
+        CancellationToken cancellationToken
+    )
+    {
+        var output = await mediator.Send(input, cancellationToken);
+        return Ok(output);
     }
 }
