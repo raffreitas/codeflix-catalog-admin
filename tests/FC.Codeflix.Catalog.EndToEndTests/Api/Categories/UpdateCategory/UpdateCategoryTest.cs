@@ -126,4 +126,29 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         output.Status.Should().Be((int)HttpStatusCode.NotFound);
         output.Detail.Should().Be($"Category '{randomGuid}' not found.");
     }
+
+    [Theory(DisplayName = nameof(ErrorWhenCantInstantiateAggregate))]
+    [Trait("E2E/API", "Category/Update - Endpoints")]
+    [MemberData(
+        nameof(UpdateCategoryTestDataGenerator.GetInvalidInputs),
+        MemberType = typeof(UpdateCategoryTestDataGenerator)
+    )]
+    public async Task ErrorWhenCantInstantiateAggregate(UpdateCategoryInput input, string expectedDetail)
+    {
+        var exampleCategoriesList = fixture.GetExampleCategoriesList(20);
+        await fixture.Persistence.InsertList(exampleCategoriesList);
+        var exampleCategory = exampleCategoriesList[10];
+        input.Id = exampleCategory.Id;
+
+        var (response, output) = await fixture.ApiClient
+            .Put<ProblemDetails>($"/categories/{exampleCategory.Id}", input);
+
+        response.Should().NotBeNull();
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        output.Should().NotBeNull();
+        output.Title.Should().Be("One or more validation error occurred");
+        output.Type.Should().Be("UnprocessableEntity");
+        output.Status.Should().Be((int)HttpStatusCode.UnprocessableEntity);
+        output.Detail.Should().Be(expectedDetail);
+    }
 }
