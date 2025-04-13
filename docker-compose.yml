@@ -1,0 +1,9 @@
+services:
+    fc.codeflix.catalog.db:
+        container_name: catalog.db
+        hostname: catalogdb
+        image: mysql
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: 123456

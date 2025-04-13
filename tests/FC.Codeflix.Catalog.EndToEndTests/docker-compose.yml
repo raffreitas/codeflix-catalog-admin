@@ -1,0 +1,9 @@
+services:
+    fc.codeflix.catalog.db.e2e:
+        container_name: catalog.db.e2e
+        hostname: catalogdb
+        image: mysql
+        ports:
+            - 33060:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: root

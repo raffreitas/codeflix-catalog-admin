@@ -2,6 +2,7 @@
 
 using FC.Codeflix.Catalog.Application.UseCases.Categories.ListCategories;
 using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
+using FC.Codeflix.Catalog.EndToEndTests.Extensions;
 
 using FluentAssertions;
 
@@ -38,7 +39,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
             item.Name.Should().Be(expectedItem.Name);
             item.Description.Should().Be(expectedItem.Description);
             item.IsActive.Should().Be(expectedItem.IsActive);
-            item.CreatedAt.Should().Be(expectedItem.CreatedAt);
+            item.CreatedAt.TrimMilliseconds().Should().Be(expectedItem.CreatedAt.TrimMilliseconds());
         }
     }
 
@@ -83,7 +84,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
             item.Name.Should().Be(expectedItem.Name);
             item.Description.Should().Be(expectedItem.Description);
             item.IsActive.Should().Be(expectedItem.IsActive);
-            item.CreatedAt.Should().Be(expectedItem.CreatedAt);
+            item.CreatedAt.TrimMilliseconds().Should().Be(expectedItem.CreatedAt.TrimMilliseconds());
         }
     }
 
@@ -122,7 +123,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
             item.Name.Should().Be(expectedItem.Name);
             item.Description.Should().Be(expectedItem.Description);
             item.IsActive.Should().Be(expectedItem.IsActive);
-            item.CreatedAt.Should().Be(expectedItem.CreatedAt);
+            item.CreatedAt.TrimMilliseconds().Should().Be(expectedItem.CreatedAt.TrimMilliseconds());
         }
     }
 
@@ -177,7 +178,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
             item.Name.Should().Be(expectedItem.Name);
             item.Description.Should().Be(expectedItem.Description);
             item.IsActive.Should().Be(expectedItem.IsActive);
-            item.CreatedAt.Should().Be(expectedItem.CreatedAt);
+            item.CreatedAt.TrimMilliseconds().Should().Be(expectedItem.CreatedAt.TrimMilliseconds());
         }
     }
 
@@ -222,7 +223,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
             outputItem.Name.Should().Be(expectedItem.Name);
             outputItem.Description.Should().Be(expectedItem.Description);
             outputItem.IsActive.Should().Be(expectedItem.IsActive);
-            outputItem.CreatedAt.Should().Be(expectedItem.CreatedAt);
+            outputItem.CreatedAt.TrimMilliseconds().Should().Be(expectedItem.CreatedAt.TrimMilliseconds());
         }
     }
 
