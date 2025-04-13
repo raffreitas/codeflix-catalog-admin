@@ -6,12 +6,18 @@ using Microsoft.AspNetCore.WebUtilities;
 namespace FC.Codeflix.Catalog.EndToEndTests.Base;
 public class ApiClient(HttpClient httpClient)
 {
+    private static readonly JsonSerializerOptions DefaultSerializerOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        PropertyNameCaseInsensitive = true
+    };
+
     public async Task<(HttpResponseMessage?, TOutput?)> Post<TOutput>(string route, object payload)
     {
         var response = await httpClient.PostAsync(
             route,
             new StringContent(
-                JsonSerializer.Serialize(payload),
+                JsonSerializer.Serialize(payload, DefaultSerializerOptions),
                 Encoding.UTF8,
                 "application/json"
             )
@@ -25,7 +31,7 @@ public class ApiClient(HttpClient httpClient)
         var response = await httpClient.PutAsync(
             route,
             new StringContent(
-                JsonSerializer.Serialize(payload),
+                JsonSerializer.Serialize(payload, DefaultSerializerOptions),
                 Encoding.UTF8,
                 "application/json"
             )
@@ -58,13 +64,7 @@ public class ApiClient(HttpClient httpClient)
         TOutput? output = default;
 
         if (!string.IsNullOrWhiteSpace(outputString))
-            output = JsonSerializer.Deserialize<TOutput>(
-                outputString,
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }
-            );
+            output = JsonSerializer.Deserialize<TOutput>(outputString, DefaultSerializerOptions);
 
         return output;
     }
@@ -74,7 +74,7 @@ public class ApiClient(HttpClient httpClient)
         if (queryStringObject is null)
             return route;
 
-        var parametersJson = JsonSerializer.Serialize(queryStringObject);
+        var parametersJson = JsonSerializer.Serialize(queryStringObject, DefaultSerializerOptions);
         var parametersDict = Newtonsoft.Json.JsonConvert
             .DeserializeObject<Dictionary<string, string>>(parametersJson);
 

@@ -22,7 +22,7 @@ public class CategoriesController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> List(
         CancellationToken cancellationToken,
        [FromQuery] int? page = null,
-       [FromQuery] int? perPage = null,
+       [FromQuery(Name = "per_page")] int? perPage = null,
        [FromQuery] string? search = null,
        [FromQuery] string? sort = null,
        [FromQuery] SearchOrder? dir = null
@@ -93,9 +93,9 @@ public class CategoriesController(IMediator mediator) : ControllerBase
     )
     {
         var input = new UpdateCategoryInput(
-            id, 
-            apiInput.Name, 
-            apiInput.Description, 
+            id,
+            apiInput.Name,
+            apiInput.Description,
             apiInput.IsActive);
 
         var output = await mediator.Send(input, cancellationToken);
