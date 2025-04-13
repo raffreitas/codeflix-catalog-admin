@@ -11,6 +11,7 @@ namespace FC.Codeflix.Catalog.EndToEndTests.Api.Categories.CreateCategory;
 
 [Collection(nameof(CreateCategoryTestFixture))]
 public class CreateCategoryTest(CreateCategoryTestFixture fixture)
+    : IDisposable
 {
     [Fact(DisplayName = nameof(CreateCategory))]
     [Trait("E2E/API", "Category/Create - Endpoints")]
@@ -61,4 +62,6 @@ public class CreateCategoryTest(CreateCategoryTestFixture fixture)
         output.Status.Should().Be((int)HttpStatusCode.UnprocessableEntity);
         output.Detail.Should().Be(expectedDetail);
     }
+
+    public void Dispose() => fixture.CleanPersistence();
 }

@@ -11,6 +11,7 @@ namespace FC.Codeflix.Catalog.EndToEndTests.Api.Categories.UpdateCategory;
 
 [Collection(nameof(UpdateCategoryTestFixture))]
 public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
+    : IDisposable
 {
     [Fact(DisplayName = nameof(UpdateCategory))]
     [Trait("E2E/API", "Category/Update - Endpoints")]
@@ -50,7 +51,7 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         await fixture.Persistence.InsertList(exampleCategoriesList);
         var exampleCategory = exampleCategoriesList[10];
         var input = new UpdateCategoryInput(exampleCategory.Id, fixture.GetValidCategoryName());
-        
+
         var (response, output) = await fixture.ApiClient
             .Put<CategoryModelOutput>($"/categories/{exampleCategory.Id}", input);
 
@@ -151,4 +152,6 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         output.Status.Should().Be((int)HttpStatusCode.UnprocessableEntity);
         output.Detail.Should().Be(expectedDetail);
     }
+
+    public void Dispose() => fixture.CleanPersistence();
 }

@@ -11,8 +11,13 @@ public record ListCategoriesInput : PaginatedListInput, IRequest<ListCategoriesO
         int perPage = 15,
         string search = "",
         string sort = "",
-        SearchOrder dir = SearchOrder.Asc) 
-        : base(page, perPage, search, sort, dir)
+        SearchOrder dir = SearchOrder.Asc
+    ) : base(page, perPage, search, sort, dir)
+    {
+    }
+
+    public ListCategoriesInput()
+        : base(page: 1, perPage: 15, search: "", sort: "", dir: SearchOrder.Asc)
     {
     }
 }

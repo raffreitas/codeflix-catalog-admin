@@ -8,6 +8,7 @@ namespace FC.Codeflix.Catalog.EndToEndTests.Api.Categories.DeleteCategory;
 
 [Collection(nameof(DeleteCategoryTestFixture))]
 public class DeleteCategoryTest(DeleteCategoryTestFixture fixture)
+    : IDisposable
 {
     [Fact(DisplayName = nameof(DeleteCategory))]
     [Trait("E2E/API", "Category/Delete - Endpoints")]
@@ -48,4 +49,6 @@ public class DeleteCategoryTest(DeleteCategoryTestFixture fixture)
         output.Status.Should().Be((int)HttpStatusCode.NotFound);
         output.Detail.Should().Be($"Category '{randomGuid}' not found.");
     }
+
+    public void Dispose() => fixture.CleanPersistence();
 }

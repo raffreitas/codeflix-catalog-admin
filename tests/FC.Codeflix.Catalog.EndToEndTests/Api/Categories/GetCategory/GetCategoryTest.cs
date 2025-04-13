@@ -10,6 +10,7 @@ namespace FC.Codeflix.Catalog.EndToEndTests.Api.Categories.GetCategory;
 
 [Collection(nameof(GetCategoryTestFixture))]
 public class GetCategoryTest(GetCategoryTestFixture fixture)
+    : IDisposable
 {
     [Fact(DisplayName = nameof(GetCategory))]
     [Trait("E2E/API", "Category/Get - Endpoints")]
@@ -53,4 +54,6 @@ public class GetCategoryTest(GetCategoryTestFixture fixture)
         output.Status.Should().Be((int)HttpStatusCode.NotFound);
         output.Detail.Should().Be($"Category '{randomGuid}' not found.");
     }
+
+    public void Dispose() => fixture.CleanPersistence();
 }
