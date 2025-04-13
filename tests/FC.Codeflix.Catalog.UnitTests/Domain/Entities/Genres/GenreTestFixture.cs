@@ -11,6 +11,13 @@ public class GenreTestFixture : BaseFixture
     public string GetValidName()
         => Faker.Commerce.ProductName();
 
-    public Genre GetExampleGenre(bool isActive = true)
-        => new(GetValidName(), isActive);
+    public Genre GetExampleGenre(bool isActive = true, List<Guid>? categoriesIds = null)
+    {
+        var genre = new Genre(GetValidName(), isActive);
+        if (categoriesIds is not null)
+            foreach (var id in categoriesIds)
+                genre.AddCategory(id);
+
+        return genre;
+    }
 }

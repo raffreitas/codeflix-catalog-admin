@@ -7,6 +7,8 @@ public class Genre
     public string Name { get; private set; }
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; private set; }
+    public IReadOnlyList<Guid> Categories => _categories.AsReadOnly();
+    private readonly List<Guid> _categories = [];
 
     public Genre(string name, bool isActive = true)
     {
@@ -20,6 +22,24 @@ public class Genre
     public void Update(string name)
     {
         Name = name;
+        Validate();
+    }
+
+    public void AddCategory(Guid categoryId)
+    {
+        _categories.Add(categoryId);
+        Validate();
+    }
+
+    public void RemoveCategory(Guid categoryId)
+    {
+        _categories.Remove(categoryId);
+        Validate();
+    }
+
+    public void RemoveAllCategories()
+    {
+        _categories.Clear();
         Validate();
     }
 

@@ -118,4 +118,61 @@ public class GenreTest(GenreTestFixture fixture)
         act.Should().Throw<EntityValidationException>()
             .WithMessage("Name should not be null or empty.");
     }
+
+    [Fact(DisplayName = nameof(AddCategory))]
+    [Trait("Domain", "Genre - Aggregates")]
+    public void AddCategory()
+    {
+        var genre = fixture.GetExampleGenre();
+        var categoryId = Guid.NewGuid();
+
+        genre.AddCategory(categoryId);
+
+        genre.Categories.Should().HaveCount(1);
+        genre.Categories.Should().Contain(categoryId);
+    }
+
+    [Fact(DisplayName = nameof(AddTwoCategory))]
+    [Trait("Domain", "Genre - Aggregates")]
+    public void AddTwoCategory()
+    {
+        var genre = fixture.GetExampleGenre();
+        var categoryId1 = Guid.NewGuid();
+        var categoryId2 = Guid.NewGuid();
+
+        genre.AddCategory(categoryId1);
+        genre.AddCategory(categoryId2);
+
+        genre.Categories.Should().HaveCount(2);
+        genre.Categories.Should().Contain(categoryId1);
+        genre.Categories.Should().Contain(categoryId2);
+    }
+
+    [Fact(DisplayName = nameof(RemoveCategory))]
+    [Trait("Domain", "Genre - Aggregates")]
+    public void RemoveCategory()
+    {
+        var exampleGuid = Guid.NewGuid();
+        var genre = fixture.GetExampleGenre(
+            categoriesIds: [Guid.NewGuid(), exampleGuid, Guid.NewGuid()]
+        );
+
+        genre.RemoveCategory(exampleGuid);
+
+        genre.Categories.Should().HaveCount(2);
+        genre.Categories.Should().NotContain(exampleGuid);
+    }
+
+    [Fact(DisplayName = nameof(RemoveAllCategories))]
+    [Trait("Domain", "Genre - Aggregates")]
+    public void RemoveAllCategories()
+    {
+        var genre = fixture.GetExampleGenre(
+            categoriesIds: [Guid.NewGuid(), Guid.NewGuid()]
+        );
+
+        genre.RemoveAllCategories();
+
+        genre.Categories.Should().BeEmpty();
+    }
 }
