@@ -1,4 +1,5 @@
 using FC.Codeflix.Catalog.Api.Models.Categories;
+using FC.Codeflix.Catalog.Api.Models.Responses;
 using FC.Codeflix.Catalog.Application.UseCases.Categories.Common;
 using FC.Codeflix.Catalog.Application.UseCases.Categories.CreateCategory;
 using FC.Codeflix.Catalog.Application.UseCases.Categories.DeleteCategory;
@@ -18,7 +19,7 @@ namespace FC.Codeflix.Catalog.Api.Controllers;
 public class CategoriesController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType<ListCategoriesOutput>(StatusCodes.Status200OK)]
+    [ProducesResponseType<TestApiResponseList<CategoryModelOutput>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> List(
         CancellationToken cancellationToken,
        [FromQuery] int? page = null,
@@ -37,11 +38,11 @@ public class CategoriesController(IMediator mediator) : ControllerBase
         if (dir is not null) input.Dir = dir.Value;
 
         var output = await mediator.Send(input, cancellationToken);
-        return Ok(output);
+        return Ok(new TestApiResponseList<CategoryModelOutput>(output));
     }
 
     [HttpPost]
-    [ProducesResponseType<CategoryModelOutput>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ApiResponse<CategoryModelOutput>>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> Create(
@@ -54,12 +55,12 @@ public class CategoriesController(IMediator mediator) : ControllerBase
         return CreatedAtAction(
             nameof(GetById),
             new { output.Id },
-            output
+            new ApiResponse<CategoryModelOutput>(output)
         );
     }
 
     [HttpGet("{id:guid}")]
-    [ProducesResponseType<CategoryModelOutput>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse<CategoryModelOutput>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(
         [FromRoute] Guid id,
@@ -67,7 +68,7 @@ public class CategoriesController(IMediator mediator) : ControllerBase
     )
     {
         var output = await mediator.Send(new GetCategoryInput(id), cancellationToken);
-        return Ok(output);
+        return Ok(new ApiResponse<CategoryModelOutput>(output));
     }
 
     [HttpDelete("{id:guid}")]
@@ -83,7 +84,7 @@ public class CategoriesController(IMediator mediator) : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    [ProducesResponseType<CategoryModelOutput>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse<CategoryModelOutput>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> Create(
@@ -99,6 +100,6 @@ public class CategoriesController(IMediator mediator) : ControllerBase
             apiInput.IsActive);
 
         var output = await mediator.Send(input, cancellationToken);
-        return Ok(output);
+        return Ok(new ApiResponse<CategoryModelOutput>(output));
     }
 }

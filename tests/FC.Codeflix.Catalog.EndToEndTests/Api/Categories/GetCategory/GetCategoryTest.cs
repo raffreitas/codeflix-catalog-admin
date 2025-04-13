@@ -1,5 +1,6 @@
 ﻿using System.Net;
 
+using FC.Codeflix.Catalog.Api.Models.Responses;
 using FC.Codeflix.Catalog.Application.UseCases.Categories.Common;
 
 using FluentAssertions;
@@ -22,16 +23,17 @@ public class GetCategoryTest(GetCategoryTestFixture fixture)
 
         var (response, output) = await fixture
             .ApiClient
-            .Get<CategoryModelOutput>($"/categories/{exampleCategory.Id}");
+            .Get<ApiResponse<CategoryModelOutput>>($"/categories/{exampleCategory.Id}");
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         output.Should().NotBeNull();
-        output.Id.Should().Be(exampleCategory.Id);
-        output.Name.Should().Be(exampleCategory.Name);
-        output.Description.Should().Be(exampleCategory.Description);
-        output.IsActive.Should().Be(exampleCategory.IsActive);
-        output.CreatedAt.Should().NotBeSameDateAs(default);
+        output.Data.Should().NotBeNull();
+        output.Data.Id.Should().Be(exampleCategory.Id);
+        output.Data.Name.Should().Be(exampleCategory.Name);
+        output.Data.Description.Should().Be(exampleCategory.Description);
+        output.Data.IsActive.Should().Be(exampleCategory.IsActive);
+        output.Data.CreatedAt.Should().NotBeSameDateAs(default);
     }
 
     [Fact(DisplayName = nameof(ErrorWhenCategoryNotFound))]

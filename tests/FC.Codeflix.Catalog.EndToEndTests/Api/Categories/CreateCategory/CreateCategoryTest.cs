@@ -1,5 +1,6 @@
 ﻿using System.Net;
 
+using FC.Codeflix.Catalog.Api.Models.Responses;
 using FC.Codeflix.Catalog.Application.UseCases.Categories.Common;
 using FC.Codeflix.Catalog.Application.UseCases.Categories.CreateCategory;
 
@@ -21,24 +22,25 @@ public class CreateCategoryTest(CreateCategoryTestFixture fixture)
 
         var (response, output) = await fixture
             .ApiClient
-            .Post<CategoryModelOutput>("/categories", input);
+            .Post<ApiResponse<CategoryModelOutput>>("/categories", input);
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         output.Should().NotBeNull();
-        output.Id.Should().NotBeEmpty();
-        output.Name.Should().Be(input.Name);
-        output.Description.Should().Be(input.Description);
-        output.IsActive.Should().Be(input.IsActive);
-        output.CreatedAt.Should().NotBeSameDateAs(default);
+        output.Data.Should().NotBeNull();
+        output.Data.Id.Should().NotBeEmpty();
+        output.Data.Name.Should().Be(input.Name);
+        output.Data.Description.Should().Be(input.Description);
+        output.Data.IsActive.Should().Be(input.IsActive);
+        output.Data.CreatedAt.Should().NotBeSameDateAs(default);
 
         var dbCategory = await fixture.Persistence
-            .GetById(output.Id);
+            .GetById(output.Data.Id);
         dbCategory.Should().NotBeNull();
-        dbCategory.Id.Should().Be(output.Id);
-        dbCategory.Name.Should().Be(output.Name);
-        dbCategory.Description.Should().Be(output.Description);
-        dbCategory.IsActive.Should().Be(output.IsActive);
+        dbCategory.Id.Should().Be(output.Data.Id);
+        dbCategory.Name.Should().Be(output.Data.Name);
+        dbCategory.Description.Should().Be(output.Data.Description);
+        dbCategory.IsActive.Should().Be(output.Data.IsActive);
         dbCategory.CreatedAt.Should().NotBeSameDateAs(default);
     }
 
