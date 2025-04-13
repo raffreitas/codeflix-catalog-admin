@@ -188,8 +188,6 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
     [InlineData("name", "desc")]
     [InlineData("id", "asc")]
     [InlineData("id", "desc")]
-    [InlineData("createdAt", "asc")]
-    [InlineData("createdAt", "desc")]
     [InlineData("", "asc")]
     [InlineData("", "desc")]
     public async Task SearchOrdered(string orderBy, string order)
@@ -224,6 +222,50 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
             outputItem.Description.Should().Be(expectedItem.Description);
             outputItem.IsActive.Should().Be(expectedItem.IsActive);
             outputItem.CreatedAt.TrimMilliseconds().Should().Be(expectedItem.CreatedAt.TrimMilliseconds());
+        }
+    }
+
+    [Theory(DisplayName = nameof(SearchOrderedDates))]
+    [Trait("E2E/API", "Category/List - Endpoints")]
+    [InlineData("createdAt", "asc")]
+    [InlineData("createdAt", "desc")]
+    public async Task SearchOrderedDates(string orderBy, string order)
+    {
+        var exampleCategoriesList = fixture.GetExampleCategoriesList(10);
+        await fixture.Persistence.InsertList(exampleCategoriesList);
+        var searchOrder = order.ToLower() == "asc" ? SearchOrder.Asc : SearchOrder.Desc;
+        var input = new ListCategoriesInput(page: 1, perPage: 20, search: "", orderBy, searchOrder);
+
+        var (response, output) = await fixture.ApiClient
+            .Get<ListCategoriesOutput>($"/categories", input);
+
+        response.Should().NotBeNull();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        output.Should().NotBeNull();
+        output.Total.Should().Be(exampleCategoriesList.Count);
+        output.Page.Should().Be(input.Page);
+        output.PerPage.Should().Be(input.PerPage);
+        output.Items.Should().HaveCount(exampleCategoriesList.Count);
+
+        DateTime lastItemDate = default;
+        foreach (var item in output.Items)
+        {
+            var expectedItem = exampleCategoriesList.Single(x => x.Id == item.Id);
+
+            item.Should().NotBeNull();
+            item.Id.Should().Be(expectedItem.Id);
+            item.Name.Should().Be(expectedItem.Name);
+            item.Description.Should().Be(expectedItem.Description);
+            item.IsActive.Should().Be(expectedItem.IsActive);
+            item.CreatedAt.TrimMilliseconds().Should().Be(expectedItem.CreatedAt.TrimMilliseconds());
+            if (lastItemDate != default)
+            {
+                if(order == "asc")
+                    Assert.True(item.CreatedAt >= lastItemDate);
+                else
+                    Assert.True(item.CreatedAt <= lastItemDate);
+            }
+            lastItemDate = item.CreatedAt;
         }
     }
 
