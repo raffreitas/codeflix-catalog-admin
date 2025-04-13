@@ -1,7 +1,21 @@
-﻿using FC.Codeflix.Catalog.Application.UseCases.Categories.UpdateCategory;
+﻿using FC.Codeflix.Catalog.Api.Models.Categories;
 using FC.Codeflix.Catalog.EndToEndTests.Api.Categories.Common;
 
 namespace FC.Codeflix.Catalog.EndToEndTests.Api.Categories.UpdateCategory;
+
+public class ApiTempInput
+{
+    public ApiTempInput(string name, string? description = null, bool? isActive = null)
+    {
+        Name = name;
+        Description = description;
+        IsActive = isActive;
+    }
+
+    public string Name { get; set; }
+    public string? Description { get; set; }
+    public bool? IsActive { get; set; }
+}
 
 [CollectionDefinition(nameof(UpdateCategoryTestFixture))]
 public class UpdateCategoryTestFixtureCollection : ICollectionFixture<UpdateCategoryTestFixture>
@@ -10,10 +24,9 @@ public class UpdateCategoryTestFixtureCollection : ICollectionFixture<UpdateCate
 
 public class UpdateCategoryTestFixture : CategoryBaseFixture
 {
-    public UpdateCategoryInput GetExampleInput(Guid? id = null)
+    public UpdateCategoryApiInput GetExampleInput()
     {
         return new(
-            id ?? Guid.NewGuid(),
              GetValidCategoryName(),
              GetValidCategoryDescription(),
              GetRandomBoolean()
