@@ -19,6 +19,7 @@ public class GenreTest(GenreTestFixture fixture)
 
         var dateTimeAfter = DateTime.Now.AddSeconds(1);
         genre.Should().NotBeNull();
+        genre.Id.Should().NotBeEmpty();
         genre.Name.Should().Be(genreName);
         genre.IsActive.Should().BeTrue();
         genre.CreatedAt.Should().NotBeSameDateAs(default);
@@ -39,6 +40,7 @@ public class GenreTest(GenreTestFixture fixture)
 
         var dateTimeAfter = DateTime.Now.AddSeconds(1);
         genre.Should().NotBeNull();
+        genre.Id.Should().NotBeEmpty();
         genre.Name.Should().Be(genreName);
         genre.IsActive.Should().Be(isActive);
         genre.CreatedAt.Should().NotBeSameDateAs(default);

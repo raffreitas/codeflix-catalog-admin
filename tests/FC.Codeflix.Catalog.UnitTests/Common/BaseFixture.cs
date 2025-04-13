@@ -7,4 +7,6 @@ public abstract class BaseFixture
 
     protected BaseFixture()
         => Faker = new Faker(locale: "pt_BR");
+
+    public bool GetRandomBoolean() => Faker.Random.Bool();
 }
