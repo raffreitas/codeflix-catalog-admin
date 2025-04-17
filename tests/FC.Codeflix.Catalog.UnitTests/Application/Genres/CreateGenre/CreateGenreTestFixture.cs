@@ -26,8 +26,7 @@ public class CreateGenreTestFixture : GenreUseCasesBaseFixture
         return new(GetValidGenreName(), GetRandomBoolean(), categoriesIds);
     }
 
-    public Mock<IGenreRepository> GetGenreRepositoryMock()
-        => new();
-
+    public Mock<IGenreRepository> GetGenreRepositoryMock() => new();
+    public Mock<ICategoryRepository> GetCategoryRepositoryMock() => new();
     public Mock<IUnitOfWork> GetUnitOfWorkMock() => new();
 }

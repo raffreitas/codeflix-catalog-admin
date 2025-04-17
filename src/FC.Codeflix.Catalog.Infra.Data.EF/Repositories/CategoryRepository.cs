@@ -63,4 +63,13 @@ public class CategoryRepository(CodeflixCatalogDbContext context) : ICategoryRep
 
         return orderedQuery.ThenBy(x => x.CreatedAt);
     }
+
+    public async Task<IReadOnlyList<Guid>> GetIdsListByIds(List<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        return await _categories
+            .AsNoTracking()
+            .Where(x => ids.Contains(x.Id))
+            .Select(x => x.Id)
+            .ToListAsync(cancellationToken);
+    }
 }
