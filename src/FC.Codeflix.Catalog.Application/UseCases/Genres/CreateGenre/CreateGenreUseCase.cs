@@ -27,21 +27,25 @@ public class CreateGenreUseCase : ICreateGenreUseCase
 
         if (request.CategoriesIds is not null)
         {
-            var idsInPersistence = await _categoryRepository.GetIdsListByIds(request.CategoriesIds, cancellationToken);
-            if (idsInPersistence.Count < request.CategoriesIds.Count)
-            {
-                var notFoundIds = request.CategoriesIds
-                    .Where(id => !idsInPersistence.Contains(id));
-                throw new RelatedAggregateException(
-                    $"Related category id or ids not found: '{string.Join(", ", notFoundIds)}'");
-            }
+            await ValidateCategoryIds(request.CategoriesIds, cancellationToken);
+            request.CategoriesIds.ForEach(genre.AddCategory);
         }
-
-        request.CategoriesIds?.ForEach(genre.AddCategory);
 
         await _genreRepository.Insert(genre, cancellationToken);
         await _unitOfWork.Commit(cancellationToken);
 
         return GenreModelOutput.FromGenre(genre);
+    }
+
+    private async Task ValidateCategoryIds(List<Guid> categoryIds, CancellationToken cancellationToken)
+    {
+        var idsInPersistence = await _categoryRepository.GetIdsListByIds(categoryIds, cancellationToken);
+        if (idsInPersistence.Count < categoryIds.Count)
+        {
+            var notFoundIds = categoryIds
+                .Where(id => !idsInPersistence.Contains(id));
+            throw new RelatedAggregateException(
+                $"Related category id or ids not found: '{string.Join(", ", notFoundIds)}'");
+        }
     }
 }
