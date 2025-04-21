@@ -15,6 +15,9 @@ public class CreateGenreTestFixture : GenreUseCasesBaseFixture
     public CreateGenreInput GetExampleInput()
         => new(GetValidGenreName(), GetRandomBoolean());
 
+    public CreateGenreInput GetExampleInput(string name)
+        => new(name, GetRandomBoolean());
+
     public CreateGenreInput GetExampleInputWithCategories()
     {
         var numberOfCategories = new Random().Next(1, 10);

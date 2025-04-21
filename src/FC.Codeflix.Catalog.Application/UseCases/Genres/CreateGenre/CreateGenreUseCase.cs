@@ -25,7 +25,7 @@ public class CreateGenreUseCase : ICreateGenreUseCase
     {
         var genre = new Genre(request.Name, request.IsActive);
 
-        if (request.CategoriesIds is not null)
+        if (request.CategoriesIds is { Count: > 0 })
         {
             await ValidateCategoryIds(request.CategoriesIds, cancellationToken);
             request.CategoriesIds.ForEach(genre.AddCategory);
