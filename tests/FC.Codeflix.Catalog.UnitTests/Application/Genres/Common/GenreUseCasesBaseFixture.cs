@@ -11,8 +11,8 @@ public class GenreUseCasesBaseFixture : BaseFixture
     public string GetValidGenreName()
         => Faker.Commerce.ProductName();
 
-    public Genre GetExampleGenre() 
-        => new(GetValidGenreName(), GetRandomBoolean());
+    public Genre GetExampleGenre(bool? isActive = null)
+        => new(GetValidGenreName(), isActive ?? GetRandomBoolean());
 
     public Mock<IGenreRepository> GetGenreRepositoryMock() => new();
     public Mock<ICategoryRepository> GetCategoryRepositoryMock() => new();
