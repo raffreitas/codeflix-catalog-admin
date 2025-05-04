@@ -28,6 +28,12 @@ public class UpdateGenreUseCase : IUpdateGenreUseCase
             else genre.Deactivate();
         }
 
+        if (request.CategoriesIds is not null && request.CategoriesIds.Count != 0)
+        {
+            genre.RemoveAllCategories();
+            request.CategoriesIds.ForEach(genre.AddCategory);
+        }
+
         await _genreRepository.Update(genre, cancellationToken);
         await _unitOfWork.Commit(cancellationToken);
 

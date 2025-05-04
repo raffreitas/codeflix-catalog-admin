@@ -3,4 +3,9 @@
 using MediatR;
 
 namespace FC.Codeflix.Catalog.Application.UseCases.Genres.UpdateGenre;
-public record UpdateGenreInput(Guid Id, string Name, bool? IsActive = null) : IRequest<GenreModelOutput>;
+public record UpdateGenreInput(
+    Guid Id,
+    string Name,
+    bool? IsActive = null,
+    List<Guid>? CategoriesIds = null
+) : IRequest<GenreModelOutput>;
