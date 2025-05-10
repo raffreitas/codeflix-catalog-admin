@@ -1,5 +1,6 @@
 ﻿using FC.Codeflix.Catalog.Application.Exceptions;
 using FC.Codeflix.Catalog.Application.UseCases.Genres.UpdateGenre;
+using FC.Codeflix.Catalog.Domain.Entities;
 using FC.Codeflix.Catalog.Domain.Exceptions;
 
 using FluentAssertions;
@@ -46,8 +47,8 @@ public class UpdateGenreTest(UpdateGenreTestFixture fixture)
         output.Id.Should().Be(exampleGenre.Id);
         output.Categories.Should().HaveCount(0);
 
-        genreRepositoryMock.Verify(x => x.Get(
-            It.Is<Guid>(x => x == exampleGenre.Id),
+        genreRepositoryMock.Verify(x => x.Update(
+            It.Is<Genre>(x => x.Id == exampleGenre.Id),
             It.IsAny<CancellationToken>()), Times.Once);
         unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -152,8 +153,8 @@ public class UpdateGenreTest(UpdateGenreTestFixture fixture)
         output.Id.Should().Be(exampleGenre.Id);
         output.Categories.Should().HaveCount(0);
 
-        genreRepositoryMock.Verify(x => x.Get(
-            It.Is<Guid>(x => x == exampleGenre.Id),
+        genreRepositoryMock.Verify(x => x.Update(
+            It.Is<Genre>(x => x.Id == exampleGenre.Id),
             It.IsAny<CancellationToken>()), Times.Once);
         unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -203,8 +204,8 @@ public class UpdateGenreTest(UpdateGenreTestFixture fixture)
             => output.Categories.Should().Contain(expectedId)
         );
 
-        genreRepositoryMock.Verify(x => x.Get(
-            It.Is<Guid>(x => x == exampleGenre.Id),
+        genreRepositoryMock.Verify(x => x.Update(
+            It.Is<Genre>(x => x.Id == exampleGenre.Id),
             It.IsAny<CancellationToken>()), Times.Once);
         unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -254,8 +255,8 @@ public class UpdateGenreTest(UpdateGenreTestFixture fixture)
             => output.Categories.Should().Contain(expectedId)
         );
 
-        genreRepositoryMock.Verify(x => x.Get(
-            It.Is<Guid>(x => x == exampleGenre.Id),
+        genreRepositoryMock.Verify(x => x.Update(
+            It.Is<Genre>(x => x.Id == exampleGenre.Id),
             It.IsAny<CancellationToken>()), Times.Once);
         unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -345,8 +346,8 @@ public class UpdateGenreTest(UpdateGenreTestFixture fixture)
             => output.Categories.Should().Contain(expectedId)
         );
 
-        genreRepositoryMock.Verify(x => x.Get(
-            It.Is<Guid>(x => x == exampleGenre.Id),
+        genreRepositoryMock.Verify(x => x.Update(
+            It.Is<Genre>(x => x.Id == exampleGenre.Id),
             It.IsAny<CancellationToken>()), Times.Once);
         unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -388,8 +389,8 @@ public class UpdateGenreTest(UpdateGenreTestFixture fixture)
         output.Id.Should().Be(exampleGenre.Id);
         output.Categories.Should().HaveCount(0);
 
-        genreRepositoryMock.Verify(x => x.Get(
-            It.Is<Guid>(x => x == exampleGenre.Id),
+        genreRepositoryMock.Verify(x => x.Update(
+            It.Is<Genre>(x => x.Id == exampleGenre.Id),
             It.IsAny<CancellationToken>()), Times.Once);
         unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
     }
