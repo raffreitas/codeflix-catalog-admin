@@ -305,4 +305,92 @@ public class UpdateGenreTest(UpdateGenreTestFixture fixture)
         await act.Should().ThrowAsync<RelatedAggregateException>()
             .WithMessage($"Related category id or ids not found: '{notFoundCategories}'");
     }
+
+    [Fact(DisplayName = nameof(UpdateGenreWithoutCategoriesIds))]
+    [Trait("Application", "UpdateGenre - Use Cases")]
+    public async Task UpdateGenreWithoutCategoriesIds()
+    {
+        var exampleCategoriesIds = fixture.GetRandomIdsList();
+        var exampleGenre = fixture.GetExampleGenre(categoriesIds: exampleCategoriesIds);
+        var genreRepositoryMock = fixture.GetGenreRepositoryMock();
+        var categoryRepositoryMock = fixture.GetCategoryRepositoryMock();
+        var unitOfWorkMock = fixture.GetUnitOfWorkMock();
+        var newName = fixture.GetValidGenreName();
+        var newIsActive = !exampleGenre.IsActive;
+        genreRepositoryMock.Setup(x => x.Get(
+            It.Is<Guid>(x => x == exampleGenre.Id),
+            It.IsAny<CancellationToken>())
+        ).ReturnsAsync(exampleGenre);
+        var input = new UpdateGenreInput(
+            exampleGenre.Id,
+            newName,
+            newIsActive
+        );
+
+        var useCase = new UpdateGenreUseCase(
+            genreRepositoryMock.Object,
+            unitOfWorkMock.Object,
+            categoryRepositoryMock.Object
+        );
+
+        var output = await useCase.Handle(input, CancellationToken.None);
+
+        output.Should().NotBeNull();
+        output.Name.Should().Be(newName);
+        output.IsActive.Should().Be(newIsActive);
+        output.CreatedAt.Should().BeSameDateAs(exampleGenre.CreatedAt);
+        output.Id.Should().Be(exampleGenre.Id);
+        output.Categories.Should().HaveCount(exampleCategoriesIds.Count);
+        exampleCategoriesIds.ForEach(expectedId
+            => output.Categories.Should().Contain(expectedId)
+        );
+
+        genreRepositoryMock.Verify(x => x.Get(
+            It.Is<Guid>(x => x == exampleGenre.Id),
+            It.IsAny<CancellationToken>()), Times.Once);
+        unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact(DisplayName = nameof(UpdateGenreWithEmptyCategoriesIds))]
+    [Trait("Application", "UpdateGenre - Use Cases")]
+    public async Task UpdateGenreWithEmptyCategoriesIds()
+    {
+        var exampleCategoriesIds = fixture.GetRandomIdsList();
+        var exampleGenre = fixture.GetExampleGenre(categoriesIds: exampleCategoriesIds);
+        var genreRepositoryMock = fixture.GetGenreRepositoryMock();
+        var categoryRepositoryMock = fixture.GetCategoryRepositoryMock();
+        var unitOfWorkMock = fixture.GetUnitOfWorkMock();
+        var newName = fixture.GetValidGenreName();
+        var newIsActive = !exampleGenre.IsActive;
+        genreRepositoryMock.Setup(x => x.Get(
+            It.Is<Guid>(x => x == exampleGenre.Id),
+            It.IsAny<CancellationToken>())
+        ).ReturnsAsync(exampleGenre);
+        var input = new UpdateGenreInput(
+            exampleGenre.Id,
+            newName,
+            newIsActive,
+            []
+        );
+
+        var useCase = new UpdateGenreUseCase(
+            genreRepositoryMock.Object,
+            unitOfWorkMock.Object,
+            categoryRepositoryMock.Object
+        );
+
+        var output = await useCase.Handle(input, CancellationToken.None);
+
+        output.Should().NotBeNull();
+        output.Name.Should().Be(newName);
+        output.IsActive.Should().Be(newIsActive);
+        output.CreatedAt.Should().BeSameDateAs(exampleGenre.CreatedAt);
+        output.Id.Should().Be(exampleGenre.Id);
+        output.Categories.Should().HaveCount(0);
+
+        genreRepositoryMock.Verify(x => x.Get(
+            It.Is<Guid>(x => x == exampleGenre.Id),
+            It.IsAny<CancellationToken>()), Times.Once);
+        unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()), Times.Once);
+    }
 }

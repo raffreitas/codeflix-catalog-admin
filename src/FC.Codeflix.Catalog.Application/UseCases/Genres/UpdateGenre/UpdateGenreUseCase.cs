@@ -29,11 +29,14 @@ public class UpdateGenreUseCase : IUpdateGenreUseCase
             else genre.Deactivate();
         }
 
-        if (request.CategoriesIds is not null && request.CategoriesIds.Count != 0)
+        if (request.CategoriesIds is not null)
         {
-            await ValidateCategoryIds(request.CategoriesIds, cancellationToken);
             genre.RemoveAllCategories();
-            request.CategoriesIds.ForEach(genre.AddCategory);
+            if (request.CategoriesIds.Count > 0)
+            {
+                await ValidateCategoryIds(request.CategoriesIds, cancellationToken);
+                request.CategoriesIds.ForEach(genre.AddCategory);
+            }
         }
 
         await _genreRepository.Update(genre, cancellationToken);
