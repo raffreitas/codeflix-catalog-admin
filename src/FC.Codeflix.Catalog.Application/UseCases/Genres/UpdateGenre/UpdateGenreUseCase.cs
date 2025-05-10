@@ -1,4 +1,5 @@
-﻿using FC.Codeflix.Catalog.Application.Interfaces;
+﻿using FC.Codeflix.Catalog.Application.Exceptions;
+using FC.Codeflix.Catalog.Application.Interfaces;
 using FC.Codeflix.Catalog.Application.UseCases.Genres.Common;
 using FC.Codeflix.Catalog.Domain.Repositories;
 
@@ -30,6 +31,7 @@ public class UpdateGenreUseCase : IUpdateGenreUseCase
 
         if (request.CategoriesIds is not null && request.CategoriesIds.Count != 0)
         {
+            await ValidateCategoryIds(request.CategoriesIds, cancellationToken);
             genre.RemoveAllCategories();
             request.CategoriesIds.ForEach(genre.AddCategory);
         }
@@ -38,5 +40,17 @@ public class UpdateGenreUseCase : IUpdateGenreUseCase
         await _unitOfWork.Commit(cancellationToken);
 
         return GenreModelOutput.FromGenre(genre);
+    }
+
+    private async Task ValidateCategoryIds(List<Guid> categoryIds, CancellationToken cancellationToken)
+    {
+        var idsInPersistence = await _categoryRepository.GetIdsListByIds(categoryIds, cancellationToken);
+        if (idsInPersistence.Count < categoryIds.Count)
+        {
+            var notFoundIds = categoryIds
+                .Where(id => !idsInPersistence.Contains(id));
+            throw new RelatedAggregateException(
+                $"Related category id or ids not found: '{string.Join(", ", notFoundIds)}'");
+        }
     }
 }
