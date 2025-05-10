@@ -7,11 +7,11 @@ namespace FC.Codeflix.Catalog.Application.UseCases.Genres.ListGenres;
 public record ListGenresInput : PaginatedListInput, IRequest<ListGenresOutput>
 {
     public ListGenresInput(
-        int page, 
-        int perPage, 
-        string search, 
-        string sort, 
-        SearchOrder dir
+        int page = 1, 
+        int perPage= 15, 
+        string search = "", 
+        string sort = "", 
+        SearchOrder dir = SearchOrder.Asc
     ) : base(page, perPage, search, sort, dir)
     {
     }
