@@ -9,7 +9,7 @@ public abstract record PaginatedListInput
     public string Sort { get; set; }
     public SearchOrder Dir { get; set; }
 
-    public PaginatedListInput(
+    protected PaginatedListInput(
         int page,
         int perPage,
         string search,
@@ -22,4 +22,13 @@ public abstract record PaginatedListInput
         Sort = sort;
         Dir = dir;
     }
+
+    public SearchInput ToSearchInput()
+        => new(
+            page: Page,
+            perPage: PerPage,
+            search: Search,
+            orderBy: Sort,
+            order: Dir
+        );
 }
