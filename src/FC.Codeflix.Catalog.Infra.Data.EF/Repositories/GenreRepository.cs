@@ -1,4 +1,5 @@
-﻿using FC.Codeflix.Catalog.Domain.Entities;
+﻿using FC.Codeflix.Catalog.Application.Exceptions;
+using FC.Codeflix.Catalog.Domain.Entities;
 using FC.Codeflix.Catalog.Domain.Repositories;
 using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 using FC.Codeflix.Catalog.Infra.Data.EF.Models;
@@ -22,12 +23,22 @@ public class GenreRepository(CodeflixCatalogDbContext context) : IGenreRepositor
         }
     }
 
-    public Task Delete(Genre aggregate, CancellationToken cancellationToken = default)
+    public async Task<Genre> Get(Guid id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var genre = await _genres
+            .AsNoTracking()
+            .FirstOrDefaultAsync((x) => x.Id == id, cancellationToken)
+                ?? throw new NotFoundException($"Genre '{id}' not found.");
+
+        var categoryIds = await _genresCategories
+            .Where(x => x.GenreId == id)
+            .Select(x => x.CategoryId)
+            .ToListAsync(cancellationToken);
+        categoryIds.ForEach(genre.AddCategory);
+        return genre;
     }
 
-    public Task<Genre> Get(Guid id, CancellationToken cancellationToken = default)
+    public Task Delete(Genre aggregate, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
