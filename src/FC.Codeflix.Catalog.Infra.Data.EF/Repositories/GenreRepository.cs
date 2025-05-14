@@ -40,7 +40,10 @@ public class GenreRepository(CodeflixCatalogDbContext context) : IGenreRepositor
 
     public Task Delete(Genre aggregate, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var relations = _genresCategories.Where(x => x.GenreId == aggregate.Id);
+        _genresCategories.RemoveRange(relations);
+        _genres.Remove(aggregate);
+        return Task.CompletedTask;
     }
 
     public Task<SearchOutput<Genre>> Search(SearchInput input, CancellationToken cancellationToken = default)
