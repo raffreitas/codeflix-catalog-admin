@@ -46,12 +46,20 @@ public class GenreRepository(CodeflixCatalogDbContext context) : IGenreRepositor
         return Task.CompletedTask;
     }
 
-    public Task<SearchOutput<Genre>> Search(SearchInput input, CancellationToken cancellationToken = default)
+    public async Task Update(Genre aggregate, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        _genres.Update(aggregate);
+        var oldRelations = _genresCategories.Where(x => x.GenreId == aggregate.Id);
+        _genresCategories.RemoveRange(oldRelations);
+        if (aggregate.Categories.Count > 0)
+        {
+            var relations = aggregate.Categories
+                .Select(categoryId => new GenresCategories(aggregate.Id, categoryId));
+            await _genresCategories.AddRangeAsync(relations, cancellationToken);
+        }
     }
 
-    public Task Update(Genre aggregate, CancellationToken cancellationToken = default)
+    public Task<SearchOutput<Genre>> Search(SearchInput input, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
