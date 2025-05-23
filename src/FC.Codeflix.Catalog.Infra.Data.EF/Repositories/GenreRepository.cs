@@ -59,8 +59,14 @@ public class GenreRepository(CodeflixCatalogDbContext context) : IGenreRepositor
         }
     }
 
-    public Task<SearchOutput<Genre>> Search(SearchInput input, CancellationToken cancellationToken = default)
+    public async Task<SearchOutput<Genre>> Search(SearchInput input, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var genres = await _genres.AsNoTracking().ToListAsync(cancellationToken);
+        return new SearchOutput<Genre>(
+            currentPage: input.Page,
+            perPage: input.PerPage,
+            total: genres.Count,
+            genres
+        );
     }
 }
