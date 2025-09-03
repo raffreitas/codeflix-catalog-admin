@@ -62,7 +62,16 @@ public class GenreRepository(CodeflixCatalogDbContext context) : IGenreRepositor
 
     public async Task<SearchOutput<Genre>> Search(SearchInput input, CancellationToken cancellationToken = default)
     {
-        var genres = await Genres.AsNoTracking().ToListAsync(cancellationToken);
+        var toSkip = (input.Page - 1) * input.PerPage;
+
+        var total = await Genres.CountAsync(cancellationToken);
+
+        var genres = await Genres
+            .AsNoTracking()
+            .Skip(toSkip)
+            .Take(input.PerPage)
+            .ToListAsync(cancellationToken);
+
 
         var genresIds = genres.Select(x => x.Id).ToList();
         var relations = await GenresCategories
@@ -86,7 +95,7 @@ public class GenreRepository(CodeflixCatalogDbContext context) : IGenreRepositor
         return new SearchOutput<Genre>(
             currentPage: input.Page,
             perPage: input.PerPage,
-            total: genres.Count,
+            total: total,
             genres
         );
     }

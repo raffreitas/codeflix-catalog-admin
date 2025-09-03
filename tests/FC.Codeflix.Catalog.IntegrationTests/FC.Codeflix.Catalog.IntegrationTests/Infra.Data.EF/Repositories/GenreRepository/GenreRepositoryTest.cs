@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 using Repository = FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
 
-
 namespace FC.Codeflix.Catalog.IntegrationTests.Infra.Data.EF.Repositories.GenreRepository;
 
 [Collection(nameof(GenreRepositoryTestFixture))]
@@ -340,6 +339,78 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
         searchOutput.PerPage.Should().Be(searchInput.PerPage);
         searchOutput.Total.Should().Be(exampleGenresList.Count);
         searchOutput.Items.Should().HaveCount(exampleGenresList.Count);
+        foreach (var item in searchOutput.Items)
+        {
+            var exampleGenre = exampleGenresList.Find(x => x.Id == item.Id);
+            exampleGenre.Should().NotBeNull();
+            exampleGenre.Name.Should().Be(exampleGenre.Name);
+            exampleGenre.IsActive.Should().Be(exampleGenre.IsActive);
+            exampleGenre.CreatedAt.Should().Be(exampleGenre.CreatedAt);
+            exampleGenre.Categories.Should().HaveCount(exampleGenre.Categories.Count);
+            exampleGenre.Categories.Should().BeEquivalentTo(exampleGenre.Categories);
+        }
+    }
+
+    [Fact(DisplayName = nameof(SearchReturnsEmptyWhenPersistenceIsEmpty))]
+    [Trait("Integration/Infra.Data", "GenreRepository - Repositories")]
+    public async Task SearchReturnsEmptyWhenPersistenceIsEmpty()
+    {
+        var actDbContext = fixture.CreateDbContext(preserveData: true);
+        var genreRepository = new Repository.GenreRepository(actDbContext);
+        var searchInput = new SearchInput(1, 20, "", "", SearchOrder.Asc);
+
+        var searchOutput = await genreRepository.Search(searchInput, CancellationToken.None);
+
+        searchOutput.Should().NotBeNull();
+        searchOutput.CurrentPage.Should().Be(searchInput.Page);
+        searchOutput.PerPage.Should().Be(searchInput.PerPage);
+        searchOutput.Total.Should().Be(0);
+        searchOutput.Items.Should().HaveCount(0);
+    }
+
+    [Theory(DisplayName = nameof(SearchReturnsPagineted))]
+    [Trait("Integration/Infra.Data", "GenreRepository - Repositories")]
+    [InlineData(10, 1, 5, 5)]
+    [InlineData(10, 2, 5, 5)]
+    [InlineData(7, 2, 5, 2)]
+    [InlineData(7, 3, 5, 0)]
+    public async Task SearchReturnsPagineted(
+        int quantityToGenerate,
+        int page,
+        int perPage,
+        int expectedTotal
+    )
+    {
+        CodeflixCatalogDbContext dbContext = fixture.CreateDbContext();
+        var exampleGenresList = fixture.GetExampleGenresList(quantityToGenerate);
+        await dbContext.Genres.AddRangeAsync(exampleGenresList);
+        var random = new Random();
+        exampleGenresList.ForEach(exampleGenre =>
+        {
+            var categoriesListToRelation = fixture
+                .GetExampleCategoriesList(random.Next(0, 4));
+            if (categoriesListToRelation.Count > 0)
+            {
+                categoriesListToRelation.ForEach(category => exampleGenre.AddCategory(category.Id));
+                dbContext.Categories.AddRange(categoriesListToRelation);
+                var relationsToAdd = categoriesListToRelation
+                    .Select(category => new GenresCategories(exampleGenre.Id, category.Id))
+                    .ToList();
+                dbContext.GenresCategories.AddRange(relationsToAdd);
+            }
+        });
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var actDbContext = fixture.CreateDbContext(preserveData: true);
+        var genreRepository = new Repository.GenreRepository(actDbContext);
+        var searchInput = new SearchInput(page, perPage, "", "", SearchOrder.Asc);
+
+        var searchOutput = await genreRepository.Search(searchInput, CancellationToken.None);
+
+        searchOutput.Should().NotBeNull();
+        searchOutput.CurrentPage.Should().Be(searchInput.Page);
+        searchOutput.PerPage.Should().Be(searchInput.PerPage);
+        searchOutput.Total.Should().Be(exampleGenresList.Count);
+        searchOutput.Items.Should().HaveCount(expectedTotal);
         foreach (var item in searchOutput.Items)
         {
             var exampleGenre = exampleGenresList.Find(x => x.Id == item.Id);
