@@ -9,21 +9,29 @@ namespace FC.Codeflix.Catalog.IntegrationTests.Infra.Data.EF.Repositories.GenreR
 public class GenreRepositoryTestFixtureCollection : ICollectionFixture<GenreRepositoryTestFixture>
 {
 }
+
 public class GenreRepositoryTestFixture : BaseFixture
 {
     public string GetValidGenreName() => Faker.Commerce.ProductName();
 
     public bool GetRandomBoolean() => Faker.Random.Bool();
 
-    public Genre GetExampleGenre(bool? isActive = null, List<Guid>? categoriesIds = null)
+    public Genre GetExampleGenre(
+        bool? isActive = null,
+        List<Guid>? categoriesIds = null,
+        string? name = null
+    )
     {
-        var genre = new Genre(GetValidGenreName(), isActive ?? GetRandomBoolean());
+        var genre = new Genre(name ?? GetValidGenreName(), isActive ?? GetRandomBoolean());
         categoriesIds?.ForEach(genre.AddCategory);
         return genre;
     }
 
+    public List<Genre> GetExampleListGenresByNames(string[] names)
+        => names.Select(name => GetExampleGenre(name: name)).ToList();
+
     public List<Genre> GetExampleGenresList(int count = 10)
-      => [.. Enumerable.Range(0, count).Select(_ => GetExampleGenre())];
+        => [.. Enumerable.Range(0, count).Select(_ => GetExampleGenre())];
 
     public string GetValidCategoryName()
     {
@@ -44,11 +52,11 @@ public class GenreRepositoryTestFixture : BaseFixture
     }
 
     public Category GetExampleCategory()
-      => new(
-          GetValidCategoryName(),
-          GetValidCategoryDescription(),
-          GetRandomBoolean());
+        => new(
+            GetValidCategoryName(),
+            GetValidCategoryDescription(),
+            GetRandomBoolean());
 
     public List<Category> GetExampleCategoriesList(int length = 10)
-      => [.. Enumerable.Range(0, length).Select(_ => GetExampleCategory())];
+        => [.. Enumerable.Range(0, length).Select(_ => GetExampleCategory())];
 }

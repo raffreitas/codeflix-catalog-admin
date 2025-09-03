@@ -355,7 +355,7 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
     [Trait("Integration/Infra.Data", "GenreRepository - Repositories")]
     public async Task SearchReturnsEmptyWhenPersistenceIsEmpty()
     {
-        var actDbContext = fixture.CreateDbContext(preserveData: true);
+        var actDbContext = fixture.CreateDbContext();
         var genreRepository = new Repository.GenreRepository(actDbContext);
         var searchInput = new SearchInput(1, 20, "", "", SearchOrder.Asc);
 
@@ -411,6 +411,76 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
         searchOutput.PerPage.Should().Be(searchInput.PerPage);
         searchOutput.Total.Should().Be(exampleGenresList.Count);
         searchOutput.Items.Should().HaveCount(expectedTotal);
+        foreach (var item in searchOutput.Items)
+        {
+            var exampleGenre = exampleGenresList.Find(x => x.Id == item.Id);
+            exampleGenre.Should().NotBeNull();
+            exampleGenre.Name.Should().Be(exampleGenre.Name);
+            exampleGenre.IsActive.Should().Be(exampleGenre.IsActive);
+            exampleGenre.CreatedAt.Should().Be(exampleGenre.CreatedAt);
+            exampleGenre.Categories.Should().HaveCount(exampleGenre.Categories.Count);
+            exampleGenre.Categories.Should().BeEquivalentTo(exampleGenre.Categories);
+        }
+    }
+
+    [Theory(DisplayName = nameof(SearchByText))]
+    [Trait("Integration/Infra.Data", "GenreRepository - Repositories")]
+    [InlineData("Action", 1, 5, 1, 1)]
+    [InlineData("Horror", 1, 5, 3, 3)]
+    [InlineData("Horror", 2, 5, 0, 3)]
+    [InlineData("Sci-fi", 1, 5, 4, 4)]
+    [InlineData("Sci-fi", 1, 2, 2, 4)]
+    [InlineData("Sci-fi", 2, 3, 1, 4)]
+    [InlineData("Sci-fi Other", 1, 3, 0, 0)]
+    [InlineData("Robots", 1, 5, 2, 2)]
+    public async Task SearchByText(
+        string search,
+        int page,
+        int perPage,
+        int expectedQuantityItemsReturned,
+        int expectedQuantityTotalItems
+    )
+    {
+        CodeflixCatalogDbContext dbContext = fixture.CreateDbContext();
+        var exampleGenresList = fixture.GetExampleListGenresByNames([
+            "Action",
+            "Horror",
+            "Horror - Robots",
+            "Horror - Based on Real Facts",
+            "Drama",
+            "Sci-fi AI",
+            "Sci-fi Space",
+            "Sci-fi Robots",
+            "Sci-fi Future",
+        ]);
+        await dbContext.Genres.AddRangeAsync(exampleGenresList);
+        var random = new Random();
+        exampleGenresList.ForEach(exampleGenre =>
+        {
+            var categoriesListToRelation = fixture
+                .GetExampleCategoriesList(random.Next(0, 4));
+            if (categoriesListToRelation.Count > 0)
+            {
+                categoriesListToRelation.ForEach(category => exampleGenre.AddCategory(category.Id));
+                dbContext.Categories.AddRange(categoriesListToRelation);
+                var relationsToAdd = categoriesListToRelation
+                    .Select(category => new GenresCategories(exampleGenre.Id, category.Id))
+                    .ToList();
+                dbContext.GenresCategories.AddRange(relationsToAdd);
+            }
+        });
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var actDbContext = fixture.CreateDbContext(preserveData: true);
+        var genreRepository = new Repository.GenreRepository(actDbContext);
+        var searchInput = new SearchInput(page, perPage, search, "", SearchOrder.Asc);
+
+        var searchOutput = await genreRepository.Search(searchInput, CancellationToken.None);
+
+        searchOutput.Should().NotBeNull();
+        searchOutput.CurrentPage.Should().Be(searchInput.Page);
+        searchOutput.PerPage.Should().Be(searchInput.PerPage);
+        searchOutput.Total.Should().Be(expectedQuantityTotalItems);
+        searchOutput.Items.Should().HaveCount(expectedQuantityItemsReturned);
         foreach (var item in searchOutput.Items)
         {
             var exampleGenre = exampleGenresList.Find(x => x.Id == item.Id);
