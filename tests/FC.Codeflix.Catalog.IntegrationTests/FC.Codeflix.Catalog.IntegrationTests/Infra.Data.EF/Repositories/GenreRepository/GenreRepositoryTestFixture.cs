@@ -1,6 +1,7 @@
 ﻿using Bogus;
 
 using FC.Codeflix.Catalog.Domain.Entities;
+using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 using FC.Codeflix.Catalog.IntegrationTests.Base;
 
 namespace FC.Codeflix.Catalog.IntegrationTests.Infra.Data.EF.Repositories.GenreRepository;
@@ -10,7 +11,7 @@ public class GenreRepositoryTestFixtureCollection : ICollectionFixture<GenreRepo
 {
 }
 
-public class GenreRepositoryTestFixture : BaseFixture
+public sealed class GenreRepositoryTestFixture : BaseFixture
 {
     public string GetValidGenreName() => Faker.Commerce.ProductName();
 
@@ -59,4 +60,19 @@ public class GenreRepositoryTestFixture : BaseFixture
 
     public List<Category> GetExampleCategoriesList(int length = 10)
         => [.. Enumerable.Range(0, length).Select(_ => GetExampleCategory())];
+
+    public List<Genre> CloneGenresListOrdered(List<Genre> genresList, string orderBy, SearchOrder order)
+    {
+        var listClone = new List<Genre>(genresList);
+        return (orderBy.ToLower(), order) switch
+        {
+            ("name", SearchOrder.Asc) => [.. listClone.OrderBy(x => x.Name)],
+            ("name", SearchOrder.Desc) => [.. listClone.OrderByDescending(x => x.Name)],
+            ("id", SearchOrder.Asc) => [.. listClone.OrderBy(x => x.Id)],
+            ("id", SearchOrder.Desc) => [.. listClone.OrderByDescending(x => x.Id)],
+            ("createdat", SearchOrder.Asc) => [.. listClone.OrderBy(x => x.CreatedAt)],
+            ("createdat", SearchOrder.Desc) => [.. listClone.OrderByDescending(x => x.CreatedAt)],
+            _ => [.. listClone.OrderBy(x => x.Name)],
+        };
+    }
 }
