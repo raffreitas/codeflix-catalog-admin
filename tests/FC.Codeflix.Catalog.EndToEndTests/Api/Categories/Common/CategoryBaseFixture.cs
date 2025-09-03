@@ -2,13 +2,16 @@
 using FC.Codeflix.Catalog.EndToEndTests.Base;
 
 namespace FC.Codeflix.Catalog.EndToEndTests.Api.Categories.Common;
+
 public abstract class CategoryBaseFixture : BaseFixture
 {
     public CategoryPersistence Persistence { get; set; }
+
     protected CategoryBaseFixture()
     {
-        Persistence = new(CreateDbContext());
+        Persistence = new CategoryPersistence(CreateDbContext());
     }
+
     public string GetValidCategoryName()
     {
         var categoryName = string.Empty;

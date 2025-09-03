@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/env/">
+    <File Path="docker-compose.yml" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/FC.Codeflix.Catalog.Api/FC.Codeflix.Catalog.Api.csproj" />
+    <Project Path="src/FC.Codeflix.Catalog.Application/FC.Codeflix.Catalog.Application.csproj" />
+    <Project Path="src/FC.Codeflix.Catalog.Domain/FC.Codeflix.Catalog.Domain.csproj" />
+    <Project Path="src/FC.Codeflix.Catalog.Infra.Data.EF/FC.Codeflix.Catalog.Infra.Data.EF.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FC.Codeflix.Catalog.EndToEndTests/FC.Codeflix.Catalog.EndToEndTests.csproj" />
+    <Project Path="tests/FC.Codeflix.Catalog.IntegrationTests/FC.Codeflix.Catalog.IntegrationTests/FC.Codeflix.Catalog.IntegrationTests.csproj" />
+    <Project Path="tests/FC.Codeflix.Catalog.UnitTests/FC.Codeflix.Catalog.UnitTests.csproj" />
+  </Folder>
+</Solution>

@@ -314,22 +314,23 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
         var exampleGenresList = fixture.GetExampleGenresList(10);
         await dbContext.Genres.AddRangeAsync(exampleGenresList);
         var random = new Random();
-        exampleGenresList.ForEach(async exampleGenre =>
+        exampleGenresList.ForEach(exampleGenre =>
         {
             var categoriesListToRelation = fixture
-                .GetExampleCategoriesList(random.Next(0, 10));
+                .GetExampleCategoriesList(random.Next(0, 4));
             if (categoriesListToRelation.Count > 0)
             {
                 categoriesListToRelation.ForEach(category => exampleGenre.AddCategory(category.Id));
-                await dbContext.Categories.AddRangeAsync(categoriesListToRelation);
+                dbContext.Categories.AddRange(categoriesListToRelation);
                 var relationsToAdd = categoriesListToRelation
-                    .Select((category) => new GenresCategories(exampleGenre.Id, category.Id));
-                await dbContext.GenresCategories.AddRangeAsync(relationsToAdd);
+                    .Select(category => new GenresCategories(exampleGenre.Id, category.Id))
+                    .ToList();
+                dbContext.GenresCategories.AddRange(relationsToAdd);
             }
         });
         await dbContext.SaveChangesAsync(CancellationToken.None);
-        var act = fixture.CreateDbContext(preserveData: true);
-        var genreRepository = new Repository.GenreRepository(act);
+        var actDbContext = fixture.CreateDbContext(preserveData: true);
+        var genreRepository = new Repository.GenreRepository(actDbContext);
         var searchInput = new SearchInput(1, 20, "", "", SearchOrder.Asc);
 
         var searchOutput = await genreRepository.Search(searchInput, CancellationToken.None);

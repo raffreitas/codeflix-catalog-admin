@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FC.Codeflix.Catalog.EndToEndTests.Base;
+
 public abstract class BaseFixture
 {
     private readonly string _dbConnectionString;
@@ -14,6 +15,7 @@ public abstract class BaseFixture
     public CustomWebApplicationFactory<Program> WebAppFactory { get; }
     public HttpClient HttpClient { get; }
     public ApiClient ApiClient { get; }
+
     protected BaseFixture()
     {
         Faker = new Faker("pt_BR");
