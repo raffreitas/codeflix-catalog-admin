@@ -9,6 +9,6 @@ public class GenresCategoriesConfiguration : IEntityTypeConfiguration<GenresCate
 {
     public void Configure(EntityTypeBuilder<GenresCategories> builder)
     {
-        builder.HasKey(builder => new { builder.GenreId, builder.CategoryId });
+        builder.HasKey(genresCategories => new { genresCategories.GenreId, genresCategories.CategoryId });
     }
 }

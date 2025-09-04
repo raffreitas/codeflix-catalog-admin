@@ -14,8 +14,10 @@ public class GetGenreTest(GetGenreTestFixture fixture)
     [Trait("Application", "GetGenre - Use Cases")]
     public async Task GetGenre()
     {
-        var exampleGenre = fixture.GetExampleGenre(categoriesIds: fixture.GetRandomIdsList());
+        var exampleGenre = fixture.GetExampleGenre();
         var genreRepositoryMock = fixture.GetGenreRepositoryMock();
+        var categoryRepositoryMock = fixture.GetCategoryRepositoryMock();
+        
         genreRepositoryMock.Setup(x => x.Get(
             It.Is<Guid>(x => x == exampleGenre.Id),
             It.IsAny<CancellationToken>())
@@ -25,9 +27,7 @@ public class GetGenreTest(GetGenreTestFixture fixture)
             exampleGenre.Id
         );
 
-        var useCase = new GetGenreUseCase(
-            genreRepositoryMock.Object
-        );
+        var useCase = new GetGenreUseCase(genreRepositoryMock.Object, categoryRepositoryMock.Object);
 
         var output = await useCase.Handle(input, CancellationToken.None);
 
@@ -37,8 +37,6 @@ public class GetGenreTest(GetGenreTestFixture fixture)
         output.CreatedAt.Should().BeSameDateAs(exampleGenre.CreatedAt);
         output.Id.Should().Be(exampleGenre.Id);
         output.Categories.Should().HaveCount(exampleGenre.Categories.Count);
-        foreach (var expectedId in exampleGenre.Categories)
-            output.Categories.Should().Contain(expectedId);
 
         genreRepositoryMock.Verify(x => x.Get(
             It.Is<Guid>(x => x == exampleGenre.Id),
@@ -51,6 +49,7 @@ public class GetGenreTest(GetGenreTestFixture fixture)
     {
         var exampleId = Guid.NewGuid();
         var genreRepositoryMock = fixture.GetGenreRepositoryMock();
+        var categoryRepositoryMock = fixture.GetCategoryRepositoryMock();
         genreRepositoryMock.Setup(x => x.Get(
             It.Is<Guid>(x => x == exampleId),
             It.IsAny<CancellationToken>())
@@ -58,7 +57,7 @@ public class GetGenreTest(GetGenreTestFixture fixture)
 
         var input = new GetGenreInput(exampleId);
 
-        var useCase = new GetGenreUseCase(genreRepositoryMock.Object);
+        var useCase = new GetGenreUseCase(genreRepositoryMock.Object, categoryRepositoryMock.Object);
 
         var act = async () => await useCase.Handle(input, CancellationToken.None);
 

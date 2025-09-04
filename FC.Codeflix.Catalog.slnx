@@ -10,7 +10,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/FC.Codeflix.Catalog.EndToEndTests/FC.Codeflix.Catalog.EndToEndTests.csproj" />
-    <Project Path="tests/FC.Codeflix.Catalog.IntegrationTests/FC.Codeflix.Catalog.IntegrationTests/FC.Codeflix.Catalog.IntegrationTests.csproj" />
     <Project Path="tests/FC.Codeflix.Catalog.UnitTests/FC.Codeflix.Catalog.UnitTests.csproj" />
+    <Project Path="tests\FC.Codeflix.Catalog.IntegrationTests\FC.Codeflix.Catalog.IntegrationTests.csproj" Type="Classic C#" />
   </Folder>
 </Solution>

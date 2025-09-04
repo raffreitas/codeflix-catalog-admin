@@ -4,7 +4,9 @@ using FC.Codeflix.Catalog.UnitTests.Application.Genres.Common;
 namespace FC.Codeflix.Catalog.UnitTests.Application.Genres.CreateGenre;
 
 [CollectionDefinition(nameof(CreateGenreTestFixture))]
-public class CreateGenreTestFixtureCollection : ICollectionFixture<CreateGenreTestFixture> { }
+public class CreateGenreTestFixtureCollection : ICollectionFixture<CreateGenreTestFixture>
+{
+}
 
 public class CreateGenreTestFixture : GenreUseCasesBaseFixture
 {
@@ -22,6 +24,6 @@ public class CreateGenreTestFixture : GenreUseCasesBaseFixture
             .Select(_ => Faker.Random.Guid())
             .ToList();
 
-        return new(GetValidGenreName(), GetRandomBoolean(), categoriesIds);
+        return new CreateGenreInput(GetValidGenreName(), GetRandomBoolean(), categoriesIds);
     }
 }

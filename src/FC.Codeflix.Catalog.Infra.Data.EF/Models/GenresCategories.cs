@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-using FC.Codeflix.Catalog.Domain.Entities;
+﻿using FC.Codeflix.Catalog.Domain.Entities;
 
 namespace FC.Codeflix.Catalog.Infra.Data.EF.Models;
 public class GenresCategories

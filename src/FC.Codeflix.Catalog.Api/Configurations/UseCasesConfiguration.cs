@@ -10,7 +10,7 @@ public static class UseCasesConfiguration
 {
     public static IServiceCollection AddUseCases(this IServiceCollection services)
     {
-        services.AddMediatR((configuration) => 
+        services.AddMediatR((configuration) =>
             configuration.RegisterServicesFromAssemblyContaining<CreateCategoryUseCase>());
         services.AddRepositories();
         return services;
@@ -20,6 +20,8 @@ public static class UseCasesConfiguration
     {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IGenreRepository, GenreRepository>();
+        services.AddScoped<ICastMemberRepository, CastMemberRepository>();
         return services;
     }
 }

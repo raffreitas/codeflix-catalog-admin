@@ -30,7 +30,7 @@ public abstract class CategoryUseCasesBaseFixture : BaseFixture
         return categoryDescription;
     }
 
-    public bool GetRandomBoolean()
+    public new bool GetRandomBoolean()
         => Faker.Random.Bool();
 
     public Category GetExampleCategory()

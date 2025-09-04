@@ -1,6 +1,4 @@
-﻿using FC.Codeflix.Catalog.Domain.SeedWork;
-
-namespace FC.Codeflix.Catalog.Application.Common;
+﻿namespace FC.Codeflix.Catalog.Application.Common;
 
 public abstract record PaginatedListOutput<TOutputItem>
 {

@@ -6,17 +6,19 @@ using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
+
 public class CategoryRepository(CodeflixCatalogDbContext context) : ICategoryRepository
 {
     private readonly DbSet<Category> _categories = context.Set<Category>();
+
     public async Task Insert(Category aggregate, CancellationToken cancellationToken = default)
         => await _categories.AddAsync(aggregate, cancellationToken);
 
     public async Task<Category> Get(Guid id, CancellationToken cancellationToken = default)
         => await _categories
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new NotFoundException($"Category '{id}' not found.");
+               .AsNoTracking()
+               .FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
+           ?? throw new NotFoundException($"Category '{id}' not found.");
 
     public Task Update(Category aggregate, CancellationToken cancellationToken = default)
         => Task.FromResult(_categories.Update(aggregate));
@@ -48,7 +50,8 @@ public class CategoryRepository(CodeflixCatalogDbContext context) : ICategoryRep
         );
     }
 
-    private static IQueryable<Category> AddOrderToQuery(IQueryable<Category> query, string orderProperty, SearchOrder order)
+    private static IQueryable<Category> AddOrderToQuery(IQueryable<Category> query, string orderProperty,
+        SearchOrder order)
     {
         var orderedQuery = (orderProperty.ToLower(), order) switch
         {
@@ -64,12 +67,17 @@ public class CategoryRepository(CodeflixCatalogDbContext context) : ICategoryRep
         return orderedQuery.ThenBy(x => x.CreatedAt);
     }
 
-    public async Task<IReadOnlyList<Guid>> GetIdsListByIds(List<Guid> ids, CancellationToken cancellationToken = default)
-    {
-        return await _categories
+    public async Task<IReadOnlyList<Guid>> GetIdsListByIds(List<Guid> ids,
+        CancellationToken cancellationToken = default)
+        => await _categories
             .AsNoTracking()
             .Where(x => ids.Contains(x.Id))
             .Select(x => x.Id)
             .ToListAsync(cancellationToken);
-    }
+
+
+    public async Task<IReadOnlyList<Category>> GetListByIds(List<Guid> ids, CancellationToken cancellationToken)
+        => await _categories.AsNoTracking()
+            .Where(category => ids.Contains(category.Id))
+            .ToListAsync(cancellationToken: cancellationToken);
 }

@@ -53,7 +53,7 @@ public class UpdateGenreUseCase : IUpdateGenreUseCase
             var notFoundIds = categoryIds
                 .Where(id => !idsInPersistence.Contains(id));
             throw new RelatedAggregateException(
-                $"Related category id or ids not found: '{string.Join(", ", notFoundIds)}'");
+                $"Related category id (or ids) not found: {string.Join(", ", notFoundIds)}");
         }
     }
 }

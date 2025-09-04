@@ -81,7 +81,6 @@ public class UpdateGenreTest(UpdateGenreTestFixture fixture)
 
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage($"Genre '{exampleId}' not found.");
-
     }
 
     [Theory(DisplayName = nameof(ThrowWhenNameIsInvalid))]
@@ -201,7 +200,7 @@ public class UpdateGenreTest(UpdateGenreTestFixture fixture)
         output.Id.Should().Be(exampleGenre.Id);
         output.Categories.Should().HaveCount(exampleCategoriesIds.Count);
         exampleCategoriesIds.ForEach(expectedId
-            => output.Categories.Should().Contain(expectedId)
+            => output.Categories.Should().Contain(x => x.Id == expectedId)
         );
 
         genreRepositoryMock.Verify(x => x.Update(
@@ -252,7 +251,7 @@ public class UpdateGenreTest(UpdateGenreTestFixture fixture)
         output.Id.Should().Be(exampleGenre.Id);
         output.Categories.Should().HaveCount(exampleCategoriesIds.Count);
         exampleCategoriesIds.ForEach(expectedId
-            => output.Categories.Should().Contain(expectedId)
+            => output.Categories.Should().Contain(x => x.Id == expectedId)
         );
 
         genreRepositoryMock.Verify(x => x.Update(
@@ -304,7 +303,7 @@ public class UpdateGenreTest(UpdateGenreTestFixture fixture)
         var notFoundCategories = string.Join(", ", idsNotReturnedByCategoryRepository);
 
         await act.Should().ThrowAsync<RelatedAggregateException>()
-            .WithMessage($"Related category id or ids not found: '{notFoundCategories}'");
+            .WithMessage($"Related category id (or ids) not found: {notFoundCategories}");
     }
 
     [Fact(DisplayName = nameof(UpdateGenreWithoutCategoriesIds))]
@@ -343,7 +342,7 @@ public class UpdateGenreTest(UpdateGenreTestFixture fixture)
         output.Id.Should().Be(exampleGenre.Id);
         output.Categories.Should().HaveCount(exampleCategoriesIds.Count);
         exampleCategoriesIds.ForEach(expectedId
-            => output.Categories.Should().Contain(expectedId)
+            => output.Categories.Should().Contain(x => x.Id == expectedId)
         );
 
         genreRepositoryMock.Verify(x => x.Update(
