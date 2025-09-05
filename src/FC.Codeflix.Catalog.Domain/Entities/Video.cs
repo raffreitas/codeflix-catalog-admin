@@ -19,6 +19,8 @@ public sealed class Video : AggregateRoot
     public Image? Thumb { get; private set; }
     public Image? ThumbHalf { get; private set; }
     public Image? Banner { get; private set; }
+    public Media? Media { get; private set; }
+    public Media? Trailer { get; private set; }
 
     public Video(
         string title,
@@ -58,6 +60,12 @@ public sealed class Video : AggregateRoot
 
     public void UpdateBanner(string path)
         => Banner = new Image(path);
+
+    public void UpdateMedia(string path)
+        => Media = new Media(path);
+
+    public void UpdateTrailer(string path)
+        => Trailer = new Media(path);
 
     public void Validate(ValidationHandler handler)
         => new VideoValidator(this, handler).Validate();

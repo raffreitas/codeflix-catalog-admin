@@ -7,6 +7,7 @@ using FluentAssertions;
 
 namespace FC.Codeflix.Catalog.UnitTests.Domain.Entities.Videos;
 
+[Trait("Domain", "Video - Aggregates")]
 public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTestFixture>
 {
     [Fact(DisplayName = nameof(Instantiate))]
@@ -42,10 +43,11 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
         video.Thumb.Should().BeNull();
         video.ThumbHalf.Should().BeNull();
         video.Banner.Should().BeNull();
+        video.Media.Should().BeNull();
+        video.Trailer.Should().BeNull();
     }
 
     [Fact(Skip = "Old Way (Defer Validation)", DisplayName = nameof(InstantiateThrowsExceptionWhenNotValid))]
-    [Trait("Domain", "Video - Aggregates")]
     public void InstantiateThrowsExceptionWhenNotValid()
     {
         var expectedTitle = string.Empty;
@@ -75,7 +77,6 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
     }
 
     [Fact(DisplayName = nameof(ValidateWhenValidState))]
-    [Trait("Domain", "Video - Aggregates")]
     public void ValidateWhenValidState()
     {
         var validVideo = fixture.GetValidVideo();
@@ -87,7 +88,6 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
     }
 
     [Fact(DisplayName = nameof(ValidateWithErrorWhenInvalidState))]
-    [Trait("Domain", "Video - Aggregates")]
     public void ValidateWithErrorWhenInvalidState()
     {
         var invalidVideo = new Video(
@@ -113,7 +113,6 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
     }
 
     [Fact(DisplayName = nameof(Update))]
-    [Trait("Domain", "Video - Aggregates")]
     public void Update()
     {
         var expectedTitle = fixture.GetValidTitle();
@@ -143,7 +142,6 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
     }
 
     [Fact(DisplayName = nameof(ValidateStillValidatingAfterUpdate))]
-    [Trait("Domain", "Video - Aggregates")]
     public void ValidateStillValidatingAfterUpdate()
     {
         var expectedTitle = fixture.GetValidTitle();
@@ -169,7 +167,6 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
     }
 
     [Fact(DisplayName = nameof(ValidateStillValidatingAfterUpdateToInvalidState))]
-    [Trait("Domain", "Video - Aggregates")]
     public void ValidateStillValidatingAfterUpdateToInvalidState()
     {
         var expectedTitle = fixture.GetTooLongTitle();
@@ -197,7 +194,6 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
 
 
     [Fact(DisplayName = nameof(UpdateThumb))]
-    [Trait("Domain", "Video - Aggregates")]
     public void UpdateThumb()
     {
         var validVideo = fixture.GetValidVideo();
@@ -210,7 +206,6 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
     }
 
     [Fact(DisplayName = nameof(UpdateThumbHalf))]
-    [Trait("Domain", "Video - Aggregates")]
     public void UpdateThumbHalf()
     {
         var validVideo = fixture.GetValidVideo();
@@ -223,7 +218,6 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
     }
 
     [Fact(DisplayName = nameof(UpdateBanner))]
-    [Trait("Domain", "Video - Aggregates")]
     public void UpdateBanner()
     {
         var validVideo = fixture.GetValidVideo();
@@ -233,5 +227,29 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
 
         validVideo.Banner.Should().NotBeNull();
         validVideo.Banner.Path.Should().Be(validImagePath);
+    }
+
+    [Fact(DisplayName = nameof(UpdateMedia))]
+    public void UpdateMedia()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var validMediaPath = fixture.GetValidMediaPath();
+
+        validVideo.UpdateMedia(validMediaPath);
+
+        validVideo.Media.Should().NotBeNull();
+        validVideo.Media.FilePath.Should().Be(validMediaPath);
+    }
+
+    [Fact(DisplayName = nameof(UpdateTrailer))]
+    public void UpdateTrailer()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var validMediaPath = fixture.GetValidMediaPath();
+
+        validVideo.UpdateTrailer(validMediaPath);
+
+        validVideo.Media.Should().NotBeNull();
+        validVideo.Media.FilePath.Should().Be(validMediaPath);
     }
 }

@@ -24,4 +24,6 @@ public sealed class VideoTestFixture : BaseFixture
     public int GetValidYearLaunched() => Faker.Date.Between(new DateTime(1998, 10, 10), DateTime.Now).Year;
     public int GetValidDuration() => Faker.Random.Int(100, 300);
     public string GetValidImagePath() => Faker.Image.PicsumUrl();
+    public string GetValidMediaPath() => Faker.Internet.UrlWithPath(fileExt: "mp4");
+    public Media GetValidMedia() => new(GetValidMediaPath());
 }
