@@ -39,6 +39,9 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
         video.Opened.Should().Be(expectedOpened);
         video.Published.Should().Be(expectedPublished);
         video.CreatedAt.Should().NotBeSameDateAs(default);
+        video.Thumb.Should().BeNull();
+        video.ThumbHalf.Should().BeNull();
+        video.Banner.Should().BeNull();
     }
 
     [Fact(Skip = "Old Way (Defer Validation)", DisplayName = nameof(InstantiateThrowsExceptionWhenNotValid))]
@@ -190,5 +193,45 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
 
         notificationHandler.HasErrors().Should().BeTrue();
         notificationHandler.Errors.Should().HaveCount(2);
+    }
+
+
+    [Fact(DisplayName = nameof(UpdateThumb))]
+    [Trait("Domain", "Video - Aggregates")]
+    public void UpdateThumb()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var validImagePath = fixture.GetValidImagePath();
+
+        validVideo.UpdateThumb(validImagePath);
+
+        validVideo.Thumb.Should().NotBeNull();
+        validVideo.Thumb.Path.Should().Be(validImagePath);
+    }
+
+    [Fact(DisplayName = nameof(UpdateThumbHalf))]
+    [Trait("Domain", "Video - Aggregates")]
+    public void UpdateThumbHalf()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var validImagePath = fixture.GetValidImagePath();
+
+        validVideo.UpdateThumbHalf(validImagePath);
+
+        validVideo.ThumbHalf.Should().NotBeNull();
+        validVideo.ThumbHalf.Path.Should().Be(validImagePath);
+    }
+
+    [Fact(DisplayName = nameof(UpdateBanner))]
+    [Trait("Domain", "Video - Aggregates")]
+    public void UpdateBanner()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var validImagePath = fixture.GetValidImagePath();
+
+        validVideo.UpdateBanner(validImagePath);
+
+        validVideo.Banner.Should().NotBeNull();
+        validVideo.Banner.Path.Should().Be(validImagePath);
     }
 }
