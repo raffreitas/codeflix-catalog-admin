@@ -252,4 +252,55 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
         validVideo.Media.Should().NotBeNull();
         validVideo.Media.FilePath.Should().Be(validMediaPath);
     }
+
+    [Fact(DisplayName = nameof(UpdateAsSentToEncode))]
+    public void UpdateAsSentToEncode()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var validMediaPath = fixture.GetValidMediaPath();
+        validVideo.UpdateMedia(validMediaPath);
+
+        validVideo.UpdateSentToEncode();
+
+        validVideo.Media.Should().NotBeNull();
+        validVideo.Media.Status.Should().Be(MediaStatus.Processing);
+    }
+
+    [Fact(DisplayName = nameof(UpdateAsSentToEncodeThrowsWhenThereIsNoMedia))]
+    public void UpdateAsSentToEncodeThrowsWhenThereIsNoMedia()
+    {
+        var validVideo = fixture.GetValidVideo();
+
+        var act = () => validVideo.UpdateSentToEncode();
+
+        act.Should().Throw<EntityValidationException>()
+            .WithMessage("There is no Media");
+    }
+
+    [Fact(DisplayName = nameof(UpdateAsEncoded))]
+    public void UpdateAsEncoded()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var validMediaPath = fixture.GetValidMediaPath();
+        var validEncodedPath = fixture.GetValidMediaPath();
+        validVideo.UpdateMedia(validMediaPath);
+
+        validVideo.UpdateAsEncoded(validEncodedPath);
+
+        validVideo.Media.Should().NotBeNull();
+        validVideo.Media.Status.Should().Be(MediaStatus.Completed);
+        validVideo.Media.EncodedPath.Should().Be(validEncodedPath);
+    }
+
+    [Fact(DisplayName = nameof(UpdateAsEncodedThrowsWhenThereIsNoMedia))]
+    public void UpdateAsEncodedThrowsWhenThereIsNoMedia()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var validEncodedPath = fixture.GetValidMediaPath();
+
+        var act = () => validVideo.UpdateAsEncoded(validEncodedPath);
+
+        act.Should().Throw<EntityValidationException>()
+            .WithMessage("There is no Media");
+    }
 }

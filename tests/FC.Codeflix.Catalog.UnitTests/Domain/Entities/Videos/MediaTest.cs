@@ -39,7 +39,7 @@ public sealed class MediaTest(VideoTestFixture fixture) : IClassFixture<VideoTes
 
         media.UpdateAsEncoded(encodedExpectedPath);
 
-        media.Status.Should().Be(MediaStatus.Processing);
+        media.Status.Should().Be(MediaStatus.Completed);
         media.EncodedPath.Should().Be(encodedExpectedPath);
     }
 }

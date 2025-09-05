@@ -1,4 +1,5 @@
 ﻿using FC.Codeflix.Catalog.Domain.Enum;
+using FC.Codeflix.Catalog.Domain.Exceptions;
 using FC.Codeflix.Catalog.Domain.SeedWork;
 using FC.Codeflix.Catalog.Domain.Validations;
 using FC.Codeflix.Catalog.Domain.Validators;
@@ -66,6 +67,20 @@ public sealed class Video : AggregateRoot
 
     public void UpdateTrailer(string path)
         => Trailer = new Media(path);
+
+    public void UpdateSentToEncode()
+    {
+        if (Media is null)
+            throw new EntityValidationException("There is no Media");
+        Media.UpdateSentToEncode();
+    }
+
+    public void UpdateAsEncoded(string encodedPath)
+    {
+        if (Media is null)
+            throw new EntityValidationException("There is no Media");
+        Media.UpdateAsEncoded(encodedPath);
+    }
 
     public void Validate(ValidationHandler handler)
         => new VideoValidator(this, handler).Validate();
