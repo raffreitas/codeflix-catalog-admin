@@ -32,7 +32,8 @@ public class VideoValidatorTest(VideoTestFixture fixture) : IClassFixture<VideoT
             fixture.GetValidYearLaunched(),
             fixture.GetValidDuration(),
             fixture.GetRandomBoolean(),
-            fixture.GetRandomBoolean()
+            fixture.GetRandomBoolean(),
+            fixture.GetRandomRating()
         );
         var notificationValidationHandler = new NotificationValidationHandler();
         var videoValidator = new VideoValidator(invalid, notificationValidationHandler);
@@ -57,7 +58,8 @@ public class VideoValidatorTest(VideoTestFixture fixture) : IClassFixture<VideoT
             fixture.GetValidYearLaunched(),
             fixture.GetValidDuration(),
             fixture.GetRandomBoolean(),
-            fixture.GetRandomBoolean()
+            fixture.GetRandomBoolean(),
+            fixture.GetRandomRating()
         );
         var notificationValidationHandler = new NotificationValidationHandler();
         var videoValidator = new VideoValidator(invalid, notificationValidationHandler);
@@ -82,7 +84,8 @@ public class VideoValidatorTest(VideoTestFixture fixture) : IClassFixture<VideoT
             fixture.GetValidYearLaunched(),
             fixture.GetValidDuration(),
             fixture.GetRandomBoolean(),
-            fixture.GetRandomBoolean()
+            fixture.GetRandomBoolean(),
+            fixture.GetRandomRating()
         );
         var notificationValidationHandler = new NotificationValidationHandler();
         var videoValidator = new VideoValidator(invalid, notificationValidationHandler);
@@ -107,7 +110,8 @@ public class VideoValidatorTest(VideoTestFixture fixture) : IClassFixture<VideoT
             fixture.GetValidYearLaunched(),
             fixture.GetValidDuration(),
             fixture.GetRandomBoolean(),
-            fixture.GetRandomBoolean()
+            fixture.GetRandomBoolean(),
+            fixture.GetRandomRating()
         );
         var notificationValidationHandler = new NotificationValidationHandler();
         var videoValidator = new VideoValidator(invalid, notificationValidationHandler);

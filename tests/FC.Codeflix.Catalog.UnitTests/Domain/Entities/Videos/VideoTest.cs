@@ -1,4 +1,5 @@
 ﻿using FC.Codeflix.Catalog.Domain.Entities;
+using FC.Codeflix.Catalog.Domain.Enum;
 using FC.Codeflix.Catalog.Domain.Exceptions;
 using FC.Codeflix.Catalog.Domain.Validations;
 
@@ -9,7 +10,7 @@ namespace FC.Codeflix.Catalog.UnitTests.Domain.Entities.Videos;
 public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTestFixture>
 {
     [Fact(DisplayName = nameof(Instantiate))]
-    [Trait("Domain", "Video")]
+    [Trait("Domain", "Video - Aggregates")]
     public void Instantiate()
     {
         var expectedTitle = fixture.GetValidTitle();
@@ -18,6 +19,7 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
         var expectedDuration = fixture.GetValidDuration();
         var expectedOpened = fixture.GetRandomBoolean();
         var expectedPublished = fixture.GetRandomBoolean();
+        var expectedRating = fixture.GetRandomRating();
 
         var video = new Video(
             expectedTitle,
@@ -25,7 +27,8 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
             expectedYearLaunched,
             expectedDuration,
             expectedOpened,
-            expectedPublished
+            expectedPublished,
+            expectedRating
         );
 
         video.Should().NotBeNull();
@@ -39,7 +42,7 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
     }
 
     [Fact(Skip = "Old Way (Defer Validation)", DisplayName = nameof(InstantiateThrowsExceptionWhenNotValid))]
-    [Trait("Domain", "Video")]
+    [Trait("Domain", "Video - Aggregates")]
     public void InstantiateThrowsExceptionWhenNotValid()
     {
         var expectedTitle = string.Empty;
@@ -48,6 +51,7 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
         var expectedDuration = fixture.GetValidDuration();
         var expectedOpened = fixture.GetRandomBoolean();
         var expectedPublished = fixture.GetRandomBoolean();
+        var expectedRating = fixture.GetRandomRating();
 
         var action = () => new Video(
             expectedTitle,
@@ -55,7 +59,8 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
             expectedYearLaunched,
             expectedDuration,
             expectedOpened,
-            expectedPublished
+            expectedPublished,
+            expectedRating
         );
 
         action.Should().Throw<EntityValidationException>()
@@ -67,7 +72,7 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
     }
 
     [Fact(DisplayName = nameof(ValidateWhenValidState))]
-    [Trait("Domain", "Video")]
+    [Trait("Domain", "Video - Aggregates")]
     public void ValidateWhenValidState()
     {
         var validVideo = fixture.GetValidVideo();
@@ -79,7 +84,7 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
     }
 
     [Fact(DisplayName = nameof(ValidateWithErrorWhenInvalidState))]
-    [Trait("Domain", "Video")]
+    [Trait("Domain", "Video - Aggregates")]
     public void ValidateWithErrorWhenInvalidState()
     {
         var invalidVideo = new Video(
@@ -88,7 +93,8 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
             fixture.GetValidYearLaunched(),
             fixture.GetValidDuration(),
             fixture.GetRandomBoolean(),
-            fixture.GetRandomBoolean()
+            fixture.GetRandomBoolean(),
+            fixture.GetRandomRating()
         );
 
         var notificationHandler = new NotificationValidationHandler();
@@ -104,7 +110,7 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
     }
 
     [Fact(DisplayName = nameof(Update))]
-    [Trait("Domain", "Video")]
+    [Trait("Domain", "Video - Aggregates")]
     public void Update()
     {
         var expectedTitle = fixture.GetValidTitle();
@@ -134,7 +140,7 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
     }
 
     [Fact(DisplayName = nameof(ValidateStillValidatingAfterUpdate))]
-    [Trait("Domain", "Video")]
+    [Trait("Domain", "Video - Aggregates")]
     public void ValidateStillValidatingAfterUpdate()
     {
         var expectedTitle = fixture.GetValidTitle();
@@ -160,7 +166,7 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
     }
 
     [Fact(DisplayName = nameof(ValidateStillValidatingAfterUpdateToInvalidState))]
-    [Trait("Domain", "Video")]
+    [Trait("Domain", "Video - Aggregates")]
     public void ValidateStillValidatingAfterUpdateToInvalidState()
     {
         var expectedTitle = fixture.GetTooLongTitle();

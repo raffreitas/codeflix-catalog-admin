@@ -153,17 +153,17 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
         int expectedQuantityTotalItems)
     {
         var exampleCategoriesList = fixture.GetExampleCategoryListWithNames(
-            [
-                "Action",
-                "Horror",
-                "Horror - Robots",
-                "Horror - Based on Real Facts",
-                "Drama",
-                "Sci-fi AI",
-                "Sci-fi Space",
-                "Sci-fi Robots",
-                "Sci-fi Future",
-            ]);
+        [
+            "Action",
+            "Horror",
+            "Horror - Robots",
+            "Horror - Based on Real Facts",
+            "Drama",
+            "Sci-fi AI",
+            "Sci-fi Space",
+            "Sci-fi Robots",
+            "Sci-fi Future",
+        ]);
         await fixture.Persistence.InsertList(exampleCategoriesList);
         var input = new ListCategoriesInput(page, perPage, search, "", SearchOrder.Asc);
 
@@ -203,7 +203,9 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
     {
         var exampleCategoriesList = fixture.GetExampleCategoriesList(10);
         await fixture.Persistence.InsertList(exampleCategoriesList);
-        var searchOrder = order.ToLower() == "asc" ? SearchOrder.Asc : SearchOrder.Desc;
+        var searchOrder = order.Equals("asc", StringComparison.CurrentCultureIgnoreCase)
+            ? SearchOrder.Asc
+            : SearchOrder.Desc;
         var input = new ListCategoriesInput(page: 1, perPage: 20, search: "", orderBy, searchOrder);
 
         var (response, output) = await fixture.ApiClient
@@ -271,13 +273,15 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
             item.CreatedAt.TrimMilliseconds().Should().Be(expectedItem.CreatedAt.TrimMilliseconds());
             if (lastItemDate != default)
             {
-                if(order == "asc")
+                if (order == "asc")
                     Assert.True(item.CreatedAt >= lastItemDate);
                 else
                     Assert.True(item.CreatedAt <= lastItemDate);
             }
+
             lastItemDate = item.CreatedAt;
         }
     }
+
     public void Dispose() => fixture.CleanPersistence();
 }

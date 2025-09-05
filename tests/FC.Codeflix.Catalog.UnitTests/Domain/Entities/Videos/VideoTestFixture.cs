@@ -1,19 +1,22 @@
 ﻿using FC.Codeflix.Catalog.Domain.Entities;
+using FC.Codeflix.Catalog.Domain.Enum;
 using FC.Codeflix.Catalog.UnitTests.Common;
 
 namespace FC.Codeflix.Catalog.UnitTests.Domain.Entities.Videos;
 
 public sealed class VideoTestFixture : BaseFixture
 {
-    public Video GetValidVideo() => new Video(
+    public Video GetValidVideo() => new(
         GetValidTitle(),
         GetValidDescription(),
         GetValidYearLaunched(),
         GetValidDuration(),
         GetRandomBoolean(),
-        GetRandomBoolean()
+        GetRandomBoolean(),
+        GetRandomRating()
     );
 
+    public Rating GetRandomRating() => Faker.PickRandom<Rating>();
     public string GetTooLongTitle() => Faker.Lorem.Letter(400);
     public string GetValidTitle() => Faker.Lorem.Letter(100);
     public string GetValidDescription() => Faker.Commerce.ProductDescription();
