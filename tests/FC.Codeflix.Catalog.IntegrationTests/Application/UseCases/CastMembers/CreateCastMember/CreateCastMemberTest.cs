@@ -4,8 +4,6 @@ using FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
 using FluentAssertions;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 using UseCase = FC.Codeflix.Catalog.Application.UseCases.CastMembers.CreateCastMember;
 

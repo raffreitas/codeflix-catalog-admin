@@ -1,29 +1,24 @@
-﻿using FC.Codeflix.Catalog.Domain.Entities;
-using FC.Codeflix.Catalog.Domain.Enum;
-using FC.Codeflix.Catalog.UnitTests.Common;
+﻿using FC.Codeflix.Catalog.Application.UseCases.Videos.CreateVideo;
+using FC.Codeflix.Catalog.UnitTests.Common.Fixtures;
 
 namespace FC.Codeflix.Catalog.UnitTests.Domain.Entities.Videos;
 
-public sealed class VideoTestFixture : BaseFixture
+public sealed class VideoTestFixture : VideoTestFixtureBase
 {
-    public Video GetValidVideo() => new(
+    public CreateVideoInput CreateValidCreateVideoInput(
+        List<Guid>? categoriesIds = null,
+        List<Guid>? genresIds = null,
+        List<Guid>? castMembersIds = null
+    ) => new(
         GetValidTitle(),
         GetValidDescription(),
         GetValidYearLaunched(),
         GetValidDuration(),
         GetRandomBoolean(),
         GetRandomBoolean(),
-        GetRandomRating()
+        GetRandomRating(),
+        categoriesIds,
+        genresIds,
+        castMembersIds
     );
-
-    public Rating GetRandomRating() => Faker.PickRandom<Rating>();
-    public string GetTooLongTitle() => Faker.Lorem.Letter(400);
-    public string GetValidTitle() => Faker.Lorem.Letter(100);
-    public string GetValidDescription() => Faker.Commerce.ProductDescription();
-    public string GetTooLongDescription() => Faker.Lorem.Letter(4001);
-    public int GetValidYearLaunched() => Faker.Date.Between(new DateTime(1998, 10, 10), DateTime.Now).Year;
-    public int GetValidDuration() => Faker.Random.Int(100, 300);
-    public string GetValidImagePath() => Faker.Image.PicsumUrl();
-    public string GetValidMediaPath() => Faker.Internet.UrlWithPath(fileExt: "mp4");
-    public Media GetValidMedia() => new(GetValidMediaPath());
 }

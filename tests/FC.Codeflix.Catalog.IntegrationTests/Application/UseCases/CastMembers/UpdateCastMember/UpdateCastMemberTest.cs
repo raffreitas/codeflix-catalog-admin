@@ -5,9 +5,6 @@ using FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.CastMembers.Comm
 
 using FluentAssertions;
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
 using UseCase = FC.Codeflix.Catalog.Application.UseCases.CastMembers.UpdateCastMember;
 
 namespace FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.CastMembers.UpdateCastMember;

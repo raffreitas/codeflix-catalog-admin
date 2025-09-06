@@ -23,6 +23,15 @@ public sealed class Video : AggregateRoot
     public Media? Media { get; private set; }
     public Media? Trailer { get; private set; }
 
+    private readonly List<Guid> _categories = [];
+    public IReadOnlyList<Guid> Categories => [.._categories];
+
+    private readonly List<Guid> _genres = [];
+    public IReadOnlyList<Guid> Genres => [.._genres];
+
+    private readonly List<Guid> _castMembers = [];
+    public IReadOnlyList<Guid> CastMembers => [.._castMembers];
+
     public Video(
         string title,
         string description,
@@ -81,6 +90,33 @@ public sealed class Video : AggregateRoot
             throw new EntityValidationException("There is no Media");
         Media.UpdateAsEncoded(encodedPath);
     }
+
+    public void AddCategory(Guid categoryId)
+        => _categories.Add(categoryId);
+
+    public void RemoveCategory(Guid categoryId)
+        => _categories.Remove(categoryId);
+
+    public void RemoveAllCategories()
+        => _categories.Clear();
+
+    public void AddGenre(Guid genreId)
+        => _genres.Add(genreId);
+
+    public void RemoveGenre(Guid genreId)
+        => _genres.Remove(genreId);
+
+    public void RemoveAllGenres()
+        => _genres.Clear();
+
+    public void AddCastMember(Guid castMemberId)
+        => _castMembers.Add(castMemberId);
+
+    public void RemoveCastMember(Guid castMemberId)
+        => _castMembers.Remove(castMemberId);
+
+    public void RemoveAllCastMembers()
+        => _castMembers.Clear();
 
     public void Validate(ValidationHandler handler)
         => new VideoValidator(this, handler).Validate();

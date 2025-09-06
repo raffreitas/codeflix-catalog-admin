@@ -249,8 +249,8 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
 
         validVideo.UpdateTrailer(validMediaPath);
 
-        validVideo.Media.Should().NotBeNull();
-        validVideo.Media.FilePath.Should().Be(validMediaPath);
+        validVideo.Trailer.Should().NotBeNull();
+        validVideo.Trailer.FilePath.Should().Be(validMediaPath);
     }
 
     [Fact(DisplayName = nameof(UpdateAsSentToEncode))]
@@ -302,5 +302,128 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
 
         act.Should().Throw<EntityValidationException>()
             .WithMessage("There is no Media");
+    }
+
+    [Fact(DisplayName = nameof(AddCategory))]
+    public void AddCategory()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var categoryIdExample = Guid.NewGuid();
+
+        validVideo.AddCategory(categoryIdExample);
+
+        validVideo.Categories.Should().HaveCount(1);
+        validVideo.Categories[0].Should().Be(categoryIdExample);
+    }
+
+    [Fact(DisplayName = nameof(RemoveCategory))]
+    public void RemoveCategory()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var categoryIdExample = Guid.NewGuid();
+        var categoryIdExample2 = Guid.NewGuid();
+        validVideo.AddCategory(categoryIdExample);
+        validVideo.AddCategory(categoryIdExample2);
+
+        validVideo.RemoveCategory(categoryIdExample2);
+
+        validVideo.Categories.Should().HaveCount(1);
+        validVideo.Categories[0].Should().Be(categoryIdExample);
+    }
+
+    [Fact(DisplayName = nameof(RemoveAllCategory))]
+    public void RemoveAllCategory()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var categoryIdExample = Guid.NewGuid();
+        var categoryIdExample2 = Guid.NewGuid();
+        validVideo.AddCategory(categoryIdExample);
+        validVideo.AddCategory(categoryIdExample2);
+
+        validVideo.RemoveAllCategories();
+
+        validVideo.Categories.Should().HaveCount(0);
+    }
+
+    [Fact(DisplayName = nameof(AddGenre))]
+    public void AddGenre()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var genreIdExample = Guid.NewGuid();
+
+        validVideo.AddGenre(genreIdExample);
+
+        validVideo.Genres.Should().HaveCount(1);
+        validVideo.Genres[0].Should().Be(genreIdExample);
+    }
+
+    [Fact(DisplayName = nameof(RemoveGenre))]
+    public void RemoveGenre()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var genreIdExample = Guid.NewGuid();
+        var genreIdExample2 = Guid.NewGuid();
+        validVideo.AddGenre(genreIdExample);
+        validVideo.AddGenre(genreIdExample2);
+
+        validVideo.RemoveGenre(genreIdExample2);
+
+        validVideo.Genres.Should().HaveCount(1);
+        validVideo.Genres[0].Should().Be(genreIdExample);
+    }
+
+    [Fact(DisplayName = nameof(RemoveAllGenres))]
+    public void RemoveAllGenres()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var genreIdExample = Guid.NewGuid();
+        var genreIdExample2 = Guid.NewGuid();
+        validVideo.AddGenre(genreIdExample);
+        validVideo.AddGenre(genreIdExample2);
+
+        validVideo.RemoveAllGenres();
+
+        validVideo.Genres.Should().HaveCount(0);
+    }
+
+    [Fact(DisplayName = nameof(AddCastMember))]
+    public void AddCastMember()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var castMemberExample = Guid.NewGuid();
+
+        validVideo.AddCastMember(castMemberExample);
+
+        validVideo.CastMembers.Should().HaveCount(1);
+        validVideo.CastMembers[0].Should().Be(castMemberExample);
+    }
+
+    [Fact(DisplayName = nameof(RemoveCastMember))]
+    public void RemoveCastMember()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var castMemberExample = Guid.NewGuid();
+        var castMemberExample2 = Guid.NewGuid();
+        validVideo.AddCastMember(castMemberExample);
+        validVideo.AddCastMember(castMemberExample2);
+
+        validVideo.RemoveCastMember(castMemberExample2);
+
+        validVideo.CastMembers.Should().HaveCount(1);
+        validVideo.CastMembers[0].Should().Be(castMemberExample);
+    }
+
+    [Fact(DisplayName = nameof(RemoveAllCastMembers))]
+    public void RemoveAllCastMembers()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var castMemberExample = Guid.NewGuid();
+        var castMemberExample2 = Guid.NewGuid();
+        validVideo.AddCastMember(castMemberExample);
+        validVideo.AddCastMember(castMemberExample2);
+
+        validVideo.RemoveAllCastMembers();
+
+        validVideo.CastMembers.Should().HaveCount(0);
     }
 }
