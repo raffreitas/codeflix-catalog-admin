@@ -109,6 +109,11 @@ public class GenreRepository(CodeflixCatalogDbContext context) : IGenreRepositor
             .Select(x => x.Id)
             .ToListAsync(cancellationToken);
 
+    public Task<IReadOnlyList<Genre>> GetListByIds(List<Guid> ids, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
     private static IQueryable<Genre> AddOrderToQuery(IQueryable<Genre> query, string orderProperty, SearchOrder order)
     {
         var orderedQuery = (orderProperty.ToLower(), order) switch

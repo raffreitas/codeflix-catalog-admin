@@ -18,6 +18,32 @@ public abstract class VideoTestFixtureBase : BaseFixture
         GetRandomRating()
     );
 
+    public Video GetValidVideoWithAllProperties()
+    {
+        var video = new Video(
+            GetValidTitle(),
+            GetValidDescription(),
+            GetValidYearLaunched(),
+            GetValidDuration(),
+            GetRandomBoolean(),
+            GetRandomBoolean(),
+            GetRandomRating()
+        );
+
+        video.UpdateBanner(GetValidImagePath());
+        video.UpdateThumb(GetValidImagePath());
+        video.UpdateThumbHalf(GetValidImagePath());
+
+        video.UpdateMedia(GetValidMediaPath());
+        video.UpdateTrailer(GetValidMediaPath());
+
+        var random = new Random();
+        Enumerable.Range(1, random.Next(2, 5)).ToList().ForEach(_ => video.AddCastMember(Guid.NewGuid()));
+        Enumerable.Range(1, random.Next(2, 5)).ToList().ForEach(_ => video.AddCategory(Guid.NewGuid()));
+        Enumerable.Range(1, random.Next(2, 5)).ToList().ForEach(_ => video.AddGenre(Guid.NewGuid()));
+        return video;
+    }
+
     public Rating GetRandomRating() => Faker.PickRandom<Rating>();
     public string GetTooLongTitle() => Faker.Lorem.Letter(400);
     public string GetValidTitle() => Faker.Lorem.Letter(100);

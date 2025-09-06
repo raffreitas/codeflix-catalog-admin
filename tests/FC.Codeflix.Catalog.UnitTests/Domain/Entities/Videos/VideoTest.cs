@@ -141,6 +141,57 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
         video.CreatedAt.Should().NotBeSameDateAs(default);
     }
 
+
+    [Fact(DisplayName = nameof(UpdateWithRating))]
+    public void UpdateWithRating()
+    {
+        var expectedTitle = fixture.GetValidTitle();
+        var expectedDescription = fixture.GetValidDescription();
+        var expectedYearLaunched = fixture.GetValidYearLaunched();
+        var expectedOpened = fixture.GetRandomBoolean();
+        var expectedPublished = fixture.GetRandomBoolean();
+        var expectedDuration = fixture.GetValidDuration();
+        var expectedRating = fixture.GetRandomRating();
+        var video = fixture.GetValidVideo();
+
+        video.Update(
+            expectedTitle,
+            expectedDescription,
+            expectedYearLaunched,
+            expectedDuration,
+            expectedOpened,
+            expectedPublished,
+            expectedRating
+        );
+
+        video.Title.Should().Be(expectedTitle);
+        video.Description.Should().Be(expectedDescription);
+        video.YearLaunched.Should().Be(expectedYearLaunched);
+        video.Opened.Should().Be(expectedOpened);
+        video.Published.Should().Be(expectedPublished);
+        video.Duration.Should().Be(expectedDuration);
+        video.Rating.Should().Be(expectedRating);
+    }
+
+    [Fact(DisplayName = nameof(UpdateWithoutRatingDoesntChangeTheRating))]
+    [Trait("Domain", "Video - Aggregate")]
+    public void UpdateWithoutRatingDoesntChangeTheRating()
+    {
+        var video = fixture.GetValidVideo();
+        var expectedRating = video.Rating;
+
+        video.Update(
+            fixture.GetValidTitle(),
+            fixture.GetValidDescription(),
+            fixture.GetValidYearLaunched(),
+            fixture.GetValidDuration(),
+            fixture.GetRandomBoolean(),
+            fixture.GetRandomBoolean()
+        );
+
+        video.Rating.Should().Be(expectedRating);
+    }
+
     [Fact(DisplayName = nameof(ValidateStillValidatingAfterUpdate))]
     public void ValidateStillValidatingAfterUpdate()
     {

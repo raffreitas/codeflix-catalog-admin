@@ -52,7 +52,15 @@ public sealed class Video : AggregateRoot
         CreatedAt = DateTime.UtcNow;
     }
 
-    public void Update(string title, string description, int yearLaunched, int duration, bool opened, bool published)
+    public void Update(
+        string title,
+        string description,
+        int yearLaunched,
+        int duration,
+        bool opened,
+        bool published,
+        Rating? rating = null
+    )
     {
         Title = title;
         Description = description;
@@ -60,6 +68,7 @@ public sealed class Video : AggregateRoot
         Duration = duration;
         Opened = opened;
         Published = published;
+        Rating = rating ?? Rating;
     }
 
     public void UpdateThumb(string path)

@@ -10,4 +10,9 @@ public interface IGenreRepository : IGenericRepository<Genre>, ISearchableReposi
         List<Guid> ids,
         CancellationToken cancellationToken
     );
+
+    public Task<IReadOnlyList<Genre>> GetListByIds(
+        List<Guid> ids,
+        CancellationToken cancellationToken
+    );
 }
