@@ -1,5 +1,6 @@
 ﻿using FC.Codeflix.Catalog.Application.Exceptions;
 using FC.Codeflix.Catalog.Application.Interfaces;
+using FC.Codeflix.Catalog.Application.UseCases.Videos.Common;
 using FC.Codeflix.Catalog.Application.UseCases.Videos.CreateVideo;
 using FC.Codeflix.Catalog.Domain.Entities;
 using FC.Codeflix.Catalog.Domain.Exceptions;
@@ -13,25 +14,40 @@ using Moq;
 namespace FC.Codeflix.Catalog.UnitTests.Application.Videos.CreateVideo;
 
 [Trait("Application", "CreateVideo - Use Cases")]
-public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<VideoTestFixture>
+public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
 {
+    private readonly Mock<IVideoRepository> _videoRepositoryMock = new();
+    private readonly Mock<ICategoryRepository> _categoryRepositoryMock = new();
+    private readonly Mock<IGenreRepository> _genreRepositoryMock = new();
+    private readonly Mock<ICastMemberRepository> _castMemberRepositoryMock = new();
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly Mock<IStorageService> _storageServiceMock = new();
+
+    private readonly VideoTestFixture _fixture;
+    private readonly CreateVideoUseCase _useCase;
+
+    public CreateVideoTest(VideoTestFixture fixture)
+    {
+        _fixture = fixture;
+        _useCase = new CreateVideoUseCase(
+            _videoRepositoryMock.Object,
+            _categoryRepositoryMock.Object,
+            _genreRepositoryMock.Object,
+            _castMemberRepositoryMock.Object,
+            _unitOfWorkMock.Object,
+            _storageServiceMock.Object
+        );
+    }
+
+
     [Fact(DisplayName = nameof(CreateVideo))]
     public async Task CreateVideo()
     {
-        var repositoryMock = new Mock<IVideoRepository>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-        var useCase = new CreateVideoUseCase(
-            repositoryMock.Object,
-            Mock.Of<ICategoryRepository>(),
-            Mock.Of<IGenreRepository>(),
-            Mock.Of<ICastMemberRepository>(),
-            unitOfWorkMock.Object
-        );
-        var input = fixture.CreateValidCreateVideoInput();
+        var input = _fixture.CreateValidCreateVideoInput();
 
-        var output = await useCase.Handle(input, CancellationToken.None);
+        var output = await _useCase.Handle(input, CancellationToken.None);
 
-        repositoryMock.Verify(x => x.Insert(
+        _videoRepositoryMock.Verify(x => x.Insert(
             It.Is<Video>(video =>
                 video.Title == input.Title &&
                 video.Published == input.Published &&
@@ -44,7 +60,7 @@ public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<Vi
             ),
             It.IsAny<CancellationToken>())
         );
-        unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
+        _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
         output.Id.Should().NotBeEmpty();
         output.CreatedAt.Should().NotBe(default(DateTime));
         output.Title.Should().Be(input.Title);
@@ -56,29 +72,36 @@ public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<Vi
         output.Opened.Should().Be(input.Opened);
     }
 
-    [Fact(DisplayName = nameof(CreateVideoWithCategoriesIds))]
-    public async Task CreateVideoWithCategoriesIds()
+    [Fact(DisplayName = nameof(CreateVideoWithThumb))]
+    public async Task CreateVideoWithThumb()
     {
-        var exampleCategoriesIds = Enumerable.Range(1, 5)
-            .Select(_ => Guid.NewGuid()).ToList();
-        var videoRepositoryMock = new Mock<IVideoRepository>();
-        var categoryRepositoryMock = new Mock<ICategoryRepository>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-        categoryRepositoryMock.Setup(x => x.GetIdsListByIds(
-            It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>())
-        ).ReturnsAsync(exampleCategoriesIds);
-        var useCase = new CreateVideoUseCase(
-            videoRepositoryMock.Object,
-            categoryRepositoryMock.Object,
-            Mock.Of<IGenreRepository>(),
-            Mock.Of<ICastMemberRepository>(),
-            unitOfWorkMock.Object
+        const string expectedThumbName = "thumb.jpg";
+        _storageServiceMock.Setup(x => x
+                .Upload(
+                    It.IsAny<string>(),
+                    It.IsAny<Stream>(),
+                    It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(expectedThumbName);
+
+        var input = _fixture.CreateValidCreateVideoInput(thumb: _fixture.GetValidImageFileInput());
+
+        var output = await _useCase.Handle(input, CancellationToken.None);
+
+        _videoRepositoryMock.Verify(x => x.Insert(
+            It.Is<Video>(video =>
+                video.Title == input.Title &&
+                video.Published == input.Published &&
+                video.Description == input.Description &&
+                video.Duration == input.Duration &&
+                video.Rating == input.Rating &&
+                video.Id != Guid.Empty &&
+                video.YearLaunched == input.YearLaunched &&
+                video.Opened == input.Opened
+            ),
+            It.IsAny<CancellationToken>())
         );
-        var input = fixture.CreateValidCreateVideoInput(exampleCategoriesIds);
-
-        var output = await useCase.Handle(input, CancellationToken.None);
-
-        unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
+        _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
         output.Id.Should().NotBeEmpty();
         output.CreatedAt.Should().NotBe(default(DateTime));
         output.Title.Should().Be(input.Title);
@@ -88,8 +111,117 @@ public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<Vi
         output.Rating.Should().Be(input.Rating);
         output.YearLaunched.Should().Be(input.YearLaunched);
         output.Opened.Should().Be(input.Opened);
+        output.Thumb.Should().Be(expectedThumbName);
+    }
+
+    [Fact(DisplayName = nameof(CreateVideoWithThumbHalf))]
+    public async Task CreateVideoWithThumbHalf()
+    {
+        const string expectedThumbHalfName = "thumb-half.jpg";
+        _storageServiceMock.Setup(x => x
+                .Upload(
+                    It.IsAny<string>(),
+                    It.IsAny<Stream>(),
+                    It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(expectedThumbHalfName);
+
+        var input = _fixture.CreateValidCreateVideoInput(thumbHalf: _fixture.GetValidImageFileInput());
+
+        var output = await _useCase.Handle(input, CancellationToken.None);
+
+        _videoRepositoryMock.Verify(x => x.Insert(
+            It.Is<Video>(video =>
+                video.Title == input.Title &&
+                video.Published == input.Published &&
+                video.Description == input.Description &&
+                video.Duration == input.Duration &&
+                video.Rating == input.Rating &&
+                video.Id != Guid.Empty &&
+                video.YearLaunched == input.YearLaunched &&
+                video.Opened == input.Opened
+            ),
+            It.IsAny<CancellationToken>())
+        );
+        _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
+        output.Id.Should().NotBeEmpty();
+        output.CreatedAt.Should().NotBe(default(DateTime));
+        output.Title.Should().Be(input.Title);
+        output.Published.Should().Be(input.Published);
+        output.Description.Should().Be(input.Description);
+        output.Duration.Should().Be(input.Duration);
+        output.Rating.Should().Be(input.Rating);
+        output.YearLaunched.Should().Be(input.YearLaunched);
+        output.Opened.Should().Be(input.Opened);
+        output.ThumbHalf.Should().Be(expectedThumbHalfName);
+    }
+
+    [Fact(DisplayName = nameof(CreateVideoWithBanner))]
+    public async Task CreateVideoWithBanner()
+    {
+        const string expectedBannerName = "banner.jpg";
+        _storageServiceMock.Setup(x => x
+                .Upload(
+                    It.IsAny<string>(),
+                    It.IsAny<Stream>(),
+                    It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(expectedBannerName);
+
+        var input = _fixture.CreateValidCreateVideoInput(banner: _fixture.GetValidImageFileInput());
+
+        var output = await _useCase.Handle(input, CancellationToken.None);
+
+        _videoRepositoryMock.Verify(x => x.Insert(
+            It.Is<Video>(video =>
+                video.Title == input.Title &&
+                video.Published == input.Published &&
+                video.Description == input.Description &&
+                video.Duration == input.Duration &&
+                video.Rating == input.Rating &&
+                video.Id != Guid.Empty &&
+                video.YearLaunched == input.YearLaunched &&
+                video.Opened == input.Opened
+            ),
+            It.IsAny<CancellationToken>())
+        );
+        _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
+        output.Id.Should().NotBeEmpty();
+        output.CreatedAt.Should().NotBe(default(DateTime));
+        output.Title.Should().Be(input.Title);
+        output.Published.Should().Be(input.Published);
+        output.Description.Should().Be(input.Description);
+        output.Duration.Should().Be(input.Duration);
+        output.Rating.Should().Be(input.Rating);
+        output.YearLaunched.Should().Be(input.YearLaunched);
+        output.Opened.Should().Be(input.Opened);
+        output.Banner.Should().Be(expectedBannerName);
+    }
+
+    [Fact(DisplayName = nameof(CreateVideoWithCategoriesIds))]
+    public async Task CreateVideoWithCategoriesIds()
+    {
+        var exampleCategoriesIds = Enumerable.Range(1, 5)
+            .Select(_ => Guid.NewGuid()).ToList();
+        _categoryRepositoryMock.Setup(x => x.GetIdsListByIds(
+            It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>())
+        ).ReturnsAsync(exampleCategoriesIds);
+        var input = _fixture.CreateValidCreateVideoInput(exampleCategoriesIds);
+
+        var output = await _useCase.Handle(input, CancellationToken.None);
+
+        _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
+        output.Id.Should().NotBeEmpty();
+        output.CreatedAt.Should().NotBe(default);
+        output.Title.Should().Be(input.Title);
+        output.Published.Should().Be(input.Published);
+        output.Description.Should().Be(input.Description);
+        output.Duration.Should().Be(input.Duration);
+        output.Rating.Should().Be(input.Rating);
+        output.YearLaunched.Should().Be(input.YearLaunched);
+        output.Opened.Should().Be(input.Opened);
         output.CategoriesIds.Should().BeEquivalentTo(exampleCategoriesIds);
-        videoRepositoryMock.Verify(x => x.Insert(
+        _videoRepositoryMock.Verify(x => x.Insert(
             It.Is<Video>(video =>
                 video.Title == input.Title &&
                 video.Published == input.Published &&
@@ -103,36 +235,26 @@ public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<Vi
             ),
             It.IsAny<CancellationToken>())
         );
-        categoryRepositoryMock.VerifyAll();
+        _categoryRepositoryMock.VerifyAll();
     }
 
     [Fact(DisplayName = nameof(ThrowsWhenCategoryIdInvalid))]
     public async Task ThrowsWhenCategoryIdInvalid()
     {
-        var videoRepositoryMock = new Mock<IVideoRepository>();
-        var categoryRepositoryMock = new Mock<ICategoryRepository>();
         var exampleCategoriesIds = Enumerable.Range(1, 5)
             .Select(_ => Guid.NewGuid()).ToList();
         var removedCategoryId = exampleCategoriesIds[2];
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-        categoryRepositoryMock.Setup(x => x.GetIdsListByIds(
+        _categoryRepositoryMock.Setup(x => x.GetIdsListByIds(
             It.IsAny<List<Guid>>(),
             It.IsAny<CancellationToken>())
         ).ReturnsAsync(exampleCategoriesIds.FindAll(x => x != removedCategoryId).AsReadOnly());
-        var useCase = new CreateVideoUseCase(
-            videoRepositoryMock.Object,
-            categoryRepositoryMock.Object,
-            Mock.Of<IGenreRepository>(),
-            Mock.Of<ICastMemberRepository>(),
-            unitOfWorkMock.Object
-        );
-        var input = fixture.CreateValidCreateVideoInput(exampleCategoriesIds);
+        var input = _fixture.CreateValidCreateVideoInput(exampleCategoriesIds);
 
-        var action = () => useCase.Handle(input, CancellationToken.None);
+        var action = () => _useCase.Handle(input, CancellationToken.None);
 
         await action.Should().ThrowAsync<RelatedAggregateException>()
             .WithMessage($"Related category id (or ids) not found: {removedCategoryId}.");
-        categoryRepositoryMock.VerifyAll();
+        _categoryRepositoryMock.VerifyAll();
     }
 
     [Theory(DisplayName = nameof(CreateVideoThrowsWithInvalidInput))]
@@ -141,24 +263,14 @@ public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<Vi
         CreateVideoInput input,
         string expectedValidationError)
     {
-        var repositoryMock = new Mock<IVideoRepository>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-        var useCase = new CreateVideoUseCase(
-            repositoryMock.Object,
-            Mock.Of<ICategoryRepository>(),
-            Mock.Of<IGenreRepository>(),
-            Mock.Of<ICastMemberRepository>(),
-            unitOfWorkMock.Object
-        );
-
-        var action = async () => await useCase.Handle(input, CancellationToken.None);
+        var action = async () => await _useCase.Handle(input, CancellationToken.None);
 
         var exceptionAssertion = await action.Should()
             .ThrowAsync<EntityValidationException>()
-            .WithMessage($"There are validation errors");
+            .WithMessage("There are validation errors");
         exceptionAssertion.Which.Errors!.ToList()[0].Message.Should()
             .Be(expectedValidationError);
-        repositoryMock.Verify(
+        _videoRepositoryMock.Verify(
             x => x.Insert(It.IsAny<Video>(), It.IsAny<CancellationToken>()),
             Times.Never
         );
@@ -169,25 +281,14 @@ public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<Vi
     {
         var exampleIds = Enumerable.Range(1, 5)
             .Select(_ => Guid.NewGuid()).ToList();
-        var videoRepositoryMock = new Mock<IVideoRepository>();
-        var categoryRepositoryMock = new Mock<ICategoryRepository>();
-        var genreRepositoryMock = new Mock<IGenreRepository>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-        genreRepositoryMock.Setup(x => x.GetIdsListByIds(
+        _genreRepositoryMock.Setup(x => x.GetIdsListByIds(
             It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>())
         ).ReturnsAsync(exampleIds);
-        var useCase = new CreateVideoUseCase(
-            videoRepositoryMock.Object,
-            categoryRepositoryMock.Object,
-            genreRepositoryMock.Object,
-            Mock.Of<ICastMemberRepository>(),
-            unitOfWorkMock.Object
-        );
-        var input = fixture.CreateValidCreateVideoInput(genresIds: exampleIds);
+        var input = _fixture.CreateValidCreateVideoInput(genresIds: exampleIds);
 
-        var output = await useCase.Handle(input, CancellationToken.None);
+        var output = await _useCase.Handle(input, CancellationToken.None);
 
-        unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
+        _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
         output.Id.Should().NotBeEmpty();
         output.CreatedAt.Should().NotBe(default(DateTime));
         output.Title.Should().Be(input.Title);
@@ -199,7 +300,7 @@ public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<Vi
         output.Opened.Should().Be(input.Opened);
         output.CategoriesIds.Should().BeEmpty();
         output.GenresIds.Should().BeEquivalentTo(exampleIds);
-        videoRepositoryMock.Verify(x => x.Insert(
+        _videoRepositoryMock.Verify(x => x.Insert(
             It.Is<Video>(video =>
                 video.Title == input.Title &&
                 video.Published == input.Published &&
@@ -213,7 +314,7 @@ public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<Vi
             ),
             It.IsAny<CancellationToken>())
         );
-        genreRepositoryMock.VerifyAll();
+        _genreRepositoryMock.VerifyAll();
     }
 
     [Fact(DisplayName = nameof(ThrowsWhenInvalidGenreId))]
@@ -222,27 +323,16 @@ public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<Vi
         var exampleIds = Enumerable.Range(1, 5)
             .Select(_ => Guid.NewGuid()).ToList();
         var removedId = exampleIds[2];
-        var videoRepositoryMock = new Mock<IVideoRepository>();
-        var categoryRepositoryMock = new Mock<ICategoryRepository>();
-        var genreRepositoryMock = new Mock<IGenreRepository>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-        genreRepositoryMock.Setup(x => x.GetIdsListByIds(
+        _genreRepositoryMock.Setup(x => x.GetIdsListByIds(
             It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>())
         ).ReturnsAsync(exampleIds.FindAll(id => id != removedId));
-        var useCase = new CreateVideoUseCase(
-            videoRepositoryMock.Object,
-            categoryRepositoryMock.Object,
-            genreRepositoryMock.Object,
-            Mock.Of<ICastMemberRepository>(),
-            unitOfWorkMock.Object
-        );
-        var input = fixture.CreateValidCreateVideoInput(genresIds: exampleIds);
+        var input = _fixture.CreateValidCreateVideoInput(genresIds: exampleIds);
 
-        var action = () => useCase.Handle(input, CancellationToken.None);
+        var action = () => _useCase.Handle(input, CancellationToken.None);
 
         await action.Should().ThrowAsync<RelatedAggregateException>()
             .WithMessage($"Related genre id (or ids) not found: {removedId}.");
-        genreRepositoryMock.VerifyAll();
+        _genreRepositoryMock.VerifyAll();
     }
 
     [Fact(DisplayName = nameof(CreateVideoWithCastMembersIds))]
@@ -250,24 +340,14 @@ public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<Vi
     {
         var exampleIds = Enumerable.Range(1, 5)
             .Select(_ => Guid.NewGuid()).ToList();
-        var videoRepositoryMock = new Mock<IVideoRepository>();
-        var castMemberRepositoryMock = new Mock<ICastMemberRepository>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-        castMemberRepositoryMock.Setup(x => x.GetIdsListByIds(
+        _castMemberRepositoryMock.Setup(x => x.GetIdsListByIds(
             It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>())
         ).ReturnsAsync(exampleIds);
-        var useCase = new CreateVideoUseCase(
-            videoRepositoryMock.Object,
-            Mock.Of<ICategoryRepository>(),
-            Mock.Of<IGenreRepository>(),
-            castMemberRepositoryMock.Object,
-            unitOfWorkMock.Object
-        );
-        var input = fixture.CreateValidCreateVideoInput(castMembersIds: exampleIds);
+        var input = _fixture.CreateValidCreateVideoInput(castMembersIds: exampleIds);
 
-        var output = await useCase.Handle(input, CancellationToken.None);
+        var output = await _useCase.Handle(input, CancellationToken.None);
 
-        unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
+        _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
         output.Id.Should().NotBeEmpty();
         output.CreatedAt.Should().NotBe(default(DateTime));
         output.Title.Should().Be(input.Title);
@@ -280,7 +360,7 @@ public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<Vi
         output.CategoriesIds.Should().BeEmpty();
         output.GenresIds.Should().BeEmpty();
         output.CastMembersIds.Should().BeEquivalentTo(exampleIds);
-        videoRepositoryMock.Verify(x => x.Insert(
+        _videoRepositoryMock.Verify(x => x.Insert(
             It.Is<Video>(video =>
                 video.Title == input.Title &&
                 video.Published == input.Published &&
@@ -294,7 +374,7 @@ public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<Vi
             ),
             It.IsAny<CancellationToken>())
         );
-        castMemberRepositoryMock.VerifyAll();
+        _castMemberRepositoryMock.VerifyAll();
     }
 
     [Fact(DisplayName = nameof(ThrowsWhenInvalidCastMemberId))]
@@ -302,25 +382,15 @@ public sealed class CreateVideoTest(VideoTestFixture fixture) : IClassFixture<Vi
     {
         var exampleIds = Enumerable.Range(1, 5).Select(_ => Guid.NewGuid()).ToList();
         var removedId = exampleIds[2];
-        var videoRepositoryMock = new Mock<IVideoRepository>();
-        var castMemberRepositoryMock = new Mock<ICastMemberRepository>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-        castMemberRepositoryMock.Setup(x => x.GetIdsListByIds(
+        _castMemberRepositoryMock.Setup(x => x.GetIdsListByIds(
             It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>())
         ).ReturnsAsync(exampleIds.FindAll(x => x != removedId));
-        var useCase = new CreateVideoUseCase(
-            videoRepositoryMock.Object,
-            Mock.Of<ICategoryRepository>(),
-            Mock.Of<IGenreRepository>(),
-            castMemberRepositoryMock.Object,
-            unitOfWorkMock.Object
-        );
-        var input = fixture.CreateValidCreateVideoInput(castMembersIds: exampleIds);
+        var input = _fixture.CreateValidCreateVideoInput(castMembersIds: exampleIds);
 
-        var action = () => useCase.Handle(input, CancellationToken.None);
+        var action = () => _useCase.Handle(input, CancellationToken.None);
 
         await action.Should().ThrowAsync<RelatedAggregateException>()
             .WithMessage($"Related cast member id (or ids) not found: {removedId}.");
-        castMemberRepositoryMock.VerifyAll();
+        _castMemberRepositoryMock.VerifyAll();
     }
 }

@@ -1,4 +1,7 @@
-﻿using FC.Codeflix.Catalog.Domain.Entities;
+﻿using System.Text;
+
+using FC.Codeflix.Catalog.Application.UseCases.Videos.Common;
+using FC.Codeflix.Catalog.Domain.Entities;
 using FC.Codeflix.Catalog.Domain.Enum;
 
 namespace FC.Codeflix.Catalog.UnitTests.Common.Fixtures;
@@ -25,4 +28,10 @@ public abstract class VideoTestFixtureBase : BaseFixture
     public string GetValidImagePath() => Faker.Image.PicsumUrl();
     public string GetValidMediaPath() => Faker.Internet.UrlWithPath(fileExt: "mp4");
     public Media GetValidMedia() => new(GetValidMediaPath());
+    public FileInput GetValidImageFileInput()
+    {
+        var buffer = Encoding.ASCII.GetBytes("image");
+        var exampleStream = new MemoryStream(buffer);
+        return new FileInput("jpg", exampleStream);
+    }
 }

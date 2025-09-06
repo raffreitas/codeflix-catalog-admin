@@ -1,4 +1,7 @@
-﻿using FC.Codeflix.Catalog.Application.UseCases.Videos.CreateVideo;
+﻿using System.Text;
+
+using FC.Codeflix.Catalog.Application.UseCases.Videos.Common;
+using FC.Codeflix.Catalog.Application.UseCases.Videos.CreateVideo;
 using FC.Codeflix.Catalog.UnitTests.Common.Fixtures;
 
 namespace FC.Codeflix.Catalog.UnitTests.Domain.Entities.Videos;
@@ -8,7 +11,10 @@ public sealed class VideoTestFixture : VideoTestFixtureBase
     public CreateVideoInput CreateValidCreateVideoInput(
         List<Guid>? categoriesIds = null,
         List<Guid>? genresIds = null,
-        List<Guid>? castMembersIds = null
+        List<Guid>? castMembersIds = null,
+        FileInput? thumb = null,
+        FileInput? banner = null,
+        FileInput? thumbHalf = null
     ) => new(
         GetValidTitle(),
         GetValidDescription(),
@@ -19,6 +25,9 @@ public sealed class VideoTestFixture : VideoTestFixtureBase
         GetRandomRating(),
         categoriesIds,
         genresIds,
-        castMembersIds
+        castMembersIds,
+        thumb,
+        banner,
+        thumbHalf
     );
 }

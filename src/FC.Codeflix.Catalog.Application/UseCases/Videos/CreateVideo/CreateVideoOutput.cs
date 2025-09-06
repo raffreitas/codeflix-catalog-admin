@@ -15,7 +15,10 @@ public sealed record CreateVideoOutput(
     DateTime CreatedAt,
     IReadOnlyCollection<Guid> CategoriesIds,
     IReadOnlyCollection<Guid> GenresIds,
-    IReadOnlyCollection<Guid> CastMembersIds
+    IReadOnlyCollection<Guid> CastMembersIds,
+    string? Thumb,
+    string? Banner,
+    string? ThumbHalf
 )
 {
     public static CreateVideoOutput FromVideo(Video video) => new(
@@ -30,6 +33,9 @@ public sealed record CreateVideoOutput(
         CreatedAt: video.CreatedAt,
         CategoriesIds: video.Categories,
         GenresIds: video.Genres,
-        CastMembersIds: video.CastMembers
+        CastMembersIds: video.CastMembers,
+        Thumb: video.Thumb?.Path,
+        Banner: video.Banner?.Path,
+        ThumbHalf: video.ThumbHalf?.Path
     );
 };
