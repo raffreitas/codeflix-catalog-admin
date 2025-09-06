@@ -1,6 +1,5 @@
 ﻿using FC.Codeflix.Catalog.Application.Exceptions;
 using FC.Codeflix.Catalog.Application.Interfaces;
-using FC.Codeflix.Catalog.Application.UseCases.Videos.Common;
 using FC.Codeflix.Catalog.Application.UseCases.Videos.CreateVideo;
 using FC.Codeflix.Catalog.Domain.Entities;
 using FC.Codeflix.Catalog.Domain.Exceptions;
@@ -86,7 +85,7 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
         ).ReturnsAsync(expectedBannerName);
         _storageServiceMock.Setup(x => x
             .Upload(
-                It.Is<string>(fileName => fileName.EndsWith("-thumb-half.jpg")),
+                It.Is<string>(fileName => fileName.EndsWith("-thumbhalf.jpg")),
                 It.IsAny<Stream>(),
                 It.IsAny<CancellationToken>())
         ).ReturnsAsync(expectedThumbHalfName);
@@ -258,6 +257,122 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
         output.Banner.Should().Be(expectedBannerName);
     }
 
+    [Fact(DisplayName = nameof(CreateVideoWithMedia))]
+    [Trait("Application", "CreateVideo - Use Cases")]
+    public async Task CreateVideoWithMedia()
+    {
+        var expectedMediaName = $"/storage/{_fixture.GetValidMediaPath()}";
+        _storageServiceMock.Setup(x => x.Upload(
+            It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>())
+        ).ReturnsAsync(expectedMediaName);
+        var input = _fixture.CreateValidCreateVideoInput(media: _fixture.GetValidMediaFileInput());
+
+        var output = await _useCase.Handle(input, CancellationToken.None);
+
+        _videoRepositoryMock.Verify(x => x.Insert(
+            It.Is<Video>(video =>
+                video.Title == input.Title &&
+                video.Published == input.Published &&
+                video.Description == input.Description &&
+                video.Duration == input.Duration &&
+                video.Rating == input.Rating &&
+                video.Id != Guid.Empty &&
+                video.YearLaunched == input.YearLaunched &&
+                video.Opened == input.Opened
+            ),
+            It.IsAny<CancellationToken>())
+        );
+        _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
+        _storageServiceMock.VerifyAll();
+        output.Id.Should().NotBeEmpty();
+        output.CreatedAt.Should().NotBe(default(DateTime));
+        output.Title.Should().Be(input.Title);
+        output.Published.Should().Be(input.Published);
+        output.Description.Should().Be(input.Description);
+        output.Duration.Should().Be(input.Duration);
+        output.Rating.Should().Be(input.Rating);
+        output.YearLaunched.Should().Be(input.YearLaunched);
+        output.Opened.Should().Be(input.Opened);
+        output.Media.Should().Be(expectedMediaName);
+    }
+
+
+    [Fact(DisplayName = nameof(CreateVideoWithTrailer))]
+    [Trait("Application", "CreateVideo - Use Cases")]
+    public async Task CreateVideoWithTrailer()
+    {
+        var expectedTrailerName = $"/storage/{_fixture.GetValidMediaPath()}";
+        _storageServiceMock.Setup(x => x.Upload(
+            It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>())
+        ).ReturnsAsync(expectedTrailerName);
+
+        var input = _fixture.CreateValidCreateVideoInput(
+            trailer: _fixture.GetValidMediaFileInput());
+
+        var output = await _useCase.Handle(input, CancellationToken.None);
+
+        _videoRepositoryMock.Verify(x => x.Insert(
+            It.Is<Video>(video =>
+                video.Title == input.Title &&
+                video.Published == input.Published &&
+                video.Description == input.Description &&
+                video.Duration == input.Duration &&
+                video.Rating == input.Rating &&
+                video.Id != Guid.Empty &&
+                video.YearLaunched == input.YearLaunched &&
+                video.Opened == input.Opened
+            ),
+            It.IsAny<CancellationToken>())
+        );
+        _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
+        _storageServiceMock.VerifyAll();
+        output.Id.Should().NotBeEmpty();
+        output.CreatedAt.Should().NotBe(default(DateTime));
+        output.Title.Should().Be(input.Title);
+        output.Published.Should().Be(input.Published);
+        output.Description.Should().Be(input.Description);
+        output.Duration.Should().Be(input.Duration);
+        output.Rating.Should().Be(input.Rating);
+        output.YearLaunched.Should().Be(input.YearLaunched);
+        output.Opened.Should().Be(input.Opened);
+        output.Trailer.Should().Be(expectedTrailerName);
+    }
+
+    [Fact(DisplayName = nameof(ThrowsExceptionAndRollbackMediaUploadInCommitErrorCases))]
+    [Trait("Application", "CreateVideo - Use Cases")]
+    public async Task ThrowsExceptionAndRollbackMediaUploadInCommitErrorCases()
+    {
+        var input = _fixture.CreateValidInputWithAllMedias();
+        var storageMediaPath = _fixture.GetValidMediaPath();
+        var storageTrailerPath = _fixture.GetValidMediaPath();
+        var storagePathList = new List<string> { storageMediaPath, storageTrailerPath };
+        _storageServiceMock.Setup(x => x.Upload(
+            It.Is<string>(fileName => fileName.EndsWith($"media.{input.Media!.Extension}")), It.IsAny<Stream>(),
+            It.IsAny<CancellationToken>())
+        ).ReturnsAsync(storageMediaPath);
+        _storageServiceMock.Setup(x => x.Upload(
+            It.Is<string>(fileName => fileName.EndsWith($"trailer.{input.Trailer!.Extension}")), It.IsAny<Stream>(),
+            It.IsAny<CancellationToken>())
+        ).ReturnsAsync(storageTrailerPath);
+        _unitOfWorkMock.Setup(x => x.Commit(It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Something went wrong with the commit"));
+
+        var action = () => _useCase.Handle(input, CancellationToken.None);
+
+        await action.Should().ThrowAsync<Exception>()
+            .WithMessage("Something went wrong with the commit");
+        _storageServiceMock.Verify(
+            x => x.Delete(
+                It.Is<string>(path => storagePathList.Contains(path)),
+                It.IsAny<CancellationToken>()
+            ), Times.Exactly(2));
+        _storageServiceMock.Verify(
+            x => x.Delete(
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()
+            ), Times.Exactly(2));
+    }
+
     [Fact(DisplayName = nameof(ThrowsExceptionInUploadErrorCases))]
     public async Task ThrowsExceptionInUploadErrorCases()
     {
@@ -275,8 +390,8 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
             .WithMessage("Something went wrong in upload");
     }
 
-    [Fact(DisplayName = nameof(ThrowsExceptionAndRollbackUploadInUploadErrorCases))]
-    public async Task ThrowsExceptionAndRollbackUploadInUploadErrorCases()
+    [Fact(DisplayName = nameof(ThrowsExceptionAndRollbackUploadInImageUploadErrorCases))]
+    public async Task ThrowsExceptionAndRollbackUploadInImageUploadErrorCases()
     {
         _storageServiceMock.Setup(x => x
             .Upload(
@@ -292,7 +407,7 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
         ).ReturnsAsync("123-banner.jpg");
         _storageServiceMock.Setup(x => x
             .Upload(
-                It.Is<string>(fileName => fileName.EndsWith("-thumb-half.jpg")),
+                It.Is<string>(fileName => fileName.EndsWith("-thumbhalf.jpg")),
                 It.IsAny<Stream>(),
                 It.IsAny<CancellationToken>())
         ).ThrowsAsync(new Exception("Something went wrong in upload"));

@@ -18,7 +18,9 @@ public sealed record CreateVideoOutput(
     IReadOnlyCollection<Guid> CastMembersIds,
     string? Thumb,
     string? Banner,
-    string? ThumbHalf
+    string? ThumbHalf,
+    string? Media,
+    string? Trailer
 )
 {
     public static CreateVideoOutput FromVideo(Video video) => new(
@@ -36,6 +38,8 @@ public sealed record CreateVideoOutput(
         CastMembersIds: video.CastMembers,
         Thumb: video.Thumb?.Path,
         Banner: video.Banner?.Path,
-        ThumbHalf: video.ThumbHalf?.Path
+        ThumbHalf: video.ThumbHalf?.Path,
+        Media: video.Media?.FilePath,
+        Trailer: video.Trailer?.FilePath
     );
 };

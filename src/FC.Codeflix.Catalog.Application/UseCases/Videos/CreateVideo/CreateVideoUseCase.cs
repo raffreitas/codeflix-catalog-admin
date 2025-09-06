@@ -1,4 +1,5 @@
-﻿using FC.Codeflix.Catalog.Application.Exceptions;
+﻿using FC.Codeflix.Catalog.Application.Common;
+using FC.Codeflix.Catalog.Application.Exceptions;
 using FC.Codeflix.Catalog.Application.Interfaces;
 using FC.Codeflix.Catalog.Domain.Entities;
 using FC.Codeflix.Catalog.Domain.Exceptions;
@@ -38,6 +39,7 @@ public sealed class CreateVideoUseCase(
         try
         {
             await UploadImagesMedia(request, video, cancellationToken);
+            await UploadVideosMedia(request, video, cancellationToken);
 
             await videoRepository.Insert(video, cancellationToken);
             await uow.Commit(cancellationToken);
@@ -56,14 +58,17 @@ public sealed class CreateVideoUseCase(
         if (video.Thumb is not null) await storageService.Delete(video.Thumb.Path, cancellationToken);
         if (video.Banner is not null) await storageService.Delete(video.Banner.Path, cancellationToken);
         if (video.ThumbHalf is not null) await storageService.Delete(video.ThumbHalf.Path, cancellationToken);
+        if (video.Media is not null) await storageService.Delete(video.Media.FilePath, cancellationToken);
+        if (video.Trailer is not null) await storageService.Delete(video.Trailer.FilePath, cancellationToken);
     }
 
     private async Task UploadImagesMedia(CreateVideoInput request, Video video, CancellationToken cancellationToken)
     {
         if (request.Thumb is not null)
         {
+            var fileName = StorageFileName.Create(video.Id, nameof(video.Thumb), request.Thumb.Extension);
             var thumbUrl = await storageService.Upload(
-                $"{video.Id}-thumb.{request.Thumb.Extension}",
+                fileName,
                 request.Thumb.FileStream,
                 cancellationToken
             );
@@ -73,8 +78,9 @@ public sealed class CreateVideoUseCase(
 
         if (request.Banner is not null)
         {
+            var fileName = StorageFileName.Create(video.Id, nameof(video.Banner), request.Banner.Extension);
             var bannerUrl = await storageService.Upload(
-                $"{video.Id}-banner.{request.Banner.Extension}",
+                fileName,
                 request.Banner.FileStream,
                 cancellationToken
             );
@@ -84,13 +90,37 @@ public sealed class CreateVideoUseCase(
 
         if (request.ThumbHalf is not null)
         {
+            var fileName = StorageFileName.Create(video.Id, nameof(video.ThumbHalf), request.ThumbHalf.Extension);
             var thumbHalfUrl = await storageService.Upload(
-                $"{video.Id}-thumb-half.{request.ThumbHalf.Extension}",
+                fileName,
                 request.ThumbHalf.FileStream,
                 cancellationToken
             );
 
             video.UpdateThumbHalf(thumbHalfUrl);
+        }
+    }
+
+    private async Task UploadVideosMedia(CreateVideoInput request, Video video, CancellationToken cancellationToken)
+    {
+        if (request.Media is not null)
+        {
+            var fileName = StorageFileName.Create(video.Id, nameof(video.Media), request.Media.Extension);
+            var mediaUrl = await storageService.Upload(
+                fileName,
+                request.Media.FileStream,
+                cancellationToken);
+            video.UpdateMedia(mediaUrl);
+        }
+
+        if (request.Trailer is not null)
+        {
+            var fileName = StorageFileName.Create(video.Id, nameof(video.Trailer), request.Trailer.Extension);
+            var mediaUrl = await storageService.Upload(
+                fileName,
+                request.Trailer.FileStream,
+                cancellationToken);
+            video.UpdateTrailer(mediaUrl);
         }
     }
 

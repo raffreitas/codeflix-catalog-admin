@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-using FC.Codeflix.Catalog.Application.UseCases.Videos.Common;
+﻿using FC.Codeflix.Catalog.Application.UseCases.Videos.Common;
 using FC.Codeflix.Catalog.Application.UseCases.Videos.CreateVideo;
 using FC.Codeflix.Catalog.UnitTests.Common.Fixtures;
 
@@ -14,7 +12,9 @@ public sealed class VideoTestFixture : VideoTestFixtureBase
         List<Guid>? castMembersIds = null,
         FileInput? thumb = null,
         FileInput? banner = null,
-        FileInput? thumbHalf = null
+        FileInput? thumbHalf = null,
+        FileInput? media = null,
+        FileInput? trailer = null
     ) => new(
         GetValidTitle(),
         GetValidDescription(),
@@ -28,7 +28,9 @@ public sealed class VideoTestFixture : VideoTestFixtureBase
         castMembersIds,
         thumb,
         banner,
-        thumbHalf
+        thumbHalf,
+        media,
+        trailer
     );
 
     public CreateVideoInput CreateValidCreateVideoInputWithAllImages() => new(
@@ -45,5 +47,23 @@ public sealed class VideoTestFixture : VideoTestFixtureBase
         GetValidImageFileInput(),
         GetValidImageFileInput(),
         GetValidImageFileInput()
+    );
+
+    public CreateVideoInput CreateValidInputWithAllMedias() => new(
+        GetValidTitle(),
+        GetValidDescription(),
+        GetValidYearLaunched(),
+        GetValidDuration(),
+        GetRandomBoolean(),
+        GetRandomBoolean(),
+        GetRandomRating(),
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        GetValidMediaFileInput(),
+        GetValidMediaFileInput()
     );
 }
