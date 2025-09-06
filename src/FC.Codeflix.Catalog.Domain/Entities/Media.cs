@@ -1,8 +1,9 @@
 ﻿using FC.Codeflix.Catalog.Domain.Enum;
+using FC.Codeflix.Catalog.Domain.SeedWork;
 
 namespace FC.Codeflix.Catalog.Domain.Entities;
 
-public sealed class Media
+public sealed class Media : Entity
 {
     public string FilePath { get; private set; }
     public string? EncodedPath { get; private set; }

@@ -16,6 +16,7 @@ public sealed class MediaTest(VideoTestFixture fixture) : IClassFixture<VideoTes
         var media = new Media(expectedFilePath);
 
         media.Should().NotBeNull();
+        media.Id.Should().NotBe(Guid.Empty);
         media.FilePath.Should().Be(expectedFilePath);
         media.Status.Should().Be(MediaStatus.Pending);
     }

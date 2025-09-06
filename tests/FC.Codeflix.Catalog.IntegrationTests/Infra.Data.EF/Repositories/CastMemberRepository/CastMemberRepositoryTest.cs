@@ -336,9 +336,9 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         result.ToList().Should().BeEquivalentTo(idsToGet);
     }
 
-    [Fact(DisplayName = nameof(GetIdsListByIdsRetrurnsOnlyTheIdsThatMatch))]
+    [Fact(DisplayName = nameof(GetIdsListByIdsReturnsOnlyTheIdsThatMatch))]
     [Trait("Integration/Infra.Data", "CastMemberRepository - Repositories")]
-    public async Task GetIdsListByIdsRetrurnsOnlyTheIdsThatMatch()
+    public async Task GetIdsListByIdsReturnsOnlyTheIdsThatMatch()
     {
         var arrangeDbContext = fixture.CreateDbContext();
         var exampleList = fixture.GetExampleCastMembersList(10);
