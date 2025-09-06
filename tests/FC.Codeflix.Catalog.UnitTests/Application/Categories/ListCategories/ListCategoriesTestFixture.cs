@@ -1,7 +1,7 @@
 ﻿using FC.Codeflix.Catalog.Application.UseCases.Categories.ListCategories;
 using FC.Codeflix.Catalog.Domain.Entities;
 using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
-using FC.Codeflix.Catalog.UnitTests.Application.Common;
+using FC.Codeflix.Catalog.UnitTests.Application.Categories.Common;
 
 namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.ListCategories;
 

@@ -5,7 +5,7 @@ using FC.Codeflix.Catalog.UnitTests.Common;
 
 using Moq;
 
-namespace FC.Codeflix.Catalog.UnitTests.Application.Common;
+namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.Common;
 public abstract class CategoryUseCasesBaseFixture : BaseFixture
 {
     public Mock<ICategoryRepository> GetCategoryRepositoryMock() => new();

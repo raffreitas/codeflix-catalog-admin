@@ -1,0 +1,54 @@
+﻿using FC.Codeflix.Catalog.Application.Common;
+using FC.Codeflix.Catalog.Application.Interfaces;
+using FC.Codeflix.Catalog.Domain.Entities;
+using FC.Codeflix.Catalog.Domain.Repositories;
+
+namespace FC.Codeflix.Catalog.Application.UseCases.Videos.UploadMedias;
+
+public sealed class UploadMediasUseCase(
+    IVideoRepository videoRepository,
+    IUnitOfWork unitOfWork,
+    IStorageService storageService) : IUploadMediasUseCase
+{
+    public async Task Handle(UploadMediasInput request, CancellationToken cancellationToken)
+    {
+        var video = await videoRepository.Get(request.VideoId, cancellationToken);
+
+        await UploadVideo(request, video, cancellationToken);
+
+        await UploadTrailer(request, video, cancellationToken);
+
+        await videoRepository.Update(video, cancellationToken);
+        await unitOfWork.Commit(cancellationToken);
+    }
+
+    private async Task UploadTrailer(UploadMediasInput request, Video video, CancellationToken cancellationToken)
+    {
+        if (request.TrailerFile is not null)
+        {
+            var fileName = StorageFileName.Create(video.Id, nameof(video.Trailer), request.TrailerFile.Extension);
+            var uploadedFilePath = await storageService.Upload(
+                fileName,
+                request.TrailerFile.FileStream,
+                cancellationToken
+            );
+
+            video.UpdateTrailer(uploadedFilePath);
+        }
+    }
+
+    private async Task UploadVideo(UploadMediasInput request, Video video, CancellationToken cancellationToken)
+    {
+        if (request.VideoFile is not null)
+        {
+            var fileName = StorageFileName.Create(video.Id, nameof(video.Media), request.VideoFile.Extension);
+            var uploadedFilePath = await storageService.Upload(
+                fileName,
+                request.VideoFile.FileStream,
+                cancellationToken
+            );
+
+            video.UpdateMedia(uploadedFilePath);
+        }
+    }
+}

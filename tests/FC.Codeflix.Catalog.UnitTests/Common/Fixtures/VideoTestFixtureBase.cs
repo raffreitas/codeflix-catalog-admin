@@ -28,10 +28,18 @@ public abstract class VideoTestFixtureBase : BaseFixture
     public string GetValidImagePath() => Faker.Image.PicsumUrl();
     public string GetValidMediaPath() => Faker.Internet.UrlWithPath(fileExt: "mp4");
     public Media GetValidMedia() => new(GetValidMediaPath());
+
     public FileInput GetValidImageFileInput()
     {
         var buffer = Encoding.ASCII.GetBytes("image");
         var exampleStream = new MemoryStream(buffer);
         return new FileInput("jpg", exampleStream);
+    }
+
+    public FileInput GetValidMediaFileInput()
+    {
+        var buffer = Encoding.ASCII.GetBytes("video");
+        var exampleStream = new MemoryStream(buffer);
+        return new FileInput("mp4", exampleStream);
     }
 }

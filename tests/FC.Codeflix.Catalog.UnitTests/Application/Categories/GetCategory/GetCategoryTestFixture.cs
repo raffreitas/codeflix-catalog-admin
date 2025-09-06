@@ -1,4 +1,4 @@
-﻿using FC.Codeflix.Catalog.UnitTests.Application.Common;
+﻿using FC.Codeflix.Catalog.UnitTests.Application.Categories.Common;
 
 namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.GetCategory;
 
