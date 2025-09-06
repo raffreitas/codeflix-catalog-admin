@@ -7,6 +7,7 @@
     <Project Path="src/FC.Codeflix.Catalog.Application/FC.Codeflix.Catalog.Application.csproj" />
     <Project Path="src/FC.Codeflix.Catalog.Domain/FC.Codeflix.Catalog.Domain.csproj" />
     <Project Path="src/FC.Codeflix.Catalog.Infra.Data.EF/FC.Codeflix.Catalog.Infra.Data.EF.csproj" />
+    <Project Path="src\FC.Codeflix.Catalog.Infra.Storage\FC.Codeflix.Catalog.Infra.Storage.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/FC.Codeflix.Catalog.EndToEndTests/FC.Codeflix.Catalog.EndToEndTests.csproj" />

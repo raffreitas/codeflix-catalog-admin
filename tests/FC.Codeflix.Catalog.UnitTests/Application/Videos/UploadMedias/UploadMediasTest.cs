@@ -43,6 +43,7 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
         _storageService.Setup(x => x.Upload(
             It.IsAny<string>(),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>())
         ).ReturnsAsync(Guid.NewGuid().ToString());
 
@@ -53,6 +54,7 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
         _storageService.Verify(x => x.Upload(
             It.Is<string>(fileName => fileNames.Contains(fileName)),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>()
         ), Times.Exactly(2));
     }
@@ -90,11 +92,13 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
         _storageService.Setup(x => x.Upload(
             It.Is<string>(name => name == videoFileName),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>())
         ).ReturnsAsync(videoFileName);
         _storageService.Setup(x => x.Upload(
             It.Is<string>(name => name == trailerFileName),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>())
         ).ThrowsAsync(new Exception("Something went wrong when trying to upload the file."));
 
@@ -108,6 +112,7 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
         _storageService.Verify(x => x.Upload(
             It.Is<string>(fileName => fileNames.Contains(fileName)),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>()
         ), Times.Exactly(2));
         _storageService.Verify(x => x.Delete(
@@ -133,11 +138,13 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
         _storageService.Setup(x => x.Upload(
             It.Is<string>(name => name == videoFileName),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>())
         ).ReturnsAsync(videoFileName);
         _storageService.Setup(x => x.Upload(
             It.Is<string>(name => name == trailerFileName),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>())
         ).ReturnsAsync(trailerFileName);
         _unitOfWork.Setup(x => x.Commit(It.IsAny<CancellationToken>()))
@@ -152,6 +159,7 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
         _storageService.Verify(x => x.Upload(
             It.Is<string>(fileName => fileNames.Contains(fileName)),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>()
         ), Times.Exactly(2));
         _storageService.Verify(x => x.Delete(
@@ -176,11 +184,13 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
         _storageService.Setup(x => x.Upload(
             It.IsAny<string>(),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>())
         ).ReturnsAsync(Guid.NewGuid().ToString());
         _storageService.Setup(x => x.Upload(
             It.Is<string>(name => name == videoFileName),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>())
         ).ReturnsAsync(videoFileName);
         _unitOfWork.Setup(x => x.Commit(It.IsAny<CancellationToken>()))
@@ -195,11 +205,13 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
         _storageService.Verify(x => x.Upload(
             It.Is<string>(fileName => fileName == videoFileName),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>()
         ), Times.Once);
         _storageService.Verify(x => x.Upload(
             It.IsAny<string>(),
             It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>()
         ), Times.Once);
         _storageService.Verify(x => x.Delete(

@@ -82,18 +82,21 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
             .Upload(
                 It.Is<string>(fileName => fileName.EndsWith("-banner.jpg")),
                 It.IsAny<Stream>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
         ).ReturnsAsync(expectedBannerName);
         _storageServiceMock.Setup(x => x
             .Upload(
                 It.Is<string>(fileName => fileName.EndsWith("-thumbhalf.jpg")),
                 It.IsAny<Stream>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
         ).ReturnsAsync(expectedThumbHalfName);
         _storageServiceMock.Setup(x => x
             .Upload(
                 It.Is<string>(fileName => fileName.EndsWith("-thumb.jpg")),
                 It.IsAny<Stream>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
         ).ReturnsAsync(expectedThumbName);
 
@@ -137,6 +140,7 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
                 .Upload(
                     It.IsAny<string>(),
                     It.IsAny<Stream>(),
+                    It.IsAny<string>(),
                     It.IsAny<CancellationToken>())
             )
             .ReturnsAsync(expectedThumbName);
@@ -180,6 +184,7 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
                 .Upload(
                     It.IsAny<string>(),
                     It.IsAny<Stream>(),
+                    It.IsAny<string>(),
                     It.IsAny<CancellationToken>())
             )
             .ReturnsAsync(expectedThumbHalfName);
@@ -223,6 +228,7 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
                 .Upload(
                     It.IsAny<string>(),
                     It.IsAny<Stream>(),
+                    It.IsAny<string>(),
                     It.IsAny<CancellationToken>())
             )
             .ReturnsAsync(expectedBannerName);
@@ -264,7 +270,7 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
     {
         var expectedMediaName = $"/storage/{_fixture.GetValidMediaPath()}";
         _storageServiceMock.Setup(x => x.Upload(
-            It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>())
+            It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>())
         ).ReturnsAsync(expectedMediaName);
         var input = _fixture.CreateValidCreateVideoInput(media: _fixture.GetValidMediaFileInput());
 
@@ -304,7 +310,7 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
     {
         var expectedTrailerName = $"/storage/{_fixture.GetValidMediaPath()}";
         _storageServiceMock.Setup(x => x.Upload(
-            It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>())
+            It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>())
         ).ReturnsAsync(expectedTrailerName);
 
         var input = _fixture.CreateValidCreateVideoInput(
@@ -349,10 +355,13 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
         var storagePathList = new List<string> { storageMediaPath, storageTrailerPath };
         _storageServiceMock.Setup(x => x.Upload(
             It.Is<string>(fileName => fileName.EndsWith($"media.{input.Media!.Extension}")), It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>())
         ).ReturnsAsync(storageMediaPath);
         _storageServiceMock.Setup(x => x.Upload(
-            It.Is<string>(fileName => fileName.EndsWith($"trailer.{input.Trailer!.Extension}")), It.IsAny<Stream>(),
+            It.Is<string>(fileName => fileName.EndsWith($"trailer.{input.Trailer!.Extension}")),
+            It.IsAny<Stream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>())
         ).ReturnsAsync(storageTrailerPath);
         _unitOfWorkMock.Setup(x => x.Commit(It.IsAny<CancellationToken>()))
@@ -381,6 +390,7 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
             .Upload(
                 It.IsAny<string>(),
                 It.IsAny<Stream>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
         ).ThrowsAsync(new Exception("Something went wrong in upload"));
         var input = _fixture.CreateValidCreateVideoInputWithAllImages();
@@ -398,18 +408,21 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
             .Upload(
                 It.Is<string>(fileName => fileName.EndsWith("-thumb.jpg")),
                 It.IsAny<Stream>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
         ).ReturnsAsync("123-thumb.jpg");
         _storageServiceMock.Setup(x => x
             .Upload(
                 It.Is<string>(fileName => fileName.EndsWith("-banner.jpg")),
                 It.IsAny<Stream>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
         ).ReturnsAsync("123-banner.jpg");
         _storageServiceMock.Setup(x => x
             .Upload(
                 It.Is<string>(fileName => fileName.EndsWith("-thumbhalf.jpg")),
                 It.IsAny<Stream>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
         ).ThrowsAsync(new Exception("Something went wrong in upload"));
         var input = _fixture.CreateValidCreateVideoInputWithAllImages();

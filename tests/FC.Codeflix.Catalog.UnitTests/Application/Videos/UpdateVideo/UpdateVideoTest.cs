@@ -645,6 +645,7 @@ public sealed class UpdateVideoTest : IClassFixture<UpdateVideoTestFixture>
                     nameof(exampleVideo.Banner),
                     input.Banner!.Extension)),
             It.IsAny<MemoryStream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>())
         ).ReturnsAsync(bannerPath);
 
@@ -710,6 +711,7 @@ public sealed class UpdateVideoTest : IClassFixture<UpdateVideoTestFixture>
         _storageServiceMock.Verify(x => x.Upload(
                 It.IsAny<string>(),
                 It.IsAny<Stream>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
             , Times.Never);
         _videoRepositoryMock.Verify(repository => repository.Update(
@@ -748,6 +750,7 @@ public sealed class UpdateVideoTest : IClassFixture<UpdateVideoTestFixture>
                 input.Thumb!.Extension))
             ),
             It.IsAny<MemoryStream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>())
         ).ReturnsAsync(path);
 
@@ -812,6 +815,7 @@ public sealed class UpdateVideoTest : IClassFixture<UpdateVideoTestFixture>
         _storageServiceMock.Verify(x => x.Upload(
                 It.IsAny<string>(),
                 It.IsAny<Stream>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
             , Times.Never);
         _videoRepositoryMock.Verify(repository => repository.Update(
@@ -850,6 +854,7 @@ public sealed class UpdateVideoTest : IClassFixture<UpdateVideoTestFixture>
                 input.ThumbHalf!.Extension))
             ),
             It.IsAny<MemoryStream>(),
+            It.IsAny<string>(),
             It.IsAny<CancellationToken>())
         ).ReturnsAsync(path);
 
@@ -914,6 +919,7 @@ public sealed class UpdateVideoTest : IClassFixture<UpdateVideoTestFixture>
         _storageServiceMock.Verify(x => x.Upload(
                 It.IsAny<string>(),
                 It.IsAny<Stream>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
             , Times.Never);
         _videoRepositoryMock.Verify(repository => repository.Update(

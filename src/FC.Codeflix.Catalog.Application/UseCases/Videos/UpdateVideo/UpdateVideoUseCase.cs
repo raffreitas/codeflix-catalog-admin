@@ -128,6 +128,7 @@ public sealed class UpdateVideoUseCase(
             var bannerUrl = await storageService.Upload(
                 fileName,
                 input.Banner.FileStream,
+                input.Banner.ContentType,
                 cancellationToken);
             video.UpdateBanner(bannerUrl);
         }
@@ -138,6 +139,7 @@ public sealed class UpdateVideoUseCase(
             var thumbUrl = await storageService.Upload(
                 fileName,
                 input.Thumb.FileStream,
+                input.Thumb.ContentType,
                 cancellationToken);
             video.UpdateThumb(thumbUrl);
         }
@@ -148,6 +150,7 @@ public sealed class UpdateVideoUseCase(
             var thumbUrl = await storageService.Upload(
                 fileName,
                 input.ThumbHalf.FileStream,
+                input.ThumbHalf.ContentType,
                 cancellationToken);
             video.UpdateThumbHalf(thumbUrl);
         }

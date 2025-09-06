@@ -44,6 +44,7 @@ public sealed class UploadMediasUseCase(
             var uploadedFilePath = await storageService.Upload(
                 fileName,
                 request.TrailerFile.FileStream,
+                request.TrailerFile.ContentType,
                 cancellationToken
             );
 
@@ -59,6 +60,7 @@ public sealed class UploadMediasUseCase(
             var uploadedFilePath = await storageService.Upload(
                 fileName,
                 request.VideoFile.FileStream,
+                request.VideoFile.ContentType,
                 cancellationToken
             );
 

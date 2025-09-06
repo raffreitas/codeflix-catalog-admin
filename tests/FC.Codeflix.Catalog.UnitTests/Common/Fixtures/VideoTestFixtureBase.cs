@@ -58,14 +58,16 @@ public abstract class VideoTestFixtureBase : BaseFixture
     public FileInput GetValidImageFileInput()
     {
         var buffer = Encoding.ASCII.GetBytes("image");
+        const string contentType = "image/jpg";
         var exampleStream = new MemoryStream(buffer);
-        return new FileInput("jpg", exampleStream);
+        return new FileInput("jpg", exampleStream, contentType);
     }
 
     public FileInput GetValidMediaFileInput()
     {
         var buffer = Encoding.ASCII.GetBytes("video");
+        const string contentType = "video/mp4";
         var exampleStream = new MemoryStream(buffer);
-        return new FileInput("mp4", exampleStream);
+        return new FileInput("mp4", exampleStream, contentType);
     }
 }

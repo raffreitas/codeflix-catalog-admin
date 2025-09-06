@@ -71,6 +71,7 @@ public sealed class CreateVideoUseCase(
             var thumbUrl = await storageService.Upload(
                 fileName,
                 request.Thumb.FileStream,
+                request.Thumb.ContentType,
                 cancellationToken
             );
 
@@ -83,6 +84,7 @@ public sealed class CreateVideoUseCase(
             var bannerUrl = await storageService.Upload(
                 fileName,
                 request.Banner.FileStream,
+                request.Banner.ContentType,
                 cancellationToken
             );
 
@@ -95,6 +97,7 @@ public sealed class CreateVideoUseCase(
             var thumbHalfUrl = await storageService.Upload(
                 fileName,
                 request.ThumbHalf.FileStream,
+                request.ThumbHalf.ContentType,
                 cancellationToken
             );
 
@@ -110,6 +113,7 @@ public sealed class CreateVideoUseCase(
             var mediaUrl = await storageService.Upload(
                 fileName,
                 request.Media.FileStream,
+                request.Media.ContentType,
                 cancellationToken);
             video.UpdateMedia(mediaUrl);
         }
@@ -120,6 +124,7 @@ public sealed class CreateVideoUseCase(
             var mediaUrl = await storageService.Upload(
                 fileName,
                 request.Trailer.FileStream,
+                request.Trailer.ContentType,
                 cancellationToken);
             video.UpdateTrailer(mediaUrl);
         }
