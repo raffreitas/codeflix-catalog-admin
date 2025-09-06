@@ -35,12 +35,27 @@ public sealed class CreateVideoUseCase(
 
         await ValidateAndAddRelations(request, video, cancellationToken);
 
-        await UploadImagesMedia(request, video, cancellationToken);
+        try
+        {
+            await UploadImagesMedia(request, video, cancellationToken);
 
-        await videoRepository.Insert(video, cancellationToken);
-        await uow.Commit(cancellationToken);
+            await videoRepository.Insert(video, cancellationToken);
+            await uow.Commit(cancellationToken);
 
-        return CreateVideoOutput.FromVideo(video);
+            return CreateVideoOutput.FromVideo(video);
+        }
+        catch (Exception)
+        {
+            await ClearStorage(video, cancellationToken);
+            throw;
+        }
+    }
+
+    private async Task ClearStorage(Video video, CancellationToken cancellationToken)
+    {
+        if (video.Thumb is not null) await storageService.Delete(video.Thumb.Path, cancellationToken);
+        if (video.Banner is not null) await storageService.Delete(video.Banner.Path, cancellationToken);
+        if (video.ThumbHalf is not null) await storageService.Delete(video.ThumbHalf.Path, cancellationToken);
     }
 
     private async Task UploadImagesMedia(CreateVideoInput request, Video video, CancellationToken cancellationToken)

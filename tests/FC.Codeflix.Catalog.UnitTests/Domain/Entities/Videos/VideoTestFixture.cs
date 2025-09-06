@@ -30,4 +30,20 @@ public sealed class VideoTestFixture : VideoTestFixtureBase
         banner,
         thumbHalf
     );
+
+    public CreateVideoInput CreateValidCreateVideoInputWithAllImages() => new(
+        GetValidTitle(),
+        GetValidDescription(),
+        GetValidYearLaunched(),
+        GetValidDuration(),
+        GetRandomBoolean(),
+        GetRandomBoolean(),
+        GetRandomRating(),
+        null,
+        null,
+        null,
+        GetValidImageFileInput(),
+        GetValidImageFileInput(),
+        GetValidImageFileInput()
+    );
 }

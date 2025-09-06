@@ -72,6 +72,63 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
         output.Opened.Should().Be(input.Opened);
     }
 
+    [Fact(DisplayName = nameof(CreateVideoWithAllImages))]
+    public async Task CreateVideoWithAllImages()
+    {
+        const string expectedThumbName = "thumb.jpg";
+        const string expectedThumbHalfName = "thumb-half.jpg";
+        const string expectedBannerName = "banner.jpg";
+        _storageServiceMock.Setup(x => x
+            .Upload(
+                It.Is<string>(fileName => fileName.EndsWith("-banner.jpg")),
+                It.IsAny<Stream>(),
+                It.IsAny<CancellationToken>())
+        ).ReturnsAsync(expectedBannerName);
+        _storageServiceMock.Setup(x => x
+            .Upload(
+                It.Is<string>(fileName => fileName.EndsWith("-thumb-half.jpg")),
+                It.IsAny<Stream>(),
+                It.IsAny<CancellationToken>())
+        ).ReturnsAsync(expectedThumbHalfName);
+        _storageServiceMock.Setup(x => x
+            .Upload(
+                It.Is<string>(fileName => fileName.EndsWith("-thumb.jpg")),
+                It.IsAny<Stream>(),
+                It.IsAny<CancellationToken>())
+        ).ReturnsAsync(expectedThumbName);
+
+        var input = _fixture.CreateValidCreateVideoInputWithAllImages();
+
+        var output = await _useCase.Handle(input, CancellationToken.None);
+
+        _videoRepositoryMock.Verify(x => x.Insert(
+            It.Is<Video>(video =>
+                video.Title == input.Title &&
+                video.Published == input.Published &&
+                video.Description == input.Description &&
+                video.Duration == input.Duration &&
+                video.Rating == input.Rating &&
+                video.Id != Guid.Empty &&
+                video.YearLaunched == input.YearLaunched &&
+                video.Opened == input.Opened
+            ),
+            It.IsAny<CancellationToken>())
+        );
+        _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
+        output.Id.Should().NotBeEmpty();
+        output.CreatedAt.Should().NotBe(default);
+        output.Title.Should().Be(input.Title);
+        output.Published.Should().Be(input.Published);
+        output.Description.Should().Be(input.Description);
+        output.Duration.Should().Be(input.Duration);
+        output.Rating.Should().Be(input.Rating);
+        output.YearLaunched.Should().Be(input.YearLaunched);
+        output.Opened.Should().Be(input.Opened);
+        output.Thumb.Should().Be(expectedThumbName);
+        output.ThumbHalf.Should().Be(expectedThumbHalfName);
+        output.Banner.Should().Be(expectedBannerName);
+    }
+
     [Fact(DisplayName = nameof(CreateVideoWithThumb))]
     public async Task CreateVideoWithThumb()
     {
@@ -101,6 +158,7 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
             ),
             It.IsAny<CancellationToken>())
         );
+        _storageServiceMock.VerifyAll();
         _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
         output.Id.Should().NotBeEmpty();
         output.CreatedAt.Should().NotBe(default(DateTime));
@@ -143,6 +201,7 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
             ),
             It.IsAny<CancellationToken>())
         );
+        _storageServiceMock.VerifyAll();
         _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
         output.Id.Should().NotBeEmpty();
         output.CreatedAt.Should().NotBe(default(DateTime));
@@ -185,6 +244,7 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
             ),
             It.IsAny<CancellationToken>())
         );
+        _storageServiceMock.VerifyAll();
         _unitOfWorkMock.Verify(x => x.Commit(It.IsAny<CancellationToken>()));
         output.Id.Should().NotBeEmpty();
         output.CreatedAt.Should().NotBe(default(DateTime));
@@ -196,6 +256,56 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
         output.YearLaunched.Should().Be(input.YearLaunched);
         output.Opened.Should().Be(input.Opened);
         output.Banner.Should().Be(expectedBannerName);
+    }
+
+    [Fact(DisplayName = nameof(ThrowsExceptionInUploadErrorCases))]
+    public async Task ThrowsExceptionInUploadErrorCases()
+    {
+        _storageServiceMock.Setup(x => x
+            .Upload(
+                It.IsAny<string>(),
+                It.IsAny<Stream>(),
+                It.IsAny<CancellationToken>())
+        ).ThrowsAsync(new Exception("Something went wrong in upload"));
+        var input = _fixture.CreateValidCreateVideoInputWithAllImages();
+
+        var action = async () => await _useCase.Handle(input, CancellationToken.None);
+
+        await action.Should().ThrowAsync<Exception>()
+            .WithMessage("Something went wrong in upload");
+    }
+
+    [Fact(DisplayName = nameof(ThrowsExceptionAndRollbackUploadInUploadErrorCases))]
+    public async Task ThrowsExceptionAndRollbackUploadInUploadErrorCases()
+    {
+        _storageServiceMock.Setup(x => x
+            .Upload(
+                It.Is<string>(fileName => fileName.EndsWith("-thumb.jpg")),
+                It.IsAny<Stream>(),
+                It.IsAny<CancellationToken>())
+        ).ReturnsAsync("123-thumb.jpg");
+        _storageServiceMock.Setup(x => x
+            .Upload(
+                It.Is<string>(fileName => fileName.EndsWith("-banner.jpg")),
+                It.IsAny<Stream>(),
+                It.IsAny<CancellationToken>())
+        ).ReturnsAsync("123-banner.jpg");
+        _storageServiceMock.Setup(x => x
+            .Upload(
+                It.Is<string>(fileName => fileName.EndsWith("-thumb-half.jpg")),
+                It.IsAny<Stream>(),
+                It.IsAny<CancellationToken>())
+        ).ThrowsAsync(new Exception("Something went wrong in upload"));
+        var input = _fixture.CreateValidCreateVideoInputWithAllImages();
+
+        var action = async () => await _useCase.Handle(input, CancellationToken.None);
+
+        await action.Should().ThrowAsync<Exception>()
+            .WithMessage("Something went wrong in upload");
+        _storageServiceMock.Verify(x => x
+                .Delete(It.Is<string>(fileName => (fileName == "123-thumb.jpg") || (fileName == "123-banner.jpg")),
+                    It.IsAny<CancellationToken>()),
+            Times.Exactly(2));
     }
 
     [Fact(DisplayName = nameof(CreateVideoWithCategoriesIds))]
