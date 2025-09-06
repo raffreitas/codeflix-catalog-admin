@@ -13,13 +13,27 @@ public sealed class UploadMediasUseCase(
     public async Task Handle(UploadMediasInput request, CancellationToken cancellationToken)
     {
         var video = await videoRepository.Get(request.VideoId, cancellationToken);
+        try
+        {
+            await UploadVideo(request, video, cancellationToken);
+            await UploadTrailer(request, video, cancellationToken);
 
-        await UploadVideo(request, video, cancellationToken);
+            await videoRepository.Update(video, cancellationToken);
+            await unitOfWork.Commit(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await ClearStorage(request, video, cancellationToken);
+            throw;
+        }
+    }
 
-        await UploadTrailer(request, video, cancellationToken);
-
-        await videoRepository.Update(video, cancellationToken);
-        await unitOfWork.Commit(cancellationToken);
+    private async Task ClearStorage(UploadMediasInput request, Video video, CancellationToken cancellationToken)
+    {
+        if (request.VideoFile is not null && video.Media is not null)
+            await storageService.Delete(video.Media.FilePath, cancellationToken);
+        if (request.TrailerFile is not null && video.Trailer is not null)
+            await storageService.Delete(video.Trailer.FilePath, cancellationToken);
     }
 
     private async Task UploadTrailer(UploadMediasInput request, Video video, CancellationToken cancellationToken)
