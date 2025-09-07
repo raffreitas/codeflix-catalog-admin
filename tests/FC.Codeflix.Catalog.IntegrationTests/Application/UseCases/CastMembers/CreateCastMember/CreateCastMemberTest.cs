@@ -1,9 +1,12 @@
-﻿using FC.Codeflix.Catalog.Infra.Data.EF;
+﻿using FC.Codeflix.Catalog.Application;
+using FC.Codeflix.Catalog.Infra.Data.EF;
 using FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
 
 using FluentAssertions;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 using UseCase = FC.Codeflix.Catalog.Application.UseCases.CastMembers.CreateCastMember;
 
@@ -23,7 +26,15 @@ public class CreateCastMemberTest
     {
         var actDbContext = _fixture.CreateDbContext();
         var repository = new CastMemberRepository(actDbContext);
-        var unitOfWork = new UnitOfWork(actDbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            actDbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var useCase = new UseCase.CreateCastMember(repository, unitOfWork);
         var input = new UseCase.CreateCastMemberInput(
             _fixture.GetValidName(),

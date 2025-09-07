@@ -1,6 +1,13 @@
-﻿using FluentAssertions;
+﻿using FC.Codeflix.Catalog.Application;
+using FC.Codeflix.Catalog.Domain.SeedWork;
+
+using FluentAssertions;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+using Moq;
 
 using UoW = FC.Codeflix.Catalog.Infra.Data.EF;
 
@@ -15,8 +22,21 @@ public class UnitOfWorkTest(UnitOfWorkTestFixture fixture)
     {
         var dbContext = fixture.CreateDbContext();
         var categoriesList = fixture.GetExampleCategoryList();
+        var categoryWithEvent = categoriesList.First();
+        var @event = new DomainEventFake();
+        categoryWithEvent.RaiseEvent(@event);
+        var eventHandlerMock = new Mock<IDomainEventHandler<DomainEventFake>>();
         await dbContext.AddRangeAsync(categoriesList);
-        var unitOfWork = new UoW.UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        serviceCollection.AddSingleton(eventHandlerMock.Object);
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UoW.UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UoW.UnitOfWork>>()
+        );
 
         await unitOfWork.Commit();
 
@@ -27,6 +47,9 @@ public class UnitOfWorkTest(UnitOfWorkTestFixture fixture)
             .ToListAsync();
 
         categories.Should().HaveCount(categoriesList.Count);
+        eventHandlerMock.Verify(x => x
+            .HandleAsync(@event, It.IsAny<CancellationToken>()), Times.Once);
+        categoryWithEvent.DomainEvents.Should().BeEmpty();
     }
 
     [Fact(DisplayName = nameof(Rollback))]
@@ -36,7 +59,15 @@ public class UnitOfWorkTest(UnitOfWorkTestFixture fixture)
         var dbContext = fixture.CreateDbContext();
         var categoriesList = fixture.GetExampleCategoryList();
         await dbContext.AddRangeAsync(categoriesList);
-        var unitOfWork = new UoW.UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UoW.UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UoW.UnitOfWork>>()
+        );
 
         await unitOfWork.Rollback();
 

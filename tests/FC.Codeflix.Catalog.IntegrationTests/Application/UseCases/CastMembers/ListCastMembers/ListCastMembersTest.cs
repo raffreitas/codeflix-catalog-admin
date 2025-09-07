@@ -161,21 +161,23 @@ public class ListCastMembersTest
         await arrangeDbContext.AddRangeAsync(examples);
         await arrangeDbContext.SaveChangesAsync();
         var repository = new CastMemberRepository(_fixture.CreateDbContext(true));
-        var searchOrder = order.ToLower() == "asc" ? SearchOrder.Asc : SearchOrder.Desc;
+        var searchOrder = order.Equals("asc", StringComparison.CurrentCultureIgnoreCase)
+            ? SearchOrder.Asc
+            : SearchOrder.Desc;
         var useCase = new UseCase.ListCastMembers(repository);
         var input = new UseCase.ListCastMembersInput(1, 20, "", orderBy, searchOrder);
 
         var output = await useCase.Handle(input, CancellationToken.None);
 
-        output.Items.Should().HaveCount(examples.Count());
-        output.Total.Should().Be(examples.Count());
+        output.Items.Should().HaveCount(examples.Count);
+        output.Total.Should().Be(examples.Count);
         output.Page.Should().Be(input.Page);
         output.PerPage.Should().Be(input.PerPage);
         var orderedList = _fixture.CloneListOrdered(
             examples,
             orderBy, searchOrder
         );
-        for (int i = 0; i < orderedList.Count(); i++)
+        for (int i = 0; i < orderedList.Count; i++)
         {
             output.Items[i].Id.Should().Be(orderedList[i].Id);
             output.Items[i].Name.Should().Be(orderedList[i].Name);

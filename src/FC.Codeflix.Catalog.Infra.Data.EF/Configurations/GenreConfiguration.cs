@@ -10,5 +10,6 @@ public class GenreConfiguration : IEntityTypeConfiguration<Genre>
     public void Configure(EntityTypeBuilder<Genre> builder)
     {
         builder.HasKey(genre => genre.Id);
+        builder.Ignore(genre => genre.DomainEvents);
     }
 }

@@ -1,4 +1,5 @@
-﻿using FC.Codeflix.Catalog.Application.UseCases.Categories.CreateCategory;
+﻿using FC.Codeflix.Catalog.Application;
+using FC.Codeflix.Catalog.Application.UseCases.Categories.CreateCategory;
 using FC.Codeflix.Catalog.Domain.Exceptions;
 using FC.Codeflix.Catalog.Infra.Data.EF;
 using FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
@@ -6,6 +7,8 @@ using FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
 using FluentAssertions;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.Categories.CreateCategory;
 
@@ -18,7 +21,15 @@ public class CreateCategoryTest(CreateCategoryTestFixture fixture)
     {
         var dbContext = fixture.CreateDbContext();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var input = fixture.GetInput();
         var useCase = new CreateCategoryUseCase(repository, unitOfWork);
 
@@ -48,7 +59,15 @@ public class CreateCategoryTest(CreateCategoryTestFixture fixture)
     {
         var dbContext = fixture.CreateDbContext();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var input = new CreateCategoryInput(fixture.GetValidCategoryName());
 
         var useCase = new CreateCategoryUseCase(repository, unitOfWork);
@@ -69,7 +88,15 @@ public class CreateCategoryTest(CreateCategoryTestFixture fixture)
     {
         var dbContext = fixture.CreateDbContext();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var input = new CreateCategoryInput(
             fixture.GetValidCategoryName(),
             fixture.GetValidCategoryDescription());
@@ -96,7 +123,15 @@ public class CreateCategoryTest(CreateCategoryTestFixture fixture)
     {
         var dbContext = fixture.CreateDbContext();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var useCase = new CreateCategoryUseCase(repository, unitOfWork);
 
         Func<Task> act = async () => await useCase.Handle(input, CancellationToken.None);

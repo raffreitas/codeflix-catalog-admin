@@ -30,5 +30,6 @@ internal sealed class VideoConfiguration : IEntityTypeConfiguration<Video>
 
         builder.HasOne(x => x.Media).WithOne().HasForeignKey<Media>();
         builder.HasOne(x => x.Trailer).WithOne().HasForeignKey<Media>();
+        builder.Ignore(video => video.DomainEvents);
     }
 }

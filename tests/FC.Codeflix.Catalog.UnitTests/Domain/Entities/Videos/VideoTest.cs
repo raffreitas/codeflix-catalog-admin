@@ -290,6 +290,7 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
 
         validVideo.Media.Should().NotBeNull();
         validVideo.Media.FilePath.Should().Be(validMediaPath);
+        validVideo.DomainEvents.Should().HaveCount(1);
     }
 
     [Fact(DisplayName = nameof(UpdateTrailer))]

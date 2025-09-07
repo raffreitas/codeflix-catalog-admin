@@ -1,4 +1,5 @@
-﻿using FC.Codeflix.Catalog.Application.Exceptions;
+﻿using FC.Codeflix.Catalog.Application;
+using FC.Codeflix.Catalog.Application.Exceptions;
 using FC.Codeflix.Catalog.Application.UseCases.Categories.Common;
 using FC.Codeflix.Catalog.Application.UseCases.Categories.UpdateCategory;
 using FC.Codeflix.Catalog.Domain.Entities;
@@ -9,6 +10,8 @@ using FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
 using FluentAssertions;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.Categories.UpdateCategory;
 
@@ -21,7 +24,15 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
     {
         var dbContext = fixture.CreateDbContext();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var input = fixture.GetValidInput();
         var useCase = new UpdateCategoryUseCase(repository, unitOfWork);
 
@@ -46,7 +57,15 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         await dbContext.SaveChangesAsync();
         trackingInfo.State = EntityState.Detached;
         var repository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var useCase = new UpdateCategoryUseCase(repository, unitOfWork);
 
         CategoryModelOutput output = await useCase.Handle(input, CancellationToken.None);
@@ -56,8 +75,8 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         output.Description.Should().Be(input.Description);
         output.IsActive.Should().Be((bool)input.IsActive!);
         var dbCategory = await fixture
-           .CreateDbContext(preserveData: true)
-           .Categories.SingleAsync((x) => x.Id == input.Id, CancellationToken.None);
+            .CreateDbContext(preserveData: true)
+            .Categories.SingleAsync((x) => x.Id == input.Id, CancellationToken.None);
         dbCategory.Should().NotBeNull();
         dbCategory.Name.Should().Be(input.Name);
         dbCategory.Description.Should().Be(input.Description);
@@ -68,9 +87,9 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
     [Theory(DisplayName = nameof(UpdateCategoryOnlyName))]
     [Trait("Integration/Application", "UpdateCategory - Use Cases")]
     [MemberData(
-    nameof(UpdateCategoryTestDataGenerator.GetCategoriesToUpdate),
-    parameters: 5,
-    MemberType = typeof(UpdateCategoryTestDataGenerator)
+        nameof(UpdateCategoryTestDataGenerator.GetCategoriesToUpdate),
+        parameters: 5,
+        MemberType = typeof(UpdateCategoryTestDataGenerator)
     )]
     public async Task UpdateCategoryOnlyName(Category exampleCategory, UpdateCategoryInput exampleInput)
     {
@@ -85,7 +104,15 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         await dbContext.SaveChangesAsync();
         trackingInfo.State = EntityState.Detached;
         var repository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var useCase = new UpdateCategoryUseCase(repository, unitOfWork);
 
         CategoryModelOutput output = await useCase.Handle(input, CancellationToken.None);
@@ -95,8 +122,8 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         output.Description.Should().Be(exampleCategory.Description);
         output.IsActive.Should().Be(exampleCategory.IsActive);
         var dbCategory = await fixture
-           .CreateDbContext(preserveData: true)
-           .Categories.SingleAsync((x) => x.Id == input.Id, CancellationToken.None);
+            .CreateDbContext(preserveData: true)
+            .Categories.SingleAsync((x) => x.Id == input.Id, CancellationToken.None);
         dbCategory.Should().NotBeNull();
         dbCategory.Name.Should().Be(input.Name);
         dbCategory.Description.Should().Be(exampleCategory.Description);
@@ -125,7 +152,15 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         await dbContext.SaveChangesAsync();
         trackingInfo.State = EntityState.Detached;
         var repository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         var useCase = new UpdateCategoryUseCase(repository, unitOfWork);
 
         CategoryModelOutput output = await useCase.Handle(input, CancellationToken.None);
@@ -135,8 +170,8 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         output.Description.Should().Be(input.Description);
         output.IsActive.Should().Be(exampleCategory.IsActive);
         var dbCategory = await fixture
-           .CreateDbContext(preserveData: true)
-           .Categories.SingleAsync((x) => x.Id == input.Id, CancellationToken.None);
+            .CreateDbContext(preserveData: true)
+            .Categories.SingleAsync((x) => x.Id == input.Id, CancellationToken.None);
         dbCategory.Should().NotBeNull();
         dbCategory.Name.Should().Be(input.Name);
         dbCategory.Description.Should().Be(input.Description);
@@ -158,7 +193,15 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         await dbContext.Categories.AddAsync(exampleCategory);
         await dbContext.SaveChangesAsync();
         var repository = new CategoryRepository(dbContext);
-        var unitOfWork = new UnitOfWork(dbContext);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var eventPublisher = new DomainEventPublisher(serviceProvider);
+        var unitOfWork = new UnitOfWork(
+            dbContext,
+            eventPublisher,
+            serviceProvider.GetRequiredService<ILogger<UnitOfWork>>()
+        );
         input.Id = exampleCategory.Id;
         await dbContext.Categories.AddAsync(exampleCategory);
 

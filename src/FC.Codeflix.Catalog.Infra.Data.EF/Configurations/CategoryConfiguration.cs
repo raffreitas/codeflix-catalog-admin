@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FC.Codeflix.Catalog.Infra.Data.EF.Configurations;
+
 internal class CategoryConfiguration : IEntityTypeConfiguration<Category>
 {
     public void Configure(EntityTypeBuilder<Category> builder)
@@ -15,5 +16,7 @@ internal class CategoryConfiguration : IEntityTypeConfiguration<Category>
 
         builder.Property(x => x.Description)
             .HasMaxLength(10_000);
+
+        builder.Ignore(category => category.DomainEvents);
     }
 }
