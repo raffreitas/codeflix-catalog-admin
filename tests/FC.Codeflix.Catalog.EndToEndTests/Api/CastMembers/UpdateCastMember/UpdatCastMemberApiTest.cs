@@ -32,15 +32,15 @@ public class UpdateCastMemberApiTest(CastMemberApiBaseFixture fixture) : IDispos
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Data.Should().NotBeNull();
+        output.Data.Should().NotBeNull();
         output.Data.Id.Should().Be(example.Id);
         output.Data.Name.Should().Be(newName);
         output.Data.Type.Should().Be(newType);
         var castMemberFromDb = await fixture.Persistence.GetById(example.Id);
         castMemberFromDb.Should().NotBeNull();
-        castMemberFromDb!.Id.Should().Be(example.Id);
+        castMemberFromDb.Id.Should().Be(example.Id);
         castMemberFromDb.Name.Should().Be(newName);
         castMemberFromDb.Type.Should().Be(newType);
     }
@@ -62,9 +62,9 @@ public class UpdateCastMemberApiTest(CastMemberApiBaseFixture fixture) : IDispos
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status404NotFound);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status404NotFound);
         output.Should().NotBeNull();
-        output!.Title.Should().Be("Not Found");
+        output.Title.Should().Be("Not Found");
         output.Detail.Should().Be($"CastMember '{randomGuid}' not found.");
     }
 
@@ -85,9 +85,9 @@ public class UpdateCastMemberApiTest(CastMemberApiBaseFixture fixture) : IDispos
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status422UnprocessableEntity);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status422UnprocessableEntity);
         output.Should().NotBeNull();
-        output!.Title.Should().Be("One or more validation error occurred");
+        output.Title.Should().Be("One or more validation error occurred");
         output.Detail.Should().Be($"Name should not be null or empty.");
     }
 

@@ -2,7 +2,7 @@
 using Amazon.S3.Model;
 
 using FC.Codeflix.Catalog.Application.Interfaces;
-using FC.Codeflix.Catalog.Infra.Storage.Options;
+using FC.Codeflix.Catalog.Infra.Storage.Settings;
 
 using Microsoft.Extensions.Options;
 
@@ -10,13 +10,13 @@ namespace FC.Codeflix.Catalog.Infra.Storage.Services;
 
 public sealed class AmazonS3StorageService(
     IAmazonS3 s3Client,
-    IOptions<StorageServiceConfiguration> options
+    IOptions<StorageSettings> options
 ) : IStorageService
 {
-    private readonly StorageServiceConfiguration _configuration = options.Value;
+    private readonly StorageSettings _settings = options.Value;
 
     public async Task Delete(string filePath, CancellationToken cancellationToken)
-        => await s3Client.DeleteObjectAsync(_configuration.BucketName, filePath, cancellationToken);
+        => await s3Client.DeleteObjectAsync(_settings.BucketName, filePath, cancellationToken);
 
     public async Task<string> Upload(string fileName, Stream fileStream, string contentType,
         CancellationToken cancellationToken)
@@ -25,7 +25,7 @@ public sealed class AmazonS3StorageService(
             new PutObjectRequest
             {
                 ContentType = contentType,
-                BucketName = _configuration.BucketName,
+                BucketName = _settings.BucketName,
                 Key = fileName,
                 InputStream = fileStream
             }, cancellationToken);

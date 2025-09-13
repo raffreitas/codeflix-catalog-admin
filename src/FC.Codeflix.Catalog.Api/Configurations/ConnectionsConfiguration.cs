@@ -1,4 +1,8 @@
-﻿using FC.Codeflix.Catalog.Infra.Data.EF;
+﻿using Amazon.S3;
+
+using FC.Codeflix.Catalog.Application.Interfaces;
+using FC.Codeflix.Catalog.Infra.Data.EF;
+using FC.Codeflix.Catalog.Infra.Storage.Services;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -15,9 +19,8 @@ public static class ConnectionsConfiguration
     private static IServiceCollection AddDbConnection(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("CatalogDb");
-        services.AddDbContext<CodeflixCatalogDbContext>(
-            options => options.UseMySql(
-                connectionString, 
+        services.AddDbContext<CodeflixCatalogDbContext>(options => options.UseMySql(
+                connectionString,
                 ServerVersion.AutoDetect(connectionString)
             )
         );

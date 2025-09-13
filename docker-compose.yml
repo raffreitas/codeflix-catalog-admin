@@ -7,6 +7,8 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
+    networks:
+      - service_catalog
   
   rabbitmq:
     container_name: adm_videos_rabbitmq
@@ -50,3 +52,6 @@ services:
 
 volumes:
   localstack-data:
+networks:
+  service_catalog:
+    external: true
