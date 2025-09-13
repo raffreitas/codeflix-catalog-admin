@@ -11,14 +11,49 @@ public sealed class DeleteVideoUseCase(
     public async Task Handle(DeleteVideoInput request, CancellationToken cancellationToken)
     {
         var video = await videoRepository.Get(request.VideoId, cancellationToken);
+        var trailerFilePath = video.Trailer?.FilePath;
+        var mediaFilePath = video.Media?.FilePath;
 
         await videoRepository.Delete(video, cancellationToken);
         await unitOfWork.Commit(cancellationToken);
 
-        if (video.Trailer is not null)
-            await storageService.Delete(video.Trailer.FilePath, cancellationToken);
+        await ClearVideoMedias(
+            mediaFilePath,
+            trailerFilePath,
+            cancellationToken);
 
-        if (video.Media is not null)
-            await storageService.Delete(video.Media.FilePath, cancellationToken);
+        await ClearImageMedias(
+            video.Banner?.Path,
+            video.Thumb?.Path,
+            video.ThumbHalf?.Path,
+            cancellationToken);
+    }
+
+    private async Task ClearImageMedias(
+        string? bannerFilePath,
+        string? thumbFilePath,
+        string? thumbHalfFilePath,
+        CancellationToken cancellationToken)
+    {
+        if (bannerFilePath is not null)
+            await storageService.Delete(bannerFilePath, cancellationToken);
+
+        if (thumbFilePath is not null)
+            await storageService.Delete(thumbFilePath, cancellationToken);
+
+        if (thumbHalfFilePath is not null)
+            await storageService.Delete(thumbHalfFilePath, cancellationToken);
+    }
+
+    private async Task ClearVideoMedias(
+        string? mediaFilePath,
+        string? trailerFilePath,
+        CancellationToken cancellationToken)
+    {
+        if (trailerFilePath is not null)
+            await storageService.Delete(trailerFilePath, cancellationToken);
+
+        if (mediaFilePath is not null)
+            await storageService.Delete(mediaFilePath, cancellationToken);
     }
 }

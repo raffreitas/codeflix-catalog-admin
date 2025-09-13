@@ -96,7 +96,7 @@ public class UpdateCategoryTest
         output.Should().NotBeNull();
         output.Name.Should().Be(input.Name);
         output.Description.Should().Be(exampleCategory.Description);
-        output.IsActive.Should().Be(exampleCategory.IsActive!);
+        output.IsActive.Should().Be(exampleCategory.IsActive);
 
         repositoryMock.Verify(x => x.Get(exampleCategory.Id, It.IsAny<CancellationToken>()), Times.Once);
         repositoryMock.Verify(x => x.Update(It.IsAny<Category>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -131,7 +131,7 @@ public class UpdateCategoryTest
         output.Should().NotBeNull();
         output.Name.Should().Be(input.Name);
         output.Description.Should().Be(input.Description);
-        output.IsActive.Should().Be(exampleCategory.IsActive!);
+        output.IsActive.Should().Be(exampleCategory.IsActive);
 
         repositoryMock.Verify(x => x.Get(exampleCategory.Id, It.IsAny<CancellationToken>()), Times.Once);
         repositoryMock.Verify(x => x.Update(It.IsAny<Category>(), It.IsAny<CancellationToken>()), Times.Once);

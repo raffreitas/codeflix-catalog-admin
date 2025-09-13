@@ -28,8 +28,12 @@ internal sealed class VideoConfiguration : IEntityTypeConfiguration<Video>
             banner.Property(image => image.Path).HasColumnName("BannerPath")
         );
 
-        builder.HasOne(x => x.Media).WithOne().HasForeignKey<Media>();
-        builder.HasOne(x => x.Trailer).WithOne().HasForeignKey<Media>();
+        builder.HasOne(video => video.Media)
+            .WithOne()
+            .HasForeignKey<Video>("MediaId");
+        builder.HasOne(video => video.Trailer)
+            .WithOne()
+            .HasForeignKey<Video>("TrailerId");
         builder.Ignore(video => video.DomainEvents);
     }
 }

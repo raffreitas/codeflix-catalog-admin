@@ -28,14 +28,14 @@ public class CreateCastMemberApiTest(CastMemberApiBaseFixture fixture) : IDispos
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status201Created);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status201Created);
         output.Should().NotBeNull();
-        output!.Data!.Id.Should().NotBeEmpty();
+        output.Data!.Id.Should().NotBeEmpty();
         output.Data.Name.Should().Be(example.Name);
         output.Data.Type.Should().Be(example.Type);
         var castMemberInDb = await fixture.Persistence.GetById(output.Data.Id);
         castMemberInDb.Should().NotBeNull();
-        castMemberInDb!.Name.Should().Be(example.Name);
+        castMemberInDb.Name.Should().Be(example.Name);
         castMemberInDb.Type.Should().Be(example.Type);
     }
 
@@ -52,9 +52,9 @@ public class CreateCastMemberApiTest(CastMemberApiBaseFixture fixture) : IDispos
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status422UnprocessableEntity);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status422UnprocessableEntity);
         output.Should().NotBeNull();
-        output!.Title.Should().Be("One or more validation error occurred");
+        output.Title.Should().Be("One or more validation error occurred");
         output.Detail.Should().Be("Name should not be null or empty.");
     }
 

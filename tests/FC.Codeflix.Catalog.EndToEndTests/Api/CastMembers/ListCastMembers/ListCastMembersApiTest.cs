@@ -30,9 +30,9 @@ public class ListCastMembersApiTest(CastMemberApiBaseFixture fixture, ITestOutpu
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Meta.Should().NotBeNull();
+        output.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
         output.Meta!.CurrentPage.Should().Be(1);
         output.Meta.Total.Should().Be(examples.Count);
@@ -41,7 +41,7 @@ public class ListCastMembersApiTest(CastMemberApiBaseFixture fixture, ITestOutpu
         {
             var exampleItem = examples.Find(x => x.Id == outputItem.Id);
             exampleItem.Should().NotBeNull();
-            outputItem.Id.Should().Be(exampleItem!.Id);
+            outputItem.Id.Should().Be(exampleItem.Id);
             outputItem.Name.Should().Be(exampleItem.Name);
             outputItem.Type.Should().Be(exampleItem.Type);
         });
@@ -65,13 +65,13 @@ public class ListCastMembersApiTest(CastMemberApiBaseFixture fixture, ITestOutpu
 
         var (response, output) =
             await fixture.ApiClient.Get<TestApiResponseList<CastMemberModelOutput>>(
-                "cast_members", new ListCastMembersInput() { Page = page, PerPage = perPage }
+                "cast_members", new ListCastMembersInput { Page = page, PerPage = perPage }
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Meta.Should().NotBeNull();
+        output.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
         output.Meta!.CurrentPage.Should().Be(page);
         output.Meta!.PerPage.Should().Be(perPage);
@@ -81,7 +81,7 @@ public class ListCastMembersApiTest(CastMemberApiBaseFixture fixture, ITestOutpu
         {
             var exampleItem = examples.Find(x => x.Id == outputItem.Id);
             exampleItem.Should().NotBeNull();
-            outputItem.Id.Should().Be(exampleItem!.Id);
+            outputItem.Id.Should().Be(exampleItem.Id);
             outputItem.Name.Should().Be(exampleItem.Name);
             outputItem.Type.Should().Be(exampleItem.Type);
         });
@@ -105,7 +105,7 @@ public class ListCastMembersApiTest(CastMemberApiBaseFixture fixture, ITestOutpu
         int expectedQuantityTotalItems
     )
     {
-        var namesToGenerate = new List<string>()
+        var namesToGenerate = new List<string>
         {
             "Action",
             "Horror",
@@ -124,13 +124,13 @@ public class ListCastMembersApiTest(CastMemberApiBaseFixture fixture, ITestOutpu
         var (response, output) =
             await fixture.ApiClient.Get<TestApiResponseList<CastMemberModelOutput>>(
                 "cast_members",
-                new ListCastMembersInput() { Page = page, PerPage = perPage, Search = search }
+                new ListCastMembersInput { Page = page, PerPage = perPage, Search = search }
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Meta.Should().NotBeNull();
+        output.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
         output.Meta!.CurrentPage.Should().Be(page);
         output.Meta!.PerPage.Should().Be(perPage);
@@ -140,7 +140,7 @@ public class ListCastMembersApiTest(CastMemberApiBaseFixture fixture, ITestOutpu
         {
             var exampleItem = examples.Find(x => x.Id == outputItem.Id);
             exampleItem.Should().NotBeNull();
-            outputItem.Id.Should().Be(exampleItem!.Id);
+            outputItem.Id.Should().Be(exampleItem.Id);
             outputItem.Name.Should().Be(exampleItem.Name);
             outputItem.Type.Should().Be(exampleItem.Type);
         });
@@ -176,9 +176,9 @@ public class ListCastMembersApiTest(CastMemberApiBaseFixture fixture, ITestOutpu
         output.WriteLine(string.Join("\n", output1!.Data!));
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output1.Should().NotBeNull();
-        output1!.Meta.Should().NotBeNull();
+        output1.Meta.Should().NotBeNull();
         output1.Data.Should().NotBeNull();
         output1.Meta!.CurrentPage.Should().Be(1);
         output1.Meta.Total.Should().Be(examples.Count);
@@ -190,7 +190,7 @@ public class ListCastMembersApiTest(CastMemberApiBaseFixture fixture, ITestOutpu
         );
         for (var i = 0; i < orderedList.Count; i++)
         {
-            output1!.Data[i].Id.Should().Be(orderedList[i].Id);
+            output1.Data[i].Id.Should().Be(orderedList[i].Id);
             output1.Data[i].Name.Should().Be(orderedList[i].Name);
             output1.Data[i].Type.Should().Be(orderedList[i].Type);
         }
@@ -206,9 +206,9 @@ public class ListCastMembersApiTest(CastMemberApiBaseFixture fixture, ITestOutpu
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Meta.Should().NotBeNull();
+        output.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
         output.Meta!.CurrentPage.Should().Be(1);
         output.Meta.Total.Should().Be(0);

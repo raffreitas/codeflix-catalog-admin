@@ -38,7 +38,7 @@ public class CastMemberTest(CastMemberTestFixture fixture)
         var action = () => new CastMember(name!, type);
 
         action.Should().Throw<EntityValidationException>()
-            .WithMessage($"Name should not be null or empty.");
+            .WithMessage("Name should not be null or empty.");
     }
 
     [Fact(DisplayName = nameof(Update))]

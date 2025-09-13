@@ -1,15 +1,22 @@
-﻿using System.Text;
+﻿using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
+
+using FC.Codeflix.Catalog.Application.UseCases.Videos.Common;
 
 using Microsoft.AspNetCore.WebUtilities;
 
+using Newtonsoft.Json;
+
+using JsonSerializer = System.Text.Json.JsonSerializer;
+
 namespace FC.Codeflix.Catalog.EndToEndTests.Base;
+
 public class ApiClient(HttpClient httpClient)
 {
     private static readonly JsonSerializerOptions DefaultSerializerOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-        PropertyNameCaseInsensitive = true
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower, PropertyNameCaseInsensitive = true
     };
 
     public async Task<(HttpResponseMessage?, TOutput?)> Post<TOutput>(string route, object payload)
@@ -75,9 +82,22 @@ public class ApiClient(HttpClient httpClient)
             return route;
 
         var parametersJson = JsonSerializer.Serialize(queryStringObject, DefaultSerializerOptions);
-        var parametersDict = Newtonsoft.Json.JsonConvert
+        var parametersDict = JsonConvert
             .DeserializeObject<Dictionary<string, string>>(parametersJson);
 
         return QueryHelpers.AddQueryString(route, parametersDict!);
+    }
+
+    internal async Task<(HttpResponseMessage?, TOutput?)> PostFormData<TOutput>(string route, FileInput file)
+        where TOutput : class
+    {
+        var fileContent = new StreamContent(file.FileStream);
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+
+        using var content = new MultipartFormDataContent();
+        content.Add(fileContent, "media_file", $"media.{file.Extension}");
+        var response = await httpClient.PostAsync(route, content);
+        var output = await GetOutput<TOutput>(response);
+        return (response, output);
     }
 }

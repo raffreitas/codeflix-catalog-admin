@@ -21,7 +21,7 @@ public class ListGenresTest
     [Trait("Integration/Application", "ListGenres - UseCases")]
     public async Task ListGenres()
     {
-        List<Domain.Entities.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<Domain.Entities.Genre> exampleGenres = _fixture.GetExampleListGenres();
         CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(exampleGenres);
         await arrangeDbContext.SaveChangesAsync();
@@ -47,7 +47,7 @@ public class ListGenresTest
             Domain.Entities.Genre? exampleItem =
                 exampleGenres.Find(example => example.Id == outputItem.Id);
             exampleItem.Should().NotBeNull();
-            outputItem.Name.Should().Be(exampleItem!.Name);
+            outputItem.Name.Should().Be(exampleItem.Name);
             outputItem.IsActive.Should().Be(exampleItem.IsActive);
         });
     }
@@ -79,8 +79,8 @@ public class ListGenresTest
     [Trait("Integration/Application", "ListGenres - UseCases")]
     public async Task ListGenresVerifyRelations()
     {
-        List<Domain.Entities.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
-        List<Category> exampleCategories = _fixture.GetExampleCategoriesList(10);
+        List<Domain.Entities.Genre> exampleGenres = _fixture.GetExampleListGenres();
+        List<Category> exampleCategories = _fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {
@@ -126,7 +126,7 @@ public class ListGenresTest
             Domain.Entities.Genre? exampleItem =
                 exampleGenres.Find(example => example.Id == outputItem.Id);
             exampleItem.Should().NotBeNull();
-            outputItem.Name.Should().Be(exampleItem!.Name);
+            outputItem.Name.Should().Be(exampleItem.Name);
             outputItem.IsActive.Should().Be(exampleItem.IsActive);
             List<Guid> outputItemCategoryIds = outputItem.Categories.Select(x => x.Id).ToList();
             outputItemCategoryIds.Should().BeEquivalentTo(exampleItem.Categories);
@@ -135,7 +135,7 @@ public class ListGenresTest
                 Category? exampleCategory =
                     exampleCategories.Find(x => x.Id == outputCategory.Id);
                 exampleCategory.Should().NotBeNull();
-                outputCategory.Name.Should().Be(exampleCategory!.Name);
+                outputCategory.Name.Should().Be(exampleCategory.Name);
             });
         });
     }
@@ -154,7 +154,7 @@ public class ListGenresTest
     )
     {
         List<Domain.Entities.Genre> exampleGenres = _fixture.GetExampleListGenres(quantityToGenerate);
-        List<Category> exampleCategories = _fixture.GetExampleCategoriesList(10);
+        List<Category> exampleCategories = _fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {
@@ -200,7 +200,7 @@ public class ListGenresTest
             Domain.Entities.Genre? exampleItem =
                 exampleGenres.Find(example => example.Id == outputItem.Id);
             exampleItem.Should().NotBeNull();
-            outputItem.Name.Should().Be(exampleItem!.Name);
+            outputItem.Name.Should().Be(exampleItem.Name);
             outputItem.IsActive.Should().Be(exampleItem.IsActive);
             List<Guid> outputItemCategoryIds = outputItem.Categories.Select(x => x.Id).ToList();
             outputItemCategoryIds.Should().BeEquivalentTo(exampleItem.Categories);
@@ -209,7 +209,7 @@ public class ListGenresTest
                 Category? exampleCategory =
                     exampleCategories.Find(x => x.Id == outputCategory.Id);
                 exampleCategory.Should().NotBeNull();
-                outputCategory.Name.Should().Be(exampleCategory!.Name);
+                outputCategory.Name.Should().Be(exampleCategory.Name);
             });
         });
     }
@@ -233,7 +233,7 @@ public class ListGenresTest
     )
     {
         var exampleGenres = _fixture.GetExampleListGenresByNames(
-            new List<string>()
+            new List<string>
             {
                 "Action",
                 "Horror",
@@ -246,7 +246,7 @@ public class ListGenresTest
                 "Sci-fi Future"
             }
         );
-        List<Category> exampleCategories = _fixture.GetExampleCategoriesList(10);
+        List<Category> exampleCategories = _fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {
@@ -293,7 +293,7 @@ public class ListGenresTest
                 exampleGenres.Find(example => example.Id == outputItem.Id);
             outputItem.Name.Should().Contain(search);
             exampleItem.Should().NotBeNull();
-            outputItem.Name.Should().Be(exampleItem!.Name);
+            outputItem.Name.Should().Be(exampleItem.Name);
             outputItem.IsActive.Should().Be(exampleItem.IsActive);
             List<Guid> outputItemCategoryIds = outputItem.Categories.Select(x => x.Id).ToList();
             outputItemCategoryIds.Should().BeEquivalentTo(exampleItem.Categories);
@@ -302,7 +302,7 @@ public class ListGenresTest
                 Category? exampleCategory =
                     exampleCategories.Find(x => x.Id == outputCategory.Id);
                 exampleCategory.Should().NotBeNull();
-                outputCategory.Name.Should().Be(exampleCategory!.Name);
+                outputCategory.Name.Should().Be(exampleCategory.Name);
             });
         });
     }
@@ -321,8 +321,8 @@ public class ListGenresTest
         string order
     )
     {
-        List<Domain.Entities.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
-        List<Category> exampleCategories = _fixture.GetExampleCategoriesList(10);
+        List<Domain.Entities.Genre> exampleGenres = _fixture.GetExampleListGenres();
+        List<Category> exampleCategories = _fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {

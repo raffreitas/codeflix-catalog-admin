@@ -88,7 +88,7 @@ public class UpdateCastMemberApiTest(CastMemberApiBaseFixture fixture) : IDispos
         response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status422UnprocessableEntity);
         output.Should().NotBeNull();
         output.Title.Should().Be("One or more validation error occurred");
-        output.Detail.Should().Be($"Name should not be null or empty.");
+        output.Detail.Should().Be("Name should not be null or empty.");
     }
 
     public void Dispose() => fixture.CleanPersistence();

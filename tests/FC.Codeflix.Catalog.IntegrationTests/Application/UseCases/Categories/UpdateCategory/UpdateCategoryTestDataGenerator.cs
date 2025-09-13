@@ -36,8 +36,6 @@ public class UpdateCategoryTestDataGenerator
                 case 2:
                     yield return [fixture.GetInvalidInputTooLongDescription(), "Description should be less or equal 10000 characters."];
                     break;
-                default:
-                    break;
             }
         }
     }

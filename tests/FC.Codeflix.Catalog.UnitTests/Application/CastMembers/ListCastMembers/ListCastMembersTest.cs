@@ -25,7 +25,7 @@ public class ListCastMembersTest
         var castMembersListExample = _fixture.GetExampleCastMembersList(3);
         var repositorySearchOutput = new SearchOutput<DomainEntity.CastMember>(
             1, 10, castMembersListExample.Count,
-            (IReadOnlyList<DomainEntity.CastMember>)castMembersListExample
+            castMembersListExample
         );
         repositoryMock.Setup(x => x.Search(
             It.IsAny<SearchInput>(), It.IsAny<CancellationToken>()
@@ -66,7 +66,7 @@ public class ListCastMembersTest
         var castMembersListExample = new List<DomainEntity.CastMember>();
         var repositorySearchOutput = new SearchOutput<DomainEntity.CastMember>(
             1, 10, castMembersListExample.Count,
-            (IReadOnlyList<DomainEntity.CastMember>)castMembersListExample
+            castMembersListExample
         );
         repositoryMock.Setup(x => x.Search(
             It.IsAny<SearchInput>(), It.IsAny<CancellationToken>()

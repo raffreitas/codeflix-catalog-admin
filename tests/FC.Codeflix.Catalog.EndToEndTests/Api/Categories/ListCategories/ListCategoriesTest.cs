@@ -23,7 +23,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
         await fixture.Persistence.InsertList(exampleCategoriesList);
 
         var (response, output) = await fixture.ApiClient
-            .Get<TestApiResponseList<CategoryModelOutput>>($"/categories");
+            .Get<TestApiResponseList<CategoryModelOutput>>("/categories");
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -53,7 +53,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
     public async Task ItemsEmptyWhenPersistenceEmpty()
     {
         var (response, output) = await fixture.ApiClient
-            .Get<TestApiResponseList<CategoryModelOutput>>($"/categories");
+            .Get<TestApiResponseList<CategoryModelOutput>>("/categories");
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -72,7 +72,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
         var input = new ListCategoriesInput(page: 1, perPage: 5);
 
         var (response, output) = await fixture.ApiClient
-            .Get<TestApiResponseList<CategoryModelOutput>>($"/categories", input);
+            .Get<TestApiResponseList<CategoryModelOutput>>("/categories", input);
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -109,10 +109,10 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
     {
         var exampleCategoriesList = fixture.GetExampleCategoriesList(quantityCategoriesToGenerate);
         await fixture.Persistence.InsertList(exampleCategoriesList);
-        var input = new ListCategoriesInput(page, perPage, "", "", SearchOrder.Asc);
+        var input = new ListCategoriesInput(page, perPage);
 
         var (response, output) = await fixture.ApiClient
-            .Get<TestApiResponseList<CategoryModelOutput>>($"/categories", input);
+            .Get<TestApiResponseList<CategoryModelOutput>>("/categories", input);
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -165,10 +165,10 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
             "Sci-fi Future",
         ]);
         await fixture.Persistence.InsertList(exampleCategoriesList);
-        var input = new ListCategoriesInput(page, perPage, search, "", SearchOrder.Asc);
+        var input = new ListCategoriesInput(page, perPage, search);
 
         var (response, output) = await fixture.ApiClient
-            .Get<TestApiResponseList<CategoryModelOutput>>($"/categories", input);
+            .Get<TestApiResponseList<CategoryModelOutput>>("/categories", input);
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -201,7 +201,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
     [InlineData("", "desc")]
     public async Task SearchOrdered(string orderBy, string order)
     {
-        var exampleCategoriesList = fixture.GetExampleCategoriesList(10);
+        var exampleCategoriesList = fixture.GetExampleCategoriesList();
         await fixture.Persistence.InsertList(exampleCategoriesList);
         var searchOrder = order.Equals("asc", StringComparison.CurrentCultureIgnoreCase)
             ? SearchOrder.Asc
@@ -209,7 +209,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
         var input = new ListCategoriesInput(page: 1, perPage: 20, search: "", orderBy, searchOrder);
 
         var (response, output) = await fixture.ApiClient
-            .Get<TestApiResponseList<CategoryModelOutput>>($"/categories", input);
+            .Get<TestApiResponseList<CategoryModelOutput>>("/categories", input);
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -243,13 +243,13 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
     [InlineData("createdAt", "desc")]
     public async Task SearchOrderedDates(string orderBy, string order)
     {
-        var exampleCategoriesList = fixture.GetExampleCategoriesList(10);
+        var exampleCategoriesList = fixture.GetExampleCategoriesList();
         await fixture.Persistence.InsertList(exampleCategoriesList);
         var searchOrder = order.ToLower() == "asc" ? SearchOrder.Asc : SearchOrder.Desc;
         var input = new ListCategoriesInput(page: 1, perPage: 20, search: "", orderBy, searchOrder);
 
         var (response, output) = await fixture.ApiClient
-            .Get<TestApiResponseList<CategoryModelOutput>>($"/categories", input);
+            .Get<TestApiResponseList<CategoryModelOutput>>("/categories", input);
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.OK);

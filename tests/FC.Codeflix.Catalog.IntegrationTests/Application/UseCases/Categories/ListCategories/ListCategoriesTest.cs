@@ -19,7 +19,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
         await dbContext.AddRangeAsync(exampleCategoryList, CancellationToken.None);
         await dbContext.SaveChangesAsync(CancellationToken.None);
         var categoryRepository = new CategoryRepository(dbContext);
-        var input = new ListCategoriesInput(1, 20, "", "", SearchOrder.Asc);
+        var input = new ListCategoriesInput(1, 20);
         var useCase = new ListCategoriesUseCase(categoryRepository);
 
         var output = await useCase.Handle(input, CancellationToken.None);
@@ -51,7 +51,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
     {
         CodeflixCatalogDbContext dbContext = fixture.CreateDbContext();
         var categoryRepository = new CategoryRepository(dbContext);
-        var input = new ListCategoriesInput(1, 20, "", "", SearchOrder.Asc);
+        var input = new ListCategoriesInput(1, 20);
         var useCase = new ListCategoriesUseCase(categoryRepository);
 
         var output = await useCase.Handle(input, CancellationToken.None);
@@ -81,7 +81,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
         await dbContext.AddRangeAsync(exampleCategoryList, CancellationToken.None);
         await dbContext.SaveChangesAsync(CancellationToken.None);
         var categoryRepository = new CategoryRepository(dbContext);
-        var input = new ListCategoriesInput(page, perPage, "", "", SearchOrder.Asc);
+        var input = new ListCategoriesInput(page, perPage);
         var useCase = new ListCategoriesUseCase(categoryRepository);
 
         var output = await useCase.Handle(input, CancellationToken.None);
@@ -140,7 +140,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
         await dbContext.AddRangeAsync(exampleCategoryList, CancellationToken.None);
         await dbContext.SaveChangesAsync(CancellationToken.None);
         var categoryRepository = new CategoryRepository(dbContext);
-        var input = new ListCategoriesInput(page, perPage, search, "", SearchOrder.Asc);
+        var input = new ListCategoriesInput(page, perPage, search);
         var useCase = new ListCategoriesUseCase(categoryRepository);
 
         var output = await useCase.Handle(input, CancellationToken.None);
@@ -182,7 +182,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
     )
     {
         CodeflixCatalogDbContext dbContext = fixture.CreateDbContext();
-        var exampleCategoryList = fixture.GetExampleCategoryList(10);
+        var exampleCategoryList = fixture.GetExampleCategoryList();
         await dbContext.AddRangeAsync(exampleCategoryList, CancellationToken.None);
         await dbContext.SaveChangesAsync(CancellationToken.None);
         var categoryRepository = new CategoryRepository(dbContext);

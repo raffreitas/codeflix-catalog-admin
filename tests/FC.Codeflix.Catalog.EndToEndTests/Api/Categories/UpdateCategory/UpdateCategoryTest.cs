@@ -98,7 +98,7 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         output.Data.Id.Should().Be(exampleCategory.Id);
         output.Data.Name.Should().Be(input.Name);
         output.Data.Description.Should().Be(input.Description);
-        output.Data.IsActive.Should().Be(exampleCategory.IsActive!);
+        output.Data.IsActive.Should().Be(exampleCategory.IsActive);
 
         var dbCategory = await fixture.Persistence
             .GetById(exampleCategory.Id);

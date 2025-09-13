@@ -14,6 +14,7 @@ public sealed class ChannelManager(IConnection connection)
             if (_channel == null || _channel.IsClosed)
             {
                 _channel = connection.CreateModel();
+                _channel.ConfirmSelect();
             }
 
             return _channel;

@@ -1,10 +1,9 @@
-﻿using FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
-
-using FluentAssertions;
-
-using FC.Codeflix.Catalog.Application.Exceptions;
+﻿using FC.Codeflix.Catalog.Application.Exceptions;
 using FC.Codeflix.Catalog.Application.UseCases.Genres.GetGenre;
 using FC.Codeflix.Catalog.Infra.Data.EF.Models;
+using FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
+
+using FluentAssertions;
 
 namespace FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.Genre.GetGenre;
 
@@ -20,7 +19,7 @@ public class GetGenreTest
     [Trait("Integration/Application", "GetGenre - Use Cases")]
     public async Task GetGenre()
     {
-        var genresExampleList = _fixture.GetExampleListGenres(10);
+        var genresExampleList = _fixture.GetExampleListGenres();
         var expectedGenre = genresExampleList[5];
         var dbArrangeContext = _fixture.CreateDbContext();
         await dbArrangeContext.Genres.AddRangeAsync(genresExampleList);
@@ -45,7 +44,7 @@ public class GetGenreTest
     [Trait("Integration/Application", "GetGenre - Use Cases")]
     public async Task GetGenreThrowsWhenNotFound()
     {
-        var genresExampleList = _fixture.GetExampleListGenres(10);
+        var genresExampleList = _fixture.GetExampleListGenres();
         var randomGuid = Guid.NewGuid();
         var dbArrangeContext = _fixture.CreateDbContext();
         await dbArrangeContext.Genres.AddRangeAsync(genresExampleList);
@@ -66,7 +65,7 @@ public class GetGenreTest
     [Trait("Integration/Application", "GetGenre - Use Cases")]
     public async Task GetGenreWithCategoryRelations()
     {
-        var genresExampleList = _fixture.GetExampleListGenres(10);
+        var genresExampleList = _fixture.GetExampleListGenres();
         var categoriesExampleList = _fixture.GetExampleCategoriesList(5);
         var expectedGenre = genresExampleList[5];
         categoriesExampleList.ForEach(category => expectedGenre.AddCategory(category.Id)

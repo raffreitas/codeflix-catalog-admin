@@ -45,7 +45,7 @@ public class DeleteCategoryTest(DeleteCategoryTestFixture fixture)
         var dbCategory = await fixture
             .CreateDbContext(preserveData: true)
             .Categories
-            .SingleOrDefaultAsync((x) => x.Id == categoryExample.Id);
+            .SingleOrDefaultAsync(x => x.Id == categoryExample.Id);
         dbCategory.Should().BeNull();
 
         var dbCount = await fixture

@@ -109,7 +109,7 @@ public class ListCastMembersTest
         int expectedQuantityTotalItems
     )
     {
-        var namesToGenerate = new List<string>()
+        var namesToGenerate = new List<string>
         {
             "Action",
             "Horror",

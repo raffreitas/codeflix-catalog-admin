@@ -29,19 +29,19 @@ public class CreateGenreApiTest : IDisposable
         );
 
         var (response, output) = await _fixture.ApiClient
-            .Post<ApiResponse<GenreModelOutput>>($"/genres", apiInput);
+            .Post<ApiResponse<GenreModelOutput>>("/genres", apiInput);
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status201Created);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status201Created);
         output.Should().NotBeNull();
-        output!.Data.Should().NotBeNull();
+        output.Data.Should().NotBeNull();
         output.Data.Id.Should().NotBeEmpty();
         output.Data.Name.Should().Be(apiInput.Name);
         output.Data.IsActive.Should().Be(apiInput.IsActive);
         output.Data.Categories.Should().HaveCount(0);
         var genreFromDb = await _fixture.GenrePersistence.GetById(output.Data.Id);
         genreFromDb.Should().NotBeNull();
-        genreFromDb!.Name.Should().Be(apiInput.Name);
+        genreFromDb.Name.Should().Be(apiInput.Name);
         genreFromDb.IsActive.Should().Be(apiInput.IsActive);
     }
 
@@ -49,7 +49,7 @@ public class CreateGenreApiTest : IDisposable
     [Trait("EndToEnd/Api", "Genre/CreateGenre - Endpoints")]
     public async Task CreateGenreWithRelations()
     {
-        var exampleCategories = _fixture.GetExampleCategoriesList(10);
+        var exampleCategories = _fixture.GetExampleCategoriesList();
         await _fixture.CategoryPersistence.InsertList(exampleCategories);
         var relatedCategories = exampleCategories
             .Skip(3).Take(3).Select(x => x.Id).ToList();
@@ -61,12 +61,12 @@ public class CreateGenreApiTest : IDisposable
         );
 
         var (response, output) = await _fixture.ApiClient
-            .Post<ApiResponse<GenreModelOutput>>($"/genres", apiInput);
+            .Post<ApiResponse<GenreModelOutput>>("/genres", apiInput);
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status201Created);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status201Created);
         output.Should().NotBeNull();
-        output!.Data.Should().NotBeNull();
+        output.Data.Should().NotBeNull();
         output.Data.Id.Should().NotBeEmpty();
         output.Data.Name.Should().Be(apiInput.Name);
         output.Data.IsActive.Should().Be(apiInput.IsActive);
@@ -75,7 +75,7 @@ public class CreateGenreApiTest : IDisposable
         outputRelatedCategoryIds.Should().BeEquivalentTo(relatedCategories);
         var genreFromDb = await _fixture.GenrePersistence.GetById(output.Data.Id);
         genreFromDb.Should().NotBeNull();
-        genreFromDb!.Name.Should().Be(apiInput.Name);
+        genreFromDb.Name.Should().Be(apiInput.Name);
         genreFromDb.IsActive.Should().Be(apiInput.IsActive);
         var relationsFromDb = await _fixture.GenrePersistence
             .GetGenresCategoriesRelationsByGenreId(output.Data.Id);
@@ -90,7 +90,7 @@ public class CreateGenreApiTest : IDisposable
     [Trait("EndToEnd/Api", "Genre/CreateGenre - Endpoints")]
     public async Task ErrorWithInvalidRelations()
     {
-        var exampleCategories = _fixture.GetExampleCategoriesList(10);
+        var exampleCategories = _fixture.GetExampleCategoriesList();
         await _fixture.CategoryPersistence.InsertList(exampleCategories);
         var relatedCategories = exampleCategories
             .Skip(3).Take(3).Select(x => x.Id).ToList();
@@ -103,13 +103,13 @@ public class CreateGenreApiTest : IDisposable
         );
 
         var (response, output) = await _fixture.ApiClient
-            .Post<ProblemDetails>($"/genres", apiInput);
+            .Post<ProblemDetails>("/genres", apiInput);
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should()
+        response.StatusCode.Should()
             .Be((HttpStatusCode)StatusCodes.Status422UnprocessableEntity);
         output.Should().NotBeNull();
-        output!.Type.Should().Be("RelatedAggregate");
+        output.Type.Should().Be("RelatedAggregate");
         output.Detail.Should().Be($"Related category id (or ids) not found: {invalidCategoryId}");
     }
 

@@ -213,7 +213,7 @@ public class CategoryTest
     {
         var category = _categoryTestFixture.GetValidCategory();
 
-        var action = () => category.Update(invalidName!);
+        var action = () => category.Update(invalidName);
 
         action.Should().Throw<EntityValidationException>()
             .WithMessage("Name should have at least 3 characters.");

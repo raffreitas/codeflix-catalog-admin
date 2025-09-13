@@ -1,8 +1,7 @@
 ﻿using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
+using FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.Genre.Common;
 
 using DomainEntity = FC.Codeflix.Catalog.Domain.Entities;
-
-using FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.Genre.Common;
 
 namespace FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.Genre.ListGenres;
 

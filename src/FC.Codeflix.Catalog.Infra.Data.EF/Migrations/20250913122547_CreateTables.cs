@@ -11,6 +11,9 @@ namespace FC.Codeflix.Catalog.Infra.Data.EF.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateTable(
                 name: "CastMembers",
                 columns: table => new
@@ -24,6 +27,24 @@ namespace FC.Codeflix.Catalog.Infra.Data.EF.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CastMembers", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Description = table.Column<string>(type: "varchar(10000)", maxLength: 10000, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -44,30 +65,19 @@ namespace FC.Codeflix.Catalog.Infra.Data.EF.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Videos",
+                name: "Media",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Title = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                    FilePath = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Description = table.Column<string>(type: "varchar(4000)", maxLength: 4000, nullable: false)
+                    EncodedPath = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    YearLaunched = table.Column<int>(type: "int", nullable: false),
-                    Duration = table.Column<int>(type: "int", nullable: false),
-                    Opened = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    Published = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: false),
-                    ThumbPath = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ThumbHalfPath = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    BannerPath = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Videos", x => x.Id);
+                    table.PrimaryKey("PK_Media", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -97,30 +107,41 @@ namespace FC.Codeflix.Catalog.Infra.Data.EF.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Media",
+                name: "Videos",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    FilePath = table.Column<string>(type: "longtext", nullable: false)
+                    Title = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    EncodedPath = table.Column<string>(type: "longtext", nullable: true)
+                    Description = table.Column<string>(type: "varchar(4000)", maxLength: 4000, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    VideoId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                    YearLaunched = table.Column<int>(type: "int", nullable: false),
+                    Duration = table.Column<int>(type: "int", nullable: false),
+                    Opened = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    Published = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    ThumbPath = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ThumbHalfPath = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    BannerPath = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    MediaId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    TrailerId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Media", x => x.Id);
+                    table.PrimaryKey("PK_Videos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Media_Videos_Id",
-                        column: x => x.Id,
-                        principalTable: "Videos",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Videos_Media_MediaId",
+                        column: x => x.MediaId,
+                        principalTable: "Media",
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Media_Videos_VideoId",
-                        column: x => x.VideoId,
-                        principalTable: "Videos",
+                        name: "FK_Videos_Media_TrailerId",
+                        column: x => x.TrailerId,
+                        principalTable: "Media",
                         principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -206,9 +227,15 @@ namespace FC.Codeflix.Catalog.Infra.Data.EF.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Media_VideoId",
-                table: "Media",
-                column: "VideoId",
+                name: "IX_Videos_MediaId",
+                table: "Videos",
+                column: "MediaId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Videos_TrailerId",
+                table: "Videos",
+                column: "TrailerId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -234,9 +261,6 @@ namespace FC.Codeflix.Catalog.Infra.Data.EF.Migrations
                 name: "GenresCategories");
 
             migrationBuilder.DropTable(
-                name: "Media");
-
-            migrationBuilder.DropTable(
                 name: "VideosCastMembers");
 
             migrationBuilder.DropTable(
@@ -249,10 +273,16 @@ namespace FC.Codeflix.Catalog.Infra.Data.EF.Migrations
                 name: "CastMembers");
 
             migrationBuilder.DropTable(
+                name: "Categories");
+
+            migrationBuilder.DropTable(
                 name: "Genres");
 
             migrationBuilder.DropTable(
                 name: "Videos");
+
+            migrationBuilder.DropTable(
+                name: "Media");
         }
     }
 }

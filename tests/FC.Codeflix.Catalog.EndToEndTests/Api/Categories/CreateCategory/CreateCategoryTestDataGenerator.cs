@@ -23,8 +23,6 @@ public class CreateCategoryTestDataGenerator
                     input.Description = null!;
                     yield return [input, "Description should not be null."];
                     break;
-                default:
-                    break;
             }
         }
     }

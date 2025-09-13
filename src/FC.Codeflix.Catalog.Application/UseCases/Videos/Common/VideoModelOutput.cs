@@ -52,6 +52,6 @@ public sealed record VideoModelOutput(
         VideoFileUrl: video.Media?.FilePath,
         TrailerFileUrl: video.Trailer?.FilePath
     );
-};
+}
 
 public record VideoModelOutputRelatedAggregate(Guid Id, string? Name = null);

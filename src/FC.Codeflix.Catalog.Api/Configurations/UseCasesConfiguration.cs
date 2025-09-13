@@ -49,7 +49,7 @@ public static class UseCasesConfiguration
             RabbitMqConfiguration config = sp.GetRequiredService<IOptions<RabbitMqConfiguration>>().Value;
             var factory = new ConnectionFactory
             {
-                HostName = config.Hostname, UserName = config.Username, Password = config.Password
+                HostName = config.Hostname, UserName = config.Username, Password = config.Password, Port = config.Port
             };
             return factory.CreateConnection();
         });

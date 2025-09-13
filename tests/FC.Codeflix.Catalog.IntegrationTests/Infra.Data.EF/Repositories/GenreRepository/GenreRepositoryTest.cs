@@ -32,7 +32,7 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
         var assertsDbContext = fixture.CreateDbContext(preserveData: true);
         var dbGenre = await assertsDbContext
             .Genres
-            .SingleAsync((x) => x.Id == exampleGenre.Id, CancellationToken.None);
+            .SingleAsync(x => x.Id == exampleGenre.Id, CancellationToken.None);
 
         dbGenre.Should().NotBeNull();
         dbGenre.Name.Should().Be(exampleGenre.Name);
@@ -128,7 +128,7 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
         var dbGenre = await assertsDbContext
             .Genres
             .AsNoTracking()
-            .FirstOrDefaultAsync((x) => x.Id == exampleGenre.Id);
+            .FirstOrDefaultAsync(x => x.Id == exampleGenre.Id);
         dbGenre.Should().BeNull();
         var genreCategoriesRelation = await assertsDbContext
             .GenresCategories
@@ -164,7 +164,7 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
         var genreFromDb = await assertsDbContext
             .Genres
             .AsNoTracking()
-            .FirstOrDefaultAsync((x) => x.Id == exampleGenre.Id);
+            .FirstOrDefaultAsync(x => x.Id == exampleGenre.Id);
 
         genreFromDb.Should().NotBeNull();
         genreFromDb.Name.Should().Be(exampleGenre.Name);
@@ -211,7 +211,7 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
         var genreFromDb = await assertsDbContext
             .Genres
             .AsNoTracking()
-            .FirstOrDefaultAsync((x) => x.Id == exampleGenre.Id);
+            .FirstOrDefaultAsync(x => x.Id == exampleGenre.Id);
 
         genreFromDb.Should().NotBeNull();
         genreFromDb.Name.Should().Be(exampleGenre.Name);
@@ -254,7 +254,7 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
         var genreFromDb = await assertsDbContext
             .Genres
             .AsNoTracking()
-            .FirstOrDefaultAsync((x) => x.Id == exampleGenre.Id);
+            .FirstOrDefaultAsync(x => x.Id == exampleGenre.Id);
 
         genreFromDb.Should().NotBeNull();
         genreFromDb.Name.Should().Be(exampleGenre.Name);
@@ -279,7 +279,7 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
     public async Task SearchReturnsItemsAndTotal()
     {
         CodeflixCatalogDbContext dbContext = fixture.CreateDbContext();
-        var exampleGenresList = fixture.GetExampleGenresList(10);
+        var exampleGenresList = fixture.GetExampleGenresList();
 
         await dbContext.Genres.AddRangeAsync(exampleGenresList);
         await dbContext.SaveChangesAsync(CancellationToken.None);
@@ -310,7 +310,7 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
     public async Task SearchReturnsRelations()
     {
         CodeflixCatalogDbContext dbContext = fixture.CreateDbContext();
-        var exampleGenresList = fixture.GetExampleGenresList(10);
+        var exampleGenresList = fixture.GetExampleGenresList();
         await dbContext.Genres.AddRangeAsync(exampleGenresList);
         var random = new Random();
         exampleGenresList.ForEach(exampleGenre =>
@@ -509,7 +509,7 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
     )
     {
         CodeflixCatalogDbContext dbContext = fixture.CreateDbContext();
-        var exampleGenresList = fixture.GetExampleGenresList(10);
+        var exampleGenresList = fixture.GetExampleGenresList();
         await dbContext.AddRangeAsync(exampleGenresList);
         await dbContext.SaveChangesAsync(CancellationToken.None);
         var genreRepository = new Repository.GenreRepository(dbContext);
@@ -550,12 +550,12 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
     public async Task GetIdsListByIds()
     {
         var arrangeDbContext = fixture.CreateDbContext();
-        var exampleGenresList = fixture.GetExampleGenresList(10);
+        var exampleGenresList = fixture.GetExampleGenresList();
         await arrangeDbContext.AddRangeAsync(exampleGenresList);
         await arrangeDbContext.SaveChangesAsync(CancellationToken.None);
         var actDbContext = fixture.CreateDbContext(true);
         var repository = new Repository.GenreRepository(actDbContext);
-        var idsToGet = new List<Guid>() { exampleGenresList[2].Id, exampleGenresList[3].Id };
+        var idsToGet = new List<Guid> { exampleGenresList[2].Id, exampleGenresList[3].Id };
 
         var result = await repository.GetIdsListByIds(
             idsToGet,
@@ -571,12 +571,12 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
     public async Task GetIdsListByIdsWhenOnlyThreeIdsMatch()
     {
         var arrangeDbContext = fixture.CreateDbContext();
-        var exampleGenresList = fixture.GetExampleGenresList(10);
+        var exampleGenresList = fixture.GetExampleGenresList();
         await arrangeDbContext.AddRangeAsync(exampleGenresList);
         await arrangeDbContext.SaveChangesAsync(CancellationToken.None);
         var actDbContext = fixture.CreateDbContext(true);
         var repository = new Repository.GenreRepository(actDbContext);
-        var idsToGet = new List<Guid>()
+        var idsToGet = new List<Guid>
         {
             exampleGenresList[3].Id,
             exampleGenresList[4].Id,
@@ -585,7 +585,7 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
             Guid.NewGuid()
         };
         var idsExpectedToReturn =
-            new List<Guid>() { exampleGenresList[3].Id, exampleGenresList[4].Id, exampleGenresList[5].Id };
+            new List<Guid> { exampleGenresList[3].Id, exampleGenresList[4].Id, exampleGenresList[5].Id };
 
         var result = await repository.GetIdsListByIds(
             idsToGet,
@@ -602,12 +602,12 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
     public async Task GetListByIds()
     {
         var arrangeDbContext = fixture.CreateDbContext();
-        var exampleGenresList = fixture.GetExampleGenresList(10);
+        var exampleGenresList = fixture.GetExampleGenresList();
         await arrangeDbContext.AddRangeAsync(exampleGenresList);
         await arrangeDbContext.SaveChangesAsync(CancellationToken.None);
         var actDbContext = fixture.CreateDbContext(true);
         var repository = new Repository.GenreRepository(actDbContext);
-        var idsToGet = new List<Guid>() { exampleGenresList[3].Id, exampleGenresList[4].Id, exampleGenresList[5].Id };
+        var idsToGet = new List<Guid> { exampleGenresList[3].Id, exampleGenresList[4].Id, exampleGenresList[5].Id };
 
         var result = await repository.GetListByIds(
             idsToGet,
@@ -621,10 +621,10 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
             var resultItem = result.FirstOrDefault(x => x.Id == id);
             example.Should().NotBeNull();
             resultItem.Should().NotBeNull();
-            resultItem!.Id.Should().Be(example!.Id);
-            resultItem.Name.Should().Be(example!.Name);
-            resultItem.IsActive.Should().Be(example!.IsActive);
-            resultItem.CreatedAt.Should().Be(example!.CreatedAt);
+            resultItem.Id.Should().Be(example.Id);
+            resultItem.Name.Should().Be(example.Name);
+            resultItem.IsActive.Should().Be(example.IsActive);
+            resultItem.CreatedAt.Should().Be(example.CreatedAt);
         });
     }
 
@@ -633,7 +633,7 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
     public async Task GetListByIdsWhenOnlyThreeIdsMatch()
     {
         var arrangeDbContext = fixture.CreateDbContext();
-        var exampleGenresList = fixture.GetExampleGenresList(10);
+        var exampleGenresList = fixture.GetExampleGenresList();
         await arrangeDbContext.AddRangeAsync(exampleGenresList);
         await arrangeDbContext.SaveChangesAsync(CancellationToken.None);
         var actDbContext = fixture.CreateDbContext(true);
@@ -664,10 +664,10 @@ public class GenreRepositoryTest(GenreRepositoryTestFixture fixture)
             var resultItem = result.FirstOrDefault(x => x.Id == id);
             example.Should().NotBeNull();
             resultItem.Should().NotBeNull();
-            resultItem.Id.Should().Be(example!.Id);
-            resultItem.Name.Should().Be(example!.Name);
-            resultItem.IsActive.Should().Be(example!.IsActive);
-            resultItem.CreatedAt.Should().Be(example!.CreatedAt);
+            resultItem.Id.Should().Be(example.Id);
+            resultItem.Name.Should().Be(example.Name);
+            resultItem.IsActive.Should().Be(example.IsActive);
+            resultItem.CreatedAt.Should().Be(example.CreatedAt);
         });
     }
 }

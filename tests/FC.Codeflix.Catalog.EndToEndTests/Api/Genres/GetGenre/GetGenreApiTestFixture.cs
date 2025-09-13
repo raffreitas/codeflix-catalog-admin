@@ -10,9 +10,4 @@ public class GetGenreApiTestFixtureCollection :
 public class GetGenreApiTestFixture
     : GenreBaseFixture
 {
-    public GetGenreApiTestFixture()
-        : base()
-    {
-
-    }
 }

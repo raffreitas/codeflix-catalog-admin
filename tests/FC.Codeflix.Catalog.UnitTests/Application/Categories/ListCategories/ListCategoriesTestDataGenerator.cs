@@ -69,8 +69,6 @@ public class ListCategoriesTestDataGenerator
                 case 6:
                     yield return new object[] { inputExample }; 
                     break;
-                default:
-                    break;
             }
         }
     }

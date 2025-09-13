@@ -116,7 +116,7 @@ public class CreateGenreTest(CreateGenreTestFixture fixture)
 
         await act.Should()
             .ThrowAsync<EntityValidationException>()
-            .WithMessage($"Name should not be null or empty.");
+            .WithMessage("Name should not be null or empty.");
     }
 
     [Fact(DisplayName = nameof(ThrowWhenNameIsNull))]
@@ -138,6 +138,6 @@ public class CreateGenreTest(CreateGenreTestFixture fixture)
 
         await act.Should()
             .ThrowAsync<EntityValidationException>()
-            .WithMessage($"Name should not be null or empty.");
+            .WithMessage("Name should not be null or empty.");
     }
 }

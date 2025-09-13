@@ -1,5 +1,4 @@
-﻿
-using FC.Codeflix.Catalog.Application.Interfaces;
+﻿using FC.Codeflix.Catalog.Application.Interfaces;
 using FC.Codeflix.Catalog.Domain.Repositories;
 
 namespace FC.Codeflix.Catalog.Application.UseCases.Categories.DeleteCategory;

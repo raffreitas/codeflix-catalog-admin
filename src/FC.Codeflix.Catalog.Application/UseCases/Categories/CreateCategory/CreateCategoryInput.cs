@@ -17,4 +17,4 @@ public record CreateCategoryInput : IRequest<CategoryModelOutput>
         Description = description ?? string.Empty;
         IsActive = isActive;
     }
-};
+}

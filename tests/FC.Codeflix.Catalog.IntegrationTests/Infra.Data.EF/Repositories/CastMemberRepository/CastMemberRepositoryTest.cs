@@ -1,11 +1,11 @@
-﻿using Repository = FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
-
-using Microsoft.EntityFrameworkCore;
+﻿using FC.Codeflix.Catalog.Application.Exceptions;
+using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 
 using FluentAssertions;
 
-using FC.Codeflix.Catalog.Application.Exceptions;
-using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
+using Microsoft.EntityFrameworkCore;
+
+using Repository = FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
 
 namespace FC.Codeflix.Catalog.IntegrationTests.Infra.Data.EF.Repositories.CastMemberRepository;
 
@@ -28,7 +28,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == castMemberExample.Id);
         castMemberFromDb.Should().NotBeNull();
-        castMemberFromDb!.Name.Should().Be(castMemberExample.Name);
+        castMemberFromDb.Name.Should().Be(castMemberExample.Name);
         castMemberFromDb.Type.Should().Be(castMemberExample.Type);
     }
 
@@ -41,8 +41,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         var arrangeContext = fixture.CreateDbContext();
         await arrangeContext.AddRangeAsync(castMemberExampleList);
         await arrangeContext.SaveChangesAsync();
-        var repository = new Repository
-            .CastMemberRepository(fixture.CreateDbContext(true));
+        var repository = new Repository.CastMemberRepository(fixture.CreateDbContext(true));
 
         var itemFromRepository = await repository.Get(
             castMemberExample.Id,
@@ -50,7 +49,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         );
 
         itemFromRepository.Should().NotBeNull();
-        itemFromRepository!.Name.Should().Be(castMemberExample.Name);
+        itemFromRepository.Name.Should().Be(castMemberExample.Name);
         itemFromRepository.Type.Should().Be(castMemberExample.Type);
     }
 
@@ -59,8 +58,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
     public async Task GetThrowsWhenNotFound()
     {
         var randomGuid = Guid.NewGuid();
-        var repository = new Repository
-            .CastMemberRepository(fixture.CreateDbContext());
+        var repository = new Repository.CastMemberRepository(fixture.CreateDbContext());
 
         var action = async () => await repository.Get(
             randomGuid,
@@ -81,8 +79,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         await arrangeContext.AddRangeAsync(castMemberExampleList);
         await arrangeContext.SaveChangesAsync();
         var actDbContext = fixture.CreateDbContext(true);
-        var repository = new Repository
-            .CastMemberRepository(actDbContext);
+        var repository = new Repository.CastMemberRepository(actDbContext);
 
         await repository.Delete(
             castMemberExample, CancellationToken.None
@@ -109,8 +106,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         await arrangeContext.AddRangeAsync(castMemberExampleList);
         await arrangeContext.SaveChangesAsync();
         var actDbContext = fixture.CreateDbContext(true);
-        var repository = new Repository
-            .CastMemberRepository(actDbContext);
+        var repository = new Repository.CastMemberRepository(actDbContext);
 
         castMemberExample.Update(newName, newType);
         await repository.Update(
@@ -123,7 +119,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == castMemberExample.Id);
         castMemberDb.Should().NotBeNull();
-        castMemberDb!.Name.Should().Be(newName);
+        castMemberDb.Name.Should().Be(newName);
         castMemberDb.Type.Should().Be(newType);
     }
 
@@ -135,8 +131,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         var arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(exampleList);
         await arrangeDbContext.SaveChangesAsync();
-        var castMembersRepository = new Repository
-            .CastMemberRepository(fixture.CreateDbContext(true));
+        var castMembersRepository = new Repository.CastMemberRepository(fixture.CreateDbContext(true));
 
         var searchResult = await castMembersRepository.Search(
             new SearchInput(1, 20, "", "", SearchOrder.Asc),
@@ -152,7 +147,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         {
             var example = exampleList.Find(x => x.Id == resultItem.Id);
             example.Should().NotBeNull();
-            resultItem.Name.Should().Be(example!.Name);
+            resultItem.Name.Should().Be(example.Name);
             resultItem.Type.Should().Be(example.Type);
         });
     }
@@ -161,8 +156,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
     [Trait("Integration/Infra.Data", "CastMemberRepository - Repositories")]
     public async Task SearchReturnsEmptyWhenEmpty()
     {
-        var castMembersRepository = new Repository
-            .CastMemberRepository(fixture.CreateDbContext());
+        var castMembersRepository = new Repository.CastMemberRepository(fixture.CreateDbContext());
 
         var searchResult = await castMembersRepository.Search(
             new SearchInput(1, 20, "", "", SearchOrder.Asc),
@@ -193,8 +187,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         var arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(exampleList);
         await arrangeDbContext.SaveChangesAsync();
-        var castMembersRepository = new Repository
-            .CastMemberRepository(fixture.CreateDbContext(true));
+        var castMembersRepository = new Repository.CastMemberRepository(fixture.CreateDbContext(true));
 
         var searchResult = await castMembersRepository.Search(
             new SearchInput(page, perPage, "", "", SearchOrder.Asc),
@@ -210,7 +203,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         {
             var example = exampleList.Find(x => x.Id == resultItem.Id);
             example.Should().NotBeNull();
-            resultItem.Name.Should().Be(example!.Name);
+            resultItem.Name.Should().Be(example.Name);
             resultItem.Type.Should().Be(example.Type);
         });
     }
@@ -233,7 +226,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         int expectedQuantityTotalItems
     )
     {
-        var namesToGenerate = new List<string>()
+        var namesToGenerate = new List<string>
         {
             "Action",
             "Horror",
@@ -249,8 +242,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         var arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(exampleList);
         await arrangeDbContext.SaveChangesAsync();
-        var castMembersRepository = new Repository
-            .CastMemberRepository(fixture.CreateDbContext(true));
+        var castMembersRepository = new Repository.CastMemberRepository(fixture.CreateDbContext(true));
 
         var searchResult = await castMembersRepository.Search(
             new SearchInput(page, perPage, search, "", SearchOrder.Asc),
@@ -266,7 +258,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         {
             var example = exampleList.Find(x => x.Id == resultItem.Id);
             example.Should().NotBeNull();
-            resultItem.Name.Should().Be(example!.Name);
+            resultItem.Name.Should().Be(example.Name);
             resultItem.Type.Should().Be(example.Type);
         });
     }
@@ -289,8 +281,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         var arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(exampleList);
         await arrangeDbContext.SaveChangesAsync();
-        var castMembersRepository = new Repository
-            .CastMemberRepository(fixture.CreateDbContext(true));
+        var castMembersRepository = new Repository.CastMemberRepository(fixture.CreateDbContext(true));
         var inputOrder = order == "asc" ? SearchOrder.Asc : SearchOrder.Desc;
 
         var searchResult = await castMembersRepository.Search(
@@ -325,7 +316,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         await arrangeDbContext.SaveChangesAsync(CancellationToken.None);
         var actDbContext = fixture.CreateDbContext(true);
         var repository = new Repository.CastMemberRepository(actDbContext);
-        var idsToGet = new List<Guid>() { exampleList[2].Id, exampleList[3].Id };
+        var idsToGet = new List<Guid> { exampleList[2].Id, exampleList[3].Id };
 
         var result = await repository.GetIdsListByIds(
             idsToGet,
@@ -346,7 +337,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
         await arrangeDbContext.SaveChangesAsync(CancellationToken.None);
         var actDbContext = fixture.CreateDbContext(true);
         var repository = new Repository.CastMemberRepository(actDbContext);
-        var idsToGet = new List<Guid>()
+        var idsToGet = new List<Guid>
         {
             exampleList[2].Id,
             exampleList[3].Id,
@@ -355,7 +346,7 @@ public class CastMemberRepositoryTest(CastMemberRepositoryTestFixture fixture)
             Guid.NewGuid(),
             Guid.NewGuid()
         };
-        var expectedIds = new List<Guid>() { exampleList[2].Id, exampleList[3].Id, exampleList[4].Id };
+        var expectedIds = new List<Guid> { exampleList[2].Id, exampleList[3].Id, exampleList[4].Id };
 
         var result = await repository.GetIdsListByIds(
             idsToGet,

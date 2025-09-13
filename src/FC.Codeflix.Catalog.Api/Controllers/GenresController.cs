@@ -42,7 +42,7 @@ public class GenresController(IMediator mediator) : ControllerBase
         return NoContent();
     }
 
-    [HttpPost()]
+    [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<GenreModelOutput>), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]

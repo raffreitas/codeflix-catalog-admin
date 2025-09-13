@@ -26,7 +26,7 @@ public class UpdateGenreApiTest : IDisposable
     [Trait("EndToEnd/Api", "Genre/UpdateGenre - Endpoints")]
     public async Task UpdateGenre()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         var targetGenre = exampleGenres[5];
         await _fixture.GenrePersistence.InsertList(exampleGenres);
         var input = new UpdateGenreApiInput(
@@ -41,14 +41,14 @@ public class UpdateGenreApiTest : IDisposable
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Data.Id.Should().Be(targetGenre.Id);
+        output.Data.Id.Should().Be(targetGenre.Id);
         output.Data.Name.Should().Be(input.Name);
         output.Data.IsActive.Should().Be((bool)input.IsActive!);
         var genreFromDb = await _fixture.GenrePersistence.GetById(output.Data.Id);
         genreFromDb.Should().NotBeNull();
-        genreFromDb!.Name.Should().Be(input.Name);
+        genreFromDb.Name.Should().Be(input.Name);
         genreFromDb.IsActive.Should().Be((bool)input.IsActive!);
     }
 
@@ -56,7 +56,7 @@ public class UpdateGenreApiTest : IDisposable
     [Trait("EndToEnd/Api", "Genre/UpdateGenre - Endpoints")]
     public async Task ProblemDetailsWhenNotFound()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         var randomGuid = Guid.NewGuid();
         await _fixture.GenrePersistence.InsertList(exampleGenres);
         var input = new UpdateGenreApiInput(
@@ -71,21 +71,21 @@ public class UpdateGenreApiTest : IDisposable
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status404NotFound);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status404NotFound);
         output.Should().NotBeNull();
-        output!.Title.Should().Be("Not Found");
-        output!.Detail.Should().Be($"Genre '{randomGuid}' not found.");
-        output!.Type.Should().Be("NotFound");
-        output!.Status.Should().Be((int)StatusCodes.Status404NotFound);
+        output.Title.Should().Be("Not Found");
+        output.Detail.Should().Be($"Genre '{randomGuid}' not found.");
+        output.Type.Should().Be("NotFound");
+        output.Status.Should().Be(StatusCodes.Status404NotFound);
     }
 
     [Fact(DisplayName = nameof(UpdateGenreWithRelations))]
     [Trait("EndToEnd/Api", "Genre/UpdateGenre - Endpoints")]
     public async Task UpdateGenreWithRelations()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         var targetGenre = exampleGenres[5];
-        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList(10);
+        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {
@@ -130,9 +130,9 @@ public class UpdateGenreApiTest : IDisposable
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Data.Id.Should().Be(targetGenre.Id);
+        output.Data.Id.Should().Be(targetGenre.Id);
         output.Data.Name.Should().Be(input.Name);
         output.Data.IsActive.Should().Be((bool)input.IsActive!);
         List<Guid> relatedCategoriesIdsFromOutput =
@@ -141,7 +141,7 @@ public class UpdateGenreApiTest : IDisposable
             .BeEquivalentTo(newRelatedCategoriesIds);
         var genreFromDb = await _fixture.GenrePersistence.GetById(output.Data.Id);
         genreFromDb.Should().NotBeNull();
-        genreFromDb!.Name.Should().Be(input.Name);
+        genreFromDb.Name.Should().Be(input.Name);
         genreFromDb.IsActive.Should().Be((bool)input.IsActive!);
         var genresCategoriesFromDb =
             await _fixture.GenrePersistence.GetGenresCategoriesRelationsByGenreId(targetGenre.Id);
@@ -157,9 +157,9 @@ public class UpdateGenreApiTest : IDisposable
     [Trait("EndToEnd/Api", "Genre/UpdateGenre - Endpoints")]
     public async Task PersistsRelationsWhenNotPresentInInput()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         var targetGenre = exampleGenres[5];
-        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList(10);
+        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {
@@ -193,9 +193,9 @@ public class UpdateGenreApiTest : IDisposable
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Data.Id.Should().Be(targetGenre.Id);
+        output.Data.Id.Should().Be(targetGenre.Id);
         output.Data.Name.Should().Be(input.Name);
         output.Data.IsActive.Should().Be((bool)input.IsActive!);
         List<Guid> relatedCategoriesIdsFromOutput =
@@ -204,7 +204,7 @@ public class UpdateGenreApiTest : IDisposable
             .BeEquivalentTo(targetGenre.Categories);
         var genreFromDb = await _fixture.GenrePersistence.GetById(output.Data.Id);
         genreFromDb.Should().NotBeNull();
-        genreFromDb!.Name.Should().Be(input.Name);
+        genreFromDb.Name.Should().Be(input.Name);
         genreFromDb.IsActive.Should().Be((bool)input.IsActive!);
         var genresCategoriesFromDb =
             await _fixture.GenrePersistence.GetGenresCategoriesRelationsByGenreId(targetGenre.Id);
@@ -220,14 +220,14 @@ public class UpdateGenreApiTest : IDisposable
     [Trait("EndToEnd/Api", "Genre/UpdateGenre - Endpoints")]
     public async Task ErrorWhenInvalidRelation()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         var targetGenre = exampleGenres[5];
         var randomGuid = Guid.NewGuid();
         await _fixture.GenrePersistence.InsertList(exampleGenres);
         var input = new UpdateGenreApiInput(
             _fixture.GetValidGenreName(),
             _fixture.GetRandomBoolean(),
-            new List<Guid>() { randomGuid }
+            new List<Guid> { randomGuid }
         );
 
         var (response, output) = await _fixture.ApiClient
@@ -237,9 +237,9 @@ public class UpdateGenreApiTest : IDisposable
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status422UnprocessableEntity);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status422UnprocessableEntity);
         output.Should().NotBeNull();
-        output!.Type.Should().Be("RelatedAggregate");
+        output.Type.Should().Be("RelatedAggregate");
         output.Detail.Should().Be($"Related category id (or ids) not found: {randomGuid}");
     }
 

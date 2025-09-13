@@ -28,7 +28,7 @@ public class UpdateGenreTest
     [Trait("Integration/Application", "UpdateGenre - Use Cases")]
     public async Task UpdateGenre()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
         DomainEntity.Genre targetGenre = exampleGenres[5];
         await arrangeDbContext.AddRangeAsync(exampleGenres);
@@ -67,7 +67,7 @@ public class UpdateGenreTest
         DomainEntity.Genre? genreFromDb =
             await assertDbContext.Genres.FindAsync(targetGenre.Id);
         genreFromDb.Should().NotBeNull();
-        genreFromDb!.Id.Should().Be(targetGenre.Id);
+        genreFromDb.Id.Should().Be(targetGenre.Id);
         genreFromDb.Name.Should().Be(input.Name);
         genreFromDb.IsActive.Should().Be((bool)input.IsActive!);
     }
@@ -76,8 +76,8 @@ public class UpdateGenreTest
     [Trait("Integration/Application", "UpdateGenre - Use Cases")]
     public async Task UpdateGenreWithCategoriesRelations()
     {
-        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList(10);
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList();
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
         DomainEntity.Genre targetGenre = exampleGenres[5];
         List<DomainEntity.Category> relatedCategories = exampleCategories.GetRange(0, 5);
@@ -129,7 +129,7 @@ public class UpdateGenreTest
         DomainEntity.Genre? genreFromDb =
             await assertDbContext.Genres.FindAsync(targetGenre.Id);
         genreFromDb.Should().NotBeNull();
-        genreFromDb!.Id.Should().Be(targetGenre.Id);
+        genreFromDb.Id.Should().Be(targetGenre.Id);
         genreFromDb.Name.Should().Be(input.Name);
         genreFromDb.IsActive.Should().Be((bool)input.IsActive!);
         List<Guid> relatedcategoryIdsFromDb = await assertDbContext
@@ -144,8 +144,8 @@ public class UpdateGenreTest
     [Trait("Integration/Application", "UpdateGenre - Use Cases")]
     public async Task UpdateGenreWithoutNewCategoriesRelations()
     {
-        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList(10);
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList();
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
         DomainEntity.Genre targetGenre = exampleGenres[5];
         List<DomainEntity.Category> relatedCategories = exampleCategories.GetRange(0, 5);
@@ -198,7 +198,7 @@ public class UpdateGenreTest
         DomainEntity.Genre? genreFromDb =
             await assertDbContext.Genres.FindAsync(targetGenre.Id);
         genreFromDb.Should().NotBeNull();
-        genreFromDb!.Id.Should().Be(targetGenre.Id);
+        genreFromDb.Id.Should().Be(targetGenre.Id);
         genreFromDb.Name.Should().Be(input.Name);
         genreFromDb.IsActive.Should().Be((bool)input.IsActive!);
         List<Guid> relatedcategoryIdsFromDb = await assertDbContext
@@ -213,8 +213,8 @@ public class UpdateGenreTest
     [Trait("Integration/Application", "UpdateGenre - Use Cases")]
     public async Task UpdateGenreWithEmptyCategoryIdsCleanRelations()
     {
-        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList(10);
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList();
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
         DomainEntity.Genre targetGenre = exampleGenres[5];
         List<DomainEntity.Category> relatedCategories = exampleCategories.GetRange(0, 5);
@@ -266,7 +266,7 @@ public class UpdateGenreTest
         DomainEntity.Genre? genreFromDb =
             await assertDbContext.Genres.FindAsync(targetGenre.Id);
         genreFromDb.Should().NotBeNull();
-        genreFromDb!.Id.Should().Be(targetGenre.Id);
+        genreFromDb.Id.Should().Be(targetGenre.Id);
         genreFromDb.Name.Should().Be(input.Name);
         genreFromDb.IsActive.Should().Be((bool)input.IsActive!);
         List<Guid> relatedcategoryIdsFromDb = await assertDbContext
@@ -281,8 +281,8 @@ public class UpdateGenreTest
     [Trait("Integration/Application", "UpdateGenre - Use Cases")]
     public async Task UpdateGenreThrowsWhenCategoryDoesntExists()
     {
-        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList(10);
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList();
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
         DomainEntity.Genre targetGenre = exampleGenres[5];
         List<DomainEntity.Category> relatedCategories = exampleCategories.GetRange(0, 5);
@@ -335,7 +335,7 @@ public class UpdateGenreTest
     [Trait("Integration/Application", "UpdateGenre - Use Cases")]
     public async Task UpdateGenreThrowsWhenNotFound()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(exampleGenres);
         await arrangeDbContext.SaveChangesAsync();

@@ -28,7 +28,7 @@ public class GenreRepository(CodeflixCatalogDbContext context) : IGenreRepositor
     {
         var genre = await Genres
                         .AsNoTracking()
-                        .FirstOrDefaultAsync((x) => x.Id == id, cancellationToken)
+                        .FirstOrDefaultAsync(x => x.Id == id, cancellationToken)
                     ?? throw new NotFoundException($"Genre '{id}' not found.");
 
         var categoryIds = await GenresCategories

@@ -1,18 +1,15 @@
 ﻿using FC.Codeflix.Catalog.Application;
-using FC.Codeflix.Catalog.Infra.Data.EF;
-using FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
-
-using FluentAssertions;
-
-using FC.Codeflix.Catalog.Infra.Data.EF.Models;
-
-using Microsoft.EntityFrameworkCore;
-
 using FC.Codeflix.Catalog.Application.Exceptions;
 using FC.Codeflix.Catalog.Application.UseCases.Genres.Common;
 using FC.Codeflix.Catalog.Application.UseCases.Genres.CreateGenre;
 using FC.Codeflix.Catalog.Domain.Entities;
+using FC.Codeflix.Catalog.Infra.Data.EF;
+using FC.Codeflix.Catalog.Infra.Data.EF.Models;
+using FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
 
+using FluentAssertions;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -61,7 +58,7 @@ public class CreateGenreTest
         Domain.Entities.Genre? genreFromDb =
             await assertDbContext.Genres.FindAsync(output.Id);
         genreFromDb.Should().NotBeNull();
-        genreFromDb!.Name.Should().Be(input.Name);
+        genreFromDb.Name.Should().Be(input.Name);
         genreFromDb.IsActive.Should().Be(input.IsActive);
     }
 
@@ -109,7 +106,7 @@ public class CreateGenreTest
         Domain.Entities.Genre? genreFromDb =
             await assertDbContext.Genres.FindAsync(output.Id);
         genreFromDb.Should().NotBeNull();
-        genreFromDb!.Name.Should().Be(input.Name);
+        genreFromDb.Name.Should().Be(input.Name);
         genreFromDb.IsActive.Should().Be(input.IsActive);
         List<GenresCategories> relations =
             await assertDbContext.GenresCategories.AsNoTracking()

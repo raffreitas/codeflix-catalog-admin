@@ -1,9 +1,8 @@
-﻿using FC.Codeflix.Catalog.IntegrationTests.Base;
+﻿using FC.Codeflix.Catalog.Domain.Enum;
+using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
+using FC.Codeflix.Catalog.IntegrationTests.Base;
 
 using DomainEntity = FC.Codeflix.Catalog.Domain.Entities;
-
-using FC.Codeflix.Catalog.Domain.Enum;
-using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 
 namespace FC.Codeflix.Catalog.IntegrationTests.Infra.Data.EF.Repositories.CastMemberRepository;
 

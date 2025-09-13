@@ -97,7 +97,7 @@ public sealed class VideoRepositoryTestFixture : BaseFixture
     public string GetValidGenreName()
         => Faker.Commerce.Categories(1)[0];
 
-    public Genre GetExampleGenre() => new(GetValidGenreName(), true);
+    public Genre GetExampleGenre() => new(GetValidGenreName());
 
     public List<Genre> GetRandomGenresList()
         => Enumerable.Range(0, Random.Shared.Next(1, 5)).Select(_ => GetExampleGenre()).ToList();
@@ -131,7 +131,7 @@ public sealed class VideoRepositoryTestFixture : BaseFixture
 
     public string GetValidMediaPath()
     {
-        var exampleMedias = new string[]
+        var exampleMedias = new[]
         {
             "https://www.googlestorage.com/file-example.mp4",
             "https://www.storage.com/another-example-of-video.mp4", "https://www.S3.com.br/example.mp4",

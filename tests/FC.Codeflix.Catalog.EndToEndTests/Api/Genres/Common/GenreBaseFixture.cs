@@ -13,7 +13,6 @@ public class GenreBaseFixture : BaseFixture
     public CategoryPersistence CategoryPersistence { get; set; }
 
     public GenreBaseFixture()
-        : base()
     {
         DbContext = CreateDbContext();
         GenrePersistence = new GenrePersistence(DbContext);

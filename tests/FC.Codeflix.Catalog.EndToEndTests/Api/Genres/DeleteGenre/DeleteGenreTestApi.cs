@@ -23,7 +23,7 @@ public class DeleteGenreTestApi : IDisposable
     [Trait("EndToEnd/Api", "Genre/DeleteGenre - Endpoints")]
     public async Task DeleteGenre()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         var targetGenre = exampleGenres[5];
         await _fixture.GenrePersistence.InsertList(exampleGenres);
 
@@ -31,7 +31,7 @@ public class DeleteGenreTestApi : IDisposable
             .Delete<object>($"/genres/{targetGenre.Id}");
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status204NoContent);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status204NoContent);
         output.Should().BeNull();
         DomainEntity.Genre? genreDb = await _fixture.GenrePersistence.GetById(targetGenre.Id);
         genreDb.Should().BeNull();
@@ -41,7 +41,7 @@ public class DeleteGenreTestApi : IDisposable
     [Trait("EndToEnd/Api", "Genre/DeleteGenre - Endpoints")]
     public async Task WhenNotFound404()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         var randomGuid = Guid.NewGuid();
         await _fixture.GenrePersistence.InsertList(exampleGenres);
 
@@ -50,8 +50,8 @@ public class DeleteGenreTestApi : IDisposable
 
         response.Should().NotBeNull();
         output.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status404NotFound);
-        output!.Type.Should().Be("NotFound");
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status404NotFound);
+        output.Type.Should().Be("NotFound");
         output.Detail.Should().Be($"Genre '{randomGuid}' not found.");
     }
 
@@ -60,9 +60,9 @@ public class DeleteGenreTestApi : IDisposable
     [Trait("EndToEnd/Api", "Genre/DeleteGenre - Endpoints")]
     public async Task DeleteGenreWithRelations()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         var targetGenre = exampleGenres[5];
-        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList(10);
+        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {
@@ -89,7 +89,7 @@ public class DeleteGenreTestApi : IDisposable
             .Delete<object>($"/genres/{targetGenre.Id}");
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status204NoContent);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status204NoContent);
         output.Should().BeNull();
         DomainEntity.Genre? genreDb = await _fixture.GenrePersistence.GetById(targetGenre.Id);
         genreDb.Should().BeNull();

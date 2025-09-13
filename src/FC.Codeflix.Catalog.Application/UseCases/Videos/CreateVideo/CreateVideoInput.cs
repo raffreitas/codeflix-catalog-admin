@@ -6,8 +6,8 @@ using MediatR;
 namespace FC.Codeflix.Catalog.Application.UseCases.Videos.CreateVideo;
 
 public sealed record CreateVideoInput(
-    string Title,
-    string Description,
+    string? Title,
+    string? Description,
     int YearLaunched,
     int Duration,
     bool Opened,

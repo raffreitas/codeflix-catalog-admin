@@ -1,9 +1,48 @@
 services:
-    fc.codeflix.catalog.db.e2e:
-        container_name: catalog.db.e2e
-        hostname: catalogdb
-        image: mysql
-        ports:
-            - 33060:3306
-        environment:
-            MYSQL_ROOT_PASSWORD: root
+  fc.codeflix.catalog.db.e2e:
+    container_name: catalog.db.e2e
+    hostname: catalogdb
+    image: mysql
+    ports:
+      - 33060:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+  
+  rabbitmq:
+    container_name: adm_videos_rabbitmq_e2e
+    image: rabbitmq:4-management
+    hostname: rabbitmqe2e
+    environment:
+      - RABBITMQ_DEFAULT_USER=adm_videos
+      - RABBITMQ_DEFAULT_PASS=123456
+    ports:
+      - 25672:15672
+      - 56720:5672
+
+  localstack:
+    image: localstack/localstack:latest
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_ACCESS_KEY_ID=localstack
+      - AWS_SECRET_ACCESS_KEY=localstack
+      - AWS_DEFAULT_REGION=us-east-1
+    ports:
+      - "4566:4566"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  localstack-setup:
+    image: amazon/aws-cli
+    volumes:
+      - ./../../.docker:/scripts
+    entrypoint: [ "/scripts/init-localstack.sh" ]
+    environment:
+      - AWS_ACCESS_KEY_ID=localstack
+      - AWS_SECRET_ACCESS_KEY=localstack
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ENDPOINT=http://localstack:4566
+    depends_on:
+      - localstack

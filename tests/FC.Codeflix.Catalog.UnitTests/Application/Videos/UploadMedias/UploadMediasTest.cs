@@ -34,7 +34,10 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
         string[] fileNames =
         [
             StorageFileName.Create(exampleVideo.Id, nameof(exampleVideo.Media), input.VideoFile!.Extension),
-            StorageFileName.Create(exampleVideo.Id, nameof(exampleVideo.Trailer), input.TrailerFile!.Extension)
+            StorageFileName.Create(exampleVideo.Id, nameof(exampleVideo.Trailer), input.TrailerFile!.Extension),
+            StorageFileName.Create(exampleVideo.Id, nameof(exampleVideo.Banner), input.BannerFile!.Extension),
+            StorageFileName.Create(exampleVideo.Id, nameof(exampleVideo.Thumb), input.ThumbFile!.Extension),
+            StorageFileName.Create(exampleVideo.Id, nameof(exampleVideo.ThumbHalf), input.ThumbHalfFile!.Extension)
         ];
         _videoRepository.Setup(x => x.Get(
             It.Is<Guid>(id => id == input.VideoId),
@@ -56,7 +59,7 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
             It.IsAny<Stream>(),
             It.IsAny<string>(),
             It.IsAny<CancellationToken>()
-        ), Times.Exactly(2));
+        ), Times.Exactly(5));
     }
 
     [Fact(DisplayName = nameof(ThrowsWhenVideoNotFound))]
@@ -126,11 +129,18 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
     {
         var exampleVideo = _fixture.GetValidVideo();
         var input = _fixture.GetValidInput(exampleVideo.Id);
+
         var videoFileName = StorageFileName
             .Create(exampleVideo.Id, nameof(exampleVideo.Media), input.VideoFile!.Extension);
         var trailerFileName = StorageFileName
             .Create(exampleVideo.Id, nameof(exampleVideo.Trailer), input.TrailerFile!.Extension);
-        string[] fileNames = [videoFileName, trailerFileName];
+        var bannerFileName = StorageFileName
+            .Create(exampleVideo.Id, nameof(exampleVideo.Banner), input.BannerFile!.Extension);
+        var thumbFileName = StorageFileName
+            .Create(exampleVideo.Id, nameof(exampleVideo.Thumb), input.ThumbFile!.Extension);
+        var thumbHalfFileName = StorageFileName
+            .Create(exampleVideo.Id, nameof(exampleVideo.ThumbHalf), input.ThumbHalfFile!.Extension);
+        string[] fileNames = [videoFileName, trailerFileName, bannerFileName, thumbFileName, thumbHalfFileName];
         _videoRepository.Setup(x => x.Get(
             It.Is<Guid>(id => id == input.VideoId),
             It.IsAny<CancellationToken>())
@@ -147,6 +157,27 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
             It.IsAny<string>(),
             It.IsAny<CancellationToken>())
         ).ReturnsAsync(trailerFileName);
+        _storageService
+            .Setup(x => x.Upload(
+                It.Is<string>(x => x == bannerFileName),
+                It.IsAny<Stream>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>())
+            ).ReturnsAsync(bannerFileName);
+        _storageService
+            .Setup(x => x.Upload(
+                It.Is<string>(x => x == thumbFileName),
+                It.IsAny<Stream>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>())
+            ).ReturnsAsync(thumbFileName);
+        _storageService
+            .Setup(x => x.Upload(
+                It.Is<string>(x => x == thumbHalfFileName),
+                It.IsAny<Stream>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>())
+            ).ReturnsAsync(thumbHalfFileName);
         _unitOfWork.Setup(x => x.Commit(It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Something went wrong when trying to commit the transaction."));
 
@@ -161,11 +192,11 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
             It.IsAny<Stream>(),
             It.IsAny<string>(),
             It.IsAny<CancellationToken>()
-        ), Times.Exactly(2));
+        ), Times.Exactly(5));
         _storageService.Verify(x => x.Delete(
             It.Is<string>(fileName => fileNames.Contains(fileName)),
             It.IsAny<CancellationToken>()
-        ), Times.Exactly(2));
+        ), Times.Exactly(5));
     }
 
     [Fact(DisplayName = nameof(ClearOnlyOneFileStorageInCommitErrorCaseIfProvidedOnlyOneFile))]
@@ -174,7 +205,10 @@ public sealed class UploadMediasTest : IClassFixture<UploadMediasTestFixture>
         var video = _fixture.GetValidVideo();
         video.UpdateTrailer(_fixture.GetValidMediaPath());
         video.UpdateMedia(_fixture.GetValidMediaPath());
-        var input = _fixture.GetValidInput(video.Id, withTrailerFile: false);
+        var input = _fixture.GetValidInput(video.Id, withTrailerFile: false,
+            withBannerFile: false,
+            withThumbFile: false,
+            withThumbHalfFile: false);
         var videoFileName = StorageFileName
             .Create(video.Id, nameof(video.Media), input.VideoFile!.Extension);
         _videoRepository.Setup(x => x.Get(

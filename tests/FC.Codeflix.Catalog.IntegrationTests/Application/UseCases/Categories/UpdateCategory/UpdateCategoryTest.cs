@@ -76,7 +76,7 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         output.IsActive.Should().Be((bool)input.IsActive!);
         var dbCategory = await fixture
             .CreateDbContext(preserveData: true)
-            .Categories.SingleAsync((x) => x.Id == input.Id, CancellationToken.None);
+            .Categories.SingleAsync(x => x.Id == input.Id, CancellationToken.None);
         dbCategory.Should().NotBeNull();
         dbCategory.Name.Should().Be(input.Name);
         dbCategory.Description.Should().Be(input.Description);
@@ -123,7 +123,7 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         output.IsActive.Should().Be(exampleCategory.IsActive);
         var dbCategory = await fixture
             .CreateDbContext(preserveData: true)
-            .Categories.SingleAsync((x) => x.Id == input.Id, CancellationToken.None);
+            .Categories.SingleAsync(x => x.Id == input.Id, CancellationToken.None);
         dbCategory.Should().NotBeNull();
         dbCategory.Name.Should().Be(input.Name);
         dbCategory.Description.Should().Be(exampleCategory.Description);
@@ -171,7 +171,7 @@ public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
         output.IsActive.Should().Be(exampleCategory.IsActive);
         var dbCategory = await fixture
             .CreateDbContext(preserveData: true)
-            .Categories.SingleAsync((x) => x.Id == input.Id, CancellationToken.None);
+            .Categories.SingleAsync(x => x.Id == input.Id, CancellationToken.None);
         dbCategory.Should().NotBeNull();
         dbCategory.Name.Should().Be(input.Name);
         dbCategory.Description.Should().Be(input.Description);

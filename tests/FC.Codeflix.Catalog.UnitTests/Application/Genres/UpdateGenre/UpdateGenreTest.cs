@@ -114,7 +114,7 @@ public class UpdateGenreTest(UpdateGenreTestFixture fixture)
         var act = async () => await useCase.Handle(input, CancellationToken.None);
 
         await act.Should().ThrowAsync<EntityValidationException>()
-            .WithMessage($"Name should not be null or empty.");
+            .WithMessage("Name should not be null or empty.");
     }
 
     [Theory(DisplayName = nameof(UpdateGenreOnlyName))]

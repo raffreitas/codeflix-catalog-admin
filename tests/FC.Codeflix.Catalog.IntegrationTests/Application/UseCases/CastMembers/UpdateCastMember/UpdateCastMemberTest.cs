@@ -56,7 +56,7 @@ public class UpdateCastMemberTest
             .CastMembers
             .FindAsync(example.Id);
         item.Should().NotBeNull();
-        item!.Name.Should().Be(newName);
+        item.Name.Should().Be(newName);
         item.Type.Should().Be(newType);
     }
 

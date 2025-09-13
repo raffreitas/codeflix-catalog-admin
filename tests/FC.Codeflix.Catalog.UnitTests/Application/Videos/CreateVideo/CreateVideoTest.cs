@@ -80,21 +80,21 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
         const string expectedBannerName = "banner.jpg";
         _storageServiceMock.Setup(x => x
             .Upload(
-                It.Is<string>(fileName => fileName.EndsWith("-banner.jpg")),
+                It.Is<string>(fileName => fileName.EndsWith("/banner.jpg")),
                 It.IsAny<Stream>(),
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
         ).ReturnsAsync(expectedBannerName);
         _storageServiceMock.Setup(x => x
             .Upload(
-                It.Is<string>(fileName => fileName.EndsWith("-thumbhalf.jpg")),
+                It.Is<string>(fileName => fileName.EndsWith("/thumbhalf.jpg")),
                 It.IsAny<Stream>(),
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
         ).ReturnsAsync(expectedThumbHalfName);
         _storageServiceMock.Setup(x => x
             .Upload(
-                It.Is<string>(fileName => fileName.EndsWith("-thumb.jpg")),
+                It.Is<string>(fileName => fileName.EndsWith("/thumb.jpg")),
                 It.IsAny<Stream>(),
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
@@ -406,21 +406,21 @@ public sealed class CreateVideoTest : IClassFixture<VideoTestFixture>
     {
         _storageServiceMock.Setup(x => x
             .Upload(
-                It.Is<string>(fileName => fileName.EndsWith("-thumb.jpg")),
+                It.Is<string>(fileName => fileName.EndsWith("/thumb.jpg")),
                 It.IsAny<Stream>(),
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
         ).ReturnsAsync("123-thumb.jpg");
         _storageServiceMock.Setup(x => x
             .Upload(
-                It.Is<string>(fileName => fileName.EndsWith("-banner.jpg")),
+                It.Is<string>(fileName => fileName.EndsWith("/banner.jpg")),
                 It.IsAny<Stream>(),
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>())
         ).ReturnsAsync("123-banner.jpg");
         _storageServiceMock.Setup(x => x
             .Upload(
-                It.Is<string>(fileName => fileName.EndsWith("-thumbhalf.jpg")),
+                It.Is<string>(fileName => fileName.EndsWith("/thumbhalf.jpg")),
                 It.IsAny<Stream>(),
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>())

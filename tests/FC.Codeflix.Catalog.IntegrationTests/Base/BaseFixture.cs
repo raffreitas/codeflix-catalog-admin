@@ -16,7 +16,7 @@ public abstract class BaseFixture
                 .Options
         );
 
-        if (preserveData == false)
+        if (!preserveData)
             dbContext.Database.EnsureDeleted();
 
         return dbContext;

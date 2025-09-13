@@ -27,7 +27,7 @@ public class ListGenresApiTest : IDisposable
     [Trait("EndToEnd/Api", "Genre/ListGenres - Endpoints")]
     public async Task List()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(10);
+        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
         await _fixture.GenrePersistence.InsertList(exampleGenres);
         var input = new ListGenresInput();
         input.Page = 1;
@@ -37,9 +37,9 @@ public class ListGenresApiTest : IDisposable
             .Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Meta.Should().NotBeNull();
+        output.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
         output.Meta!.Total.Should().Be(exampleGenres.Count);
         output.Meta.CurrentPage.Should().Be(input.Page);
@@ -49,7 +49,7 @@ public class ListGenresApiTest : IDisposable
         {
             var exampleItem = exampleGenres.Find(x => x.Id == outputItem.Id);
             exampleItem.Should().NotBeNull();
-            outputItem.Name.Should().Be(exampleItem!.Name);
+            outputItem.Name.Should().Be(exampleItem.Name);
             outputItem.IsActive.Should().Be(exampleItem.IsActive);
             outputItem.CreatedAt.TrimMilliseconds()
                 .Should().Be(exampleItem.CreatedAt.TrimMilliseconds());
@@ -61,7 +61,7 @@ public class ListGenresApiTest : IDisposable
     public async Task ListWithRelations()
     {
         List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(15);
-        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList(10);
+        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {
@@ -91,9 +91,9 @@ public class ListGenresApiTest : IDisposable
             .Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Meta.Should().NotBeNull();
+        output.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
         output.Meta!.Total.Should().Be(exampleGenres.Count);
         output.Meta.CurrentPage.Should().Be(input.Page);
@@ -103,7 +103,7 @@ public class ListGenresApiTest : IDisposable
         {
             var exampleItem = exampleGenres.Find(x => x.Id == outputItem.Id);
             exampleItem.Should().NotBeNull();
-            outputItem.Name.Should().Be(exampleItem!.Name);
+            outputItem.Name.Should().Be(exampleItem.Name);
             outputItem.IsActive.Should().Be(exampleItem.IsActive);
             outputItem.CreatedAt.TrimMilliseconds()
                 .Should().Be(exampleItem.CreatedAt.TrimMilliseconds());
@@ -115,7 +115,7 @@ public class ListGenresApiTest : IDisposable
                 var exampleCategory = exampleCategories
                     .Find(x => x.Id == outputRelatedCategory.Id);
                 exampleCategory.Should().NotBeNull();
-                outputRelatedCategory.Name.Should().Be(exampleCategory!.Name);
+                outputRelatedCategory.Name.Should().Be(exampleCategory.Name);
             });
         });
     }
@@ -133,9 +133,9 @@ public class ListGenresApiTest : IDisposable
             .Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Meta.Should().NotBeNull();
+        output.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
         output.Meta!.Total.Should().Be(0);
         output.Data!.Count.Should().Be(0);
@@ -164,9 +164,9 @@ public class ListGenresApiTest : IDisposable
             .Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Meta.Should().NotBeNull();
+        output.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
         output.Meta!.Total.Should().Be(quantityToGenerate);
         output.Meta.CurrentPage.Should().Be(input.Page);
@@ -176,7 +176,7 @@ public class ListGenresApiTest : IDisposable
         {
             var exampleItem = exampleGenres.Find(x => x.Id == outputItem.Id);
             exampleItem.Should().NotBeNull();
-            outputItem.Name.Should().Be(exampleItem!.Name);
+            outputItem.Name.Should().Be(exampleItem.Name);
             outputItem.IsActive.Should().Be(exampleItem.IsActive);
             outputItem.CreatedAt.TrimMilliseconds()
                 .Should().Be(exampleItem.CreatedAt.TrimMilliseconds());
@@ -202,7 +202,7 @@ public class ListGenresApiTest : IDisposable
     )
     {
         var exampleGenres = _fixture.GetExampleListGenresByNames(
-            new List<string>()
+            new List<string>
             {
                 "Action",
                 "Horror",
@@ -226,9 +226,9 @@ public class ListGenresApiTest : IDisposable
             .Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Meta.Should().NotBeNull();
+        output.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
         output.Meta!.Total.Should().Be(expectedQuantityTotalItems);
         output.Meta.CurrentPage.Should().Be(input.Page);
@@ -238,7 +238,7 @@ public class ListGenresApiTest : IDisposable
         {
             var exampleItem = exampleGenres.Find(x => x.Id == outputItem.Id);
             exampleItem.Should().NotBeNull();
-            outputItem.Name.Should().Be(exampleItem!.Name);
+            outputItem.Name.Should().Be(exampleItem.Name);
             outputItem.IsActive.Should().Be(exampleItem.IsActive);
             outputItem.CreatedAt.TrimMilliseconds()
                 .Should().Be(exampleItem.CreatedAt.TrimMilliseconds());
@@ -259,7 +259,7 @@ public class ListGenresApiTest : IDisposable
         string order
     )
     {
-        var exampleGenres = _fixture.GetExampleListGenres(10);
+        var exampleGenres = _fixture.GetExampleListGenres();
 
         await _fixture.GenrePersistence.InsertList(exampleGenres);
         var input = new ListGenresInput();
@@ -273,9 +273,9 @@ public class ListGenresApiTest : IDisposable
             .Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Meta.Should().NotBeNull();
+        output.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
         output.Meta!.Total.Should().Be(10);
         output.Meta.CurrentPage.Should().Be(input.Page);
@@ -289,7 +289,7 @@ public class ListGenresApiTest : IDisposable
             var outputItem = output.Data[indice];
             var exampleItem = exampleGenres.Find(x => x.Id == outputItem.Id);
             exampleItem.Should().NotBeNull();
-            outputItem.Name.Should().Be(exampleItem!.Name);
+            outputItem.Name.Should().Be(exampleItem.Name);
             outputItem.IsActive.Should().Be(exampleItem.IsActive);
             outputItem.CreatedAt.TrimMilliseconds()
                 .Should().Be(exampleItem.CreatedAt.TrimMilliseconds());

@@ -44,7 +44,7 @@ public class CreateCategoryTest(CreateCategoryTestFixture fixture)
 
         var dbCategory = await fixture
             .CreateDbContext(preserveData: true)
-            .Categories.SingleAsync((x) => x.Id == output.Id, CancellationToken.None);
+            .Categories.SingleAsync(x => x.Id == output.Id, CancellationToken.None);
 
         dbCategory.Should().NotBeNull();
         dbCategory.Name.Should().Be(input.Name);

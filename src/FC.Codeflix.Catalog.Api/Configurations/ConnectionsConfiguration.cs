@@ -1,8 +1,4 @@
-﻿using Amazon.S3;
-
-using FC.Codeflix.Catalog.Application.Interfaces;
-using FC.Codeflix.Catalog.Infra.Data.EF;
-using FC.Codeflix.Catalog.Infra.Storage.Services;
+﻿using FC.Codeflix.Catalog.Infra.Data.EF;
 
 using Microsoft.EntityFrameworkCore;
 

@@ -483,7 +483,7 @@ public sealed class UpdateVideoTest : IClassFixture<UpdateVideoTestFixture>
             .Select(_ => Guid.NewGuid()).ToList();
         var invalidGenreId = Guid.NewGuid();
         var inputInvalidIdsList = examplesGenreIds
-            .Concat(new List<Guid>() { invalidGenreId }).ToList();
+            .Concat(new List<Guid> { invalidGenreId }).ToList();
         var input = _fixture.CreateValidInput(exampleVideo.Id, inputInvalidIdsList);
         _videoRepositoryMock.Setup(repository =>
                 repository.Get(
@@ -566,7 +566,7 @@ public sealed class UpdateVideoTest : IClassFixture<UpdateVideoTestFixture>
             .Select(_ => Guid.NewGuid()).ToList();
         var invalidGenreId = Guid.NewGuid();
         var inputInvalidIdsList = examplesGenreIds
-            .Concat(new List<Guid>() { invalidGenreId }).ToList();
+            .Concat(new List<Guid> { invalidGenreId }).ToList();
         var input = _fixture.CreateValidInput(exampleVideo.Id, inputInvalidIdsList);
         _videoRepositoryMock.Setup(repository =>
                 repository.Get(

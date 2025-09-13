@@ -106,13 +106,7 @@ namespace FC.Codeflix.Catalog.Infra.Data.EF.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("VideoId")
-                        .HasColumnType("char(36)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("VideoId")
-                        .IsUnique();
 
                     b.ToTable("Media");
                 });
@@ -133,6 +127,9 @@ namespace FC.Codeflix.Catalog.Infra.Data.EF.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("MediaId")
+                        .HasColumnType("char(36)");
+
                     b.Property<bool>("Opened")
                         .HasColumnType("tinyint(1)");
 
@@ -147,10 +144,19 @@ namespace FC.Codeflix.Catalog.Infra.Data.EF.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<Guid?>("TrailerId")
+                        .HasColumnType("char(36)");
+
                     b.Property<int>("YearLaunched")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MediaId")
+                        .IsUnique();
+
+                    b.HasIndex("TrailerId")
+                        .IsUnique();
 
                     b.ToTable("Videos");
                 });
@@ -215,21 +221,16 @@ namespace FC.Codeflix.Catalog.Infra.Data.EF.Migrations
                     b.ToTable("VideosGenres");
                 });
 
-            modelBuilder.Entity("FC.Codeflix.Catalog.Domain.Entities.Media", b =>
-                {
-                    b.HasOne("FC.Codeflix.Catalog.Domain.Entities.Video", null)
-                        .WithOne("Media")
-                        .HasForeignKey("FC.Codeflix.Catalog.Domain.Entities.Media", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FC.Codeflix.Catalog.Domain.Entities.Video", null)
-                        .WithOne("Trailer")
-                        .HasForeignKey("FC.Codeflix.Catalog.Domain.Entities.Media", "VideoId");
-                });
-
             modelBuilder.Entity("FC.Codeflix.Catalog.Domain.Entities.Video", b =>
                 {
+                    b.HasOne("FC.Codeflix.Catalog.Domain.Entities.Media", "Media")
+                        .WithOne()
+                        .HasForeignKey("FC.Codeflix.Catalog.Domain.Entities.Video", "MediaId");
+
+                    b.HasOne("FC.Codeflix.Catalog.Domain.Entities.Media", "Trailer")
+                        .WithOne()
+                        .HasForeignKey("FC.Codeflix.Catalog.Domain.Entities.Video", "TrailerId");
+
                     b.OwnsOne("FC.Codeflix.Catalog.Domain.ValueObjects.Image", "Banner", b1 =>
                         {
                             b1.Property<Guid>("VideoId")
@@ -286,9 +287,13 @@ namespace FC.Codeflix.Catalog.Infra.Data.EF.Migrations
 
                     b.Navigation("Banner");
 
+                    b.Navigation("Media");
+
                     b.Navigation("Thumb");
 
                     b.Navigation("ThumbHalf");
+
+                    b.Navigation("Trailer");
                 });
 
             modelBuilder.Entity("FC.Codeflix.Catalog.Infra.Data.EF.Models.GenresCategories", b =>
@@ -365,13 +370,6 @@ namespace FC.Codeflix.Catalog.Infra.Data.EF.Migrations
                     b.Navigation("Genre");
 
                     b.Navigation("Video");
-                });
-
-            modelBuilder.Entity("FC.Codeflix.Catalog.Domain.Entities.Video", b =>
-                {
-                    b.Navigation("Media");
-
-                    b.Navigation("Trailer");
                 });
 #pragma warning restore 612, 618
         }

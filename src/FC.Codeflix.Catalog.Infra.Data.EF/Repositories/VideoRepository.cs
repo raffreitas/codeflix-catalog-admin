@@ -89,6 +89,31 @@ public sealed class VideoRepository(CodeflixCatalogDbContext context) : IVideoRe
                 ));
             await VideosCastMembers.AddRangeAsync(relations, cancellationToken);
         }
+
+        DeleteOrphanMedias(video);
+    }
+
+    private void DeleteOrphanMedias(Video video)
+    {
+        if (context.Entry(video).Reference(v => v.Trailer).IsModified)
+        {
+            var oldTrailerId = context.Entry(video).OriginalValues.GetValue<Guid?>($"{nameof(Video.Trailer)}Id");
+            if (oldTrailerId != null && oldTrailerId != video.Trailer?.Id)
+            {
+                var oldTrailer = Medias.Find(oldTrailerId);
+                Medias.Remove(oldTrailer!);
+            }
+        }
+
+        if (context.Entry(video).Reference(v => v.Media).IsModified)
+        {
+            var oldMediaId = context.Entry(video).OriginalValues.GetValue<Guid?>($"{nameof(Video.Media)}Id");
+            if (oldMediaId != null && oldMediaId != video.Media?.Id)
+            {
+                var oldMedia = Medias.Find(oldMediaId);
+                Medias.Remove(oldMedia!);
+            }
+        }
     }
 
     public Task Delete(Video video, CancellationToken cancellationToken)

@@ -185,6 +185,7 @@ public sealed class VideoRepositoryTest(VideoRepositoryTestFixture fixture) : IC
     {
         var dbContextArrange = fixture.CreateDbContext();
         var exampleVideo = fixture.GetExampleVideo();
+        exampleVideo.UpdateTrailer(fixture.GetValidMediaPath());
         await dbContextArrange.AddAsync(exampleVideo);
         await dbContextArrange.SaveChangesAsync();
         var updatedThumb = fixture.GetValidImagePath();
@@ -698,7 +699,7 @@ public sealed class VideoRepositoryTest(VideoRepositoryTestFixture fixture) : IC
     [InlineData("", "asc")]
     public async Task SearchOrdered(string orderBy, string order)
     {
-        var exampleVideosList = fixture.GetExampleVideosList(10);
+        var exampleVideosList = fixture.GetExampleVideosList();
         await using (var arrangeDbContext = fixture.CreateDbContext())
         {
             await arrangeDbContext.Videos.AddRangeAsync(exampleVideosList);

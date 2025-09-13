@@ -1,16 +1,13 @@
 ﻿using FC.Codeflix.Catalog.Application;
-using FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
+using FC.Codeflix.Catalog.Application.Exceptions;
+using FC.Codeflix.Catalog.Application.UseCases.Genres.DeleteGenre;
 using FC.Codeflix.Catalog.Infra.Data.EF;
+using FC.Codeflix.Catalog.Infra.Data.EF.Models;
+using FC.Codeflix.Catalog.Infra.Data.EF.Repositories;
 
 using FluentAssertions;
 
-using FC.Codeflix.Catalog.Application.Exceptions;
-using FC.Codeflix.Catalog.Infra.Data.EF.Models;
-
 using Microsoft.EntityFrameworkCore;
-
-using FC.Codeflix.Catalog.Application.UseCases.Genres.DeleteGenre;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -28,7 +25,7 @@ public class DeleteGenreTest
     [Trait("Integration/Application", "DeleteGenre - Use Cases")]
     public async Task DeleteGenre()
     {
-        var genresExampleList = _fixture.GetExampleListGenres(10);
+        var genresExampleList = _fixture.GetExampleListGenres();
         var targetGenre = genresExampleList[5];
         var dbArrangeContext = _fixture.CreateDbContext();
         await dbArrangeContext.Genres.AddRangeAsync(genresExampleList);
@@ -61,7 +58,7 @@ public class DeleteGenreTest
     [Trait("Integration/Application", "DeleteGenre - Use Cases")]
     public async Task DeleteGenreWithRelations()
     {
-        var genresExampleList = _fixture.GetExampleListGenres(10);
+        var genresExampleList = _fixture.GetExampleListGenres();
         var targetGenre = genresExampleList[5];
         var exampleCategories = _fixture.GetExampleCategoriesList(5);
         var dbArrangeContext = _fixture.CreateDbContext();
@@ -108,7 +105,7 @@ public class DeleteGenreTest
     [Trait("Integration/Application", "DeleteGenre - Use Cases")]
     public async Task DeleteGenreThrowsWhenNotFound()
     {
-        var genresExampleList = _fixture.GetExampleListGenres(10);
+        var genresExampleList = _fixture.GetExampleListGenres();
         var dbArrangeContext = _fixture.CreateDbContext();
         await dbArrangeContext.Genres.AddRangeAsync(genresExampleList);
         await dbArrangeContext.SaveChangesAsync();

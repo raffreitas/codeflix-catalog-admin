@@ -28,9 +28,9 @@ public class GetCastMemberApiTest(CastMemberApiBaseFixture fixture) : IDisposabl
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status200OK);
         output.Should().NotBeNull();
-        output!.Data.Should().NotBeNull();
+        output.Data.Should().NotBeNull();
         output.Data.Id.Should().Be(example.Id);
         output.Data.Name.Should().Be(example.Name);
         output.Data.Type.Should().Be(example.Type);
@@ -51,10 +51,10 @@ public class GetCastMemberApiTest(CastMemberApiBaseFixture fixture) : IDisposabl
             );
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status404NotFound);
+        response.StatusCode.Should().Be((HttpStatusCode)StatusCodes.Status404NotFound);
         output.Should().NotBeNull();
-        output!.Title.Should().Be("Not Found");
-        output!.Detail.Should().Be($"CastMember '{randomGuid}' not found.");
+        output.Title.Should().Be("Not Found");
+        output.Detail.Should().Be($"CastMember '{randomGuid}' not found.");
     }
 
     public void Dispose() => fixture.CleanPersistence();
