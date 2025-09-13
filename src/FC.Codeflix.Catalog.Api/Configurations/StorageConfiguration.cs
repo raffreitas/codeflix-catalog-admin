@@ -12,7 +12,9 @@ public static class StorageConfiguration
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var settings = configuration.Get<StorageSettings>() ??
+        services.Configure<StorageSettings>(configuration.GetSection(StorageSettings.ConfigurationSection));
+
+        var settings = configuration.GetSection(StorageSettings.ConfigurationSection).Get<StorageSettings>() ??
                        throw new InvalidOperationException("Storage settings not found");
 
         var config = new AmazonS3Config();
@@ -20,6 +22,7 @@ public static class StorageConfiguration
         {
             config.ServiceURL = settings.ServiceUrl;
             config.ForcePathStyle = true;
+            config.AuthenticationRegion = "us-east-1";
         }
 
         services.AddSingleton<IAmazonS3>(_ => new AmazonS3Client(settings.AccessKey, settings.SecretKey, config));
