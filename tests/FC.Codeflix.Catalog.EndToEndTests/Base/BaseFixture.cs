@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FC.Codeflix.Catalog.EndToEndTests.Base;
 
-public abstract class BaseFixture
+public abstract class BaseFixture : IDisposable
 {
     private readonly string _dbConnectionString;
     protected Faker Faker { get; }
@@ -42,5 +42,10 @@ public abstract class BaseFixture
         using var dbContext = CreateDbContext();
         dbContext.Database.EnsureDeleted();
         dbContext.Database.EnsureCreated();
+    }
+
+    public void Dispose()
+    {
+        WebAppFactory.Dispose();
     }
 }

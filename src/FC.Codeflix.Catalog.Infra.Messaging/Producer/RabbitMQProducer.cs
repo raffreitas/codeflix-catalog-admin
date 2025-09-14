@@ -18,7 +18,7 @@ public sealed class RabbitMqProducer(
 
     private readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
     };
 
     public Task SendMessageAsync<T>(T message, CancellationToken cancellationToken = default)

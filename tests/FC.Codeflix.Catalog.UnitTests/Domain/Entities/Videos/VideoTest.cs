@@ -329,6 +329,31 @@ public sealed class VideoTest(VideoTestFixture fixture) : IClassFixture<VideoTes
             .WithMessage("There is no Media");
     }
 
+    [Fact(DisplayName = nameof(UpdateAsEncodingError))]
+    public void UpdateAsEncodingError()
+    {
+        var validVideo = fixture.GetValidVideo();
+        var validMediaPath = fixture.GetValidMediaPath();
+        validVideo.UpdateMedia(validMediaPath);
+
+        validVideo.UpdateAsEncodingError();
+
+        validVideo.Media.Should().NotBeNull();
+        validVideo.Media.Status.Should().Be(MediaStatus.Error);
+        validVideo.Media.EncodedPath.Should().BeNull();
+    }
+
+    [Fact(DisplayName = nameof(UpdateAsEncodingThrowsWhenThereIsNoMedia))]
+    public void UpdateAsEncodingThrowsWhenThereIsNoMedia()
+    {
+        var validVideo = fixture.GetValidVideo();
+
+        var act = () => validVideo.UpdateAsEncodingError();
+
+        act.Should().Throw<EntityValidationException>()
+            .WithMessage("There is no Media");
+    }
+
     [Fact(DisplayName = nameof(UpdateAsEncoded))]
     public void UpdateAsEncoded()
     {

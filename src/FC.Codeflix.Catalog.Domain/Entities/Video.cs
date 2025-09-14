@@ -97,6 +97,13 @@ public sealed class Video : AggregateRoot
         Media.UpdateSentToEncode();
     }
 
+    public void UpdateAsEncodingError()
+    {
+        if (Media is null)
+            throw new EntityValidationException("There is no Media");
+        Media.UpdateAsEncodingError();
+    }
+
     public void UpdateAsEncoded(string encodedPath)
     {
         if (Media is null)

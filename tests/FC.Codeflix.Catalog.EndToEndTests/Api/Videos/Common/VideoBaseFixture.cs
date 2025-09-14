@@ -11,14 +11,23 @@ using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 using FC.Codeflix.Catalog.EndToEndTests.Api.CastMembers.Common;
 using FC.Codeflix.Catalog.EndToEndTests.Api.Genres.Common;
 
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+
+using Moq;
+
+using RabbitMQ.Client;
+
 namespace FC.Codeflix.Catalog.EndToEndTests.Api.Videos.Common;
+
+[CollectionDefinition(nameof(VideoBaseFixture))]
+public class VideoBaseFixtureCollection : ICollectionFixture<VideoBaseFixture>
+{
+}
 
 public sealed class VideoBaseFixture : GenreBaseFixture
 {
-    public readonly VideoPersistence VideoPersistence;
-    public readonly CastMemberPersistence CastMemberPersistence;
-    private const string VideoCreatedQueue = "video.created.queue";
-    private const string RoutingKey = "video.created";
+    public VideoPersistence VideoPersistence { get; private set; }
+    public CastMemberPersistence CastMemberPersistence { get; private set; }
 
     public VideoBaseFixture()
     {
@@ -26,33 +35,34 @@ public sealed class VideoBaseFixture : GenreBaseFixture
         CastMemberPersistence = new CastMemberPersistence(DbContext);
     }
 
-    public void SetupRabbitMQ()
+    internal void PublishMessageToRabbitMQ(object exampleEvent)
     {
-        var channel = WebAppFactory.RabbitMQChannel;
         var exchange = WebAppFactory.RabbitMQConfiguration.Exchange;
-        channel.ExchangeDeclare(exchange, "direct", true, false, null);
-        channel.QueueDeclare(VideoCreatedQueue, true, false, false, null);
-        channel.QueueBind(VideoCreatedQueue, exchange, RoutingKey, null);
+        var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
+        var message = JsonSerializer.SerializeToUtf8Bytes(
+            exampleEvent, jsonOptions);
+        WebAppFactory.RabbitMQChannel.BasicPublish(
+            exchange: exchange,
+            routingKey: WebAppFactory.VideoEncodedRoutingKey,
+            body: message);
     }
 
-    public void TearDownRabbitMQ()
+    public (T?, uint) ReadMessageFromRabbitMQ<T>() where T : class
     {
-        var channel = WebAppFactory.RabbitMQChannel;
-        var exchange = WebAppFactory.RabbitMQConfiguration.Exchange;
-        channel.QueueUnbind(VideoCreatedQueue, exchange, RoutingKey, null);
-        channel.QueueDelete(VideoCreatedQueue, false, false);
-        channel.ExchangeDelete(exchange, false);
-    }
-
-    public (VideoUploadedEvent?, uint) ReadMessageFromRabbitMQ()
-    {
-        var consumingResult = WebAppFactory.RabbitMQChannel.BasicGet(VideoCreatedQueue, true);
+        var consumingResult = WebAppFactory.RabbitMQChannel.BasicGet(WebAppFactory.VideoCreatedQueue, true);
+        if (consumingResult == null) return (null, 0);
         var rawMessage = consumingResult.Body.ToArray();
         var stringMessage = Encoding.UTF8.GetString(rawMessage);
-        var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower, };
-        var @event = JsonSerializer.Deserialize<VideoUploadedEvent>(
-            stringMessage, jsonOptions);
+        var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
+        var @event = JsonSerializer.Deserialize<T>(stringMessage, jsonOptions);
         return (@event, consumingResult.MessageCount);
+    }
+
+    public void PurgeRabbitMQQueues()
+    {
+        IModel channel = WebAppFactory.RabbitMQChannel;
+        channel.QueuePurge(WebAppFactory.VideoCreatedQueue);
+        channel.QueuePurge(WebAppFactory.RabbitMQConfiguration.VideoEncodedQueue);
     }
 
     #region Video

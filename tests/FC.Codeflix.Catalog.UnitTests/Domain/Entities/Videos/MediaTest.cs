@@ -43,4 +43,16 @@ public sealed class MediaTest(VideoTestFixture fixture) : IClassFixture<VideoTes
         media.Status.Should().Be(MediaStatus.Completed);
         media.EncodedPath.Should().Be(encodedExpectedPath);
     }
+
+    [Fact(DisplayName = nameof(UpdateAsEncodingError))]
+    public void UpdateAsEncodingError()
+    {
+        var media = fixture.GetValidMedia();
+        media.UpdateSentToEncode();
+
+        media.UpdateAsEncodingError();
+
+        media.Status.Should().Be(MediaStatus.Error);
+        media.EncodedPath.Should().BeNull();
+    }
 }

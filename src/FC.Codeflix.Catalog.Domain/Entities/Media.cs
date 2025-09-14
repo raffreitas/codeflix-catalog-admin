@@ -17,6 +17,12 @@ public sealed class Media : Entity
 
     public void UpdateSentToEncode() => Status = MediaStatus.Processing;
 
+    public void UpdateAsEncodingError()
+    {
+        EncodedPath = null;
+        Status = MediaStatus.Error;
+    }
+
     public void UpdateAsEncoded(string encodedFilePath)
     {
         EncodedPath = encodedFilePath;

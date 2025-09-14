@@ -18,11 +18,11 @@ namespace FC.Codeflix.Catalog.Api.Configurations;
 
 public static class UseCasesConfiguration
 {
-    public static IServiceCollection AddUseCases(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddUseCases(this IServiceCollection services)
     {
         services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<CreateCategoryUseCase>());
         services.AddRepositories();
-        services.AddDomainEvents(configuration);
+        services.AddDomainEvents();
         return services;
     }
 
@@ -37,32 +37,10 @@ public static class UseCasesConfiguration
         return services;
     }
 
-    private static IServiceCollection AddDomainEvents(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddDomainEvents(this IServiceCollection services)
     {
         services.AddTransient<IDomainEventPublisher, DomainEventPublisher>();
         services.AddTransient<IDomainEventHandler<VideoUploadedEvent>, SentToEncoderEventHandler>();
-
-        services.Configure<RabbitMqConfiguration>(configuration.GetSection(RabbitMqConfiguration.ConfigurationSection));
-
-        services.AddSingleton(sp =>
-        {
-            RabbitMqConfiguration config = sp.GetRequiredService<IOptions<RabbitMqConfiguration>>().Value;
-            var factory = new ConnectionFactory
-            {
-                HostName = config.Hostname, UserName = config.Username, Password = config.Password, Port = config.Port
-            };
-            return factory.CreateConnection();
-        });
-
-        services.AddSingleton<ChannelManager>();
-
-        services.AddTransient<IMessageProducer>(sp =>
-        {
-            var channelManager = sp.GetRequiredService<ChannelManager>();
-            var config = sp.GetRequiredService<IOptions<RabbitMqConfiguration>>();
-            return new RabbitMqProducer(channelManager.GetChannel()!, config);
-        });
-
         return services;
     }
 }
