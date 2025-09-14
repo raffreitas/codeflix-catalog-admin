@@ -1,3 +1,4 @@
+using FC.Codeflix.Catalog.Api.Authorization;
 using FC.Codeflix.Catalog.Api.Models.Categories;
 using FC.Codeflix.Catalog.Api.Models.Responses;
 using FC.Codeflix.Catalog.Application.UseCases.Categories.Common;
@@ -10,12 +11,14 @@ using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FC.Codeflix.Catalog.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize(Roles = $"{Roles.Categories},{Roles.Admin}")]
 public class CategoriesController(IMediator mediator) : ControllerBase
 {
     [HttpGet]

@@ -9,12 +9,14 @@ builder.Services
     .AddMessageProducer()
     .AddMessageConsumer(builder.Configuration)
     .AddStorage(builder.Configuration)
+    .AddSecurity(builder.Configuration)
     .AddAndConfigureControllers();
 
 var app = builder.Build();
 
 app.UseDocumentation();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

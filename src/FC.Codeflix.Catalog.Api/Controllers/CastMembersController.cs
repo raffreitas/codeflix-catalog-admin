@@ -1,4 +1,5 @@
-﻿using FC.Codeflix.Catalog.Api.Models.CastMembers;
+﻿using FC.Codeflix.Catalog.Api.Authorization;
+using FC.Codeflix.Catalog.Api.Models.CastMembers;
 using FC.Codeflix.Catalog.Api.Models.Responses;
 using FC.Codeflix.Catalog.Application.UseCases.CastMembers.Common;
 using FC.Codeflix.Catalog.Application.UseCases.CastMembers.CreateCastMember;
@@ -10,12 +11,14 @@ using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FC.Codeflix.Catalog.Api.Controllers;
 
 [ApiController]
 [Route("cast_members")]
+[Authorize(Roles = $"{Roles.CastMembers},{Roles.Admin}")]
 public class CastMembersController(IMediator mediator) : ControllerBase
 {
     [HttpPost]

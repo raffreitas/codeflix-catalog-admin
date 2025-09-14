@@ -1,4 +1,5 @@
-﻿using FC.Codeflix.Catalog.Api.Models.Responses;
+﻿using FC.Codeflix.Catalog.Api.Authorization;
+using FC.Codeflix.Catalog.Api.Models.Responses;
 using FC.Codeflix.Catalog.Api.Models.Videos;
 using FC.Codeflix.Catalog.Application.UseCases.Videos.Common;
 using FC.Codeflix.Catalog.Application.UseCases.Videos.DeleteVideo;
@@ -8,19 +9,16 @@ using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FC.Codeflix.Catalog.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class VideosController : ControllerBase
+[Authorize(Policy = Policies.VideosManager)]
+public class VideosController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public VideosController(IMediator mediator)
-        => _mediator = mediator;
-
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<VideoModelOutput>), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -30,7 +28,7 @@ public class VideosController : ControllerBase
         CancellationToken cancellationToken)
     {
         var input = request.ToCreateVideoInput();
-        var output = await _mediator.Send(input, cancellationToken);
+        var output = await mediator.Send(input, cancellationToken);
         return CreatedAtAction(
             nameof(CreateVideo),
             new { id = output.Id },
@@ -55,7 +53,7 @@ public class VideosController : ControllerBase
         if (!string.IsNullOrWhiteSpace(sort)) input.Sort = sort;
         if (dir is not null) input.Dir = dir.Value;
 
-        var output = await _mediator.Send(input, cancellationToken);
+        var output = await mediator.Send(input, cancellationToken);
         return Ok(
             new ApiResponseList<VideoModelOutput>(output)
         );
@@ -69,7 +67,7 @@ public class VideosController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        var output = await _mediator.Send(new GetVideoInput(id), cancellationToken);
+        var output = await mediator.Send(new GetVideoInput(id), cancellationToken);
         return Ok(new ApiResponse<VideoModelOutput>(output));
     }
 
@@ -82,7 +80,7 @@ public class VideosController : ControllerBase
         [FromBody] UpdateVideoApiInput apiInput,
         CancellationToken cancellationToken)
     {
-        var output = await _mediator.Send(apiInput.ToInput(id), cancellationToken);
+        var output = await mediator.Send(apiInput.ToInput(id), cancellationToken);
         return Ok(new ApiResponse<VideoModelOutput>(output));
     }
 
@@ -93,7 +91,7 @@ public class VideosController : ControllerBase
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
-        await _mediator.Send(new DeleteVideoInput(id), cancellationToken);
+        await mediator.Send(new DeleteVideoInput(id), cancellationToken);
         return NoContent();
     }
 
@@ -108,7 +106,7 @@ public class VideosController : ControllerBase
         CancellationToken cancellationToken)
     {
         var input = apiInput.ToUploadMediasInput(id, type);
-        await _mediator.Send(input, cancellationToken);
+        await mediator.Send(input, cancellationToken);
         return NoContent();
     }
 }
