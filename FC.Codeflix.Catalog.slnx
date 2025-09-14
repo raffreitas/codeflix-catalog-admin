@@ -2,6 +2,7 @@
   <Folder Name="/env/">
     <File Path="docker-compose.yml" />
     <File Path="keycloak-requests.http" />
+    <File Path=".github\workflows\ci.yml" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/FC.Codeflix.Catalog.Api/FC.Codeflix.Catalog.Api.csproj" />
