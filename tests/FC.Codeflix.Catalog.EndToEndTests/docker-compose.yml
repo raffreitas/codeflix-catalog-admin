@@ -1,12 +1,14 @@
 services:
-  fc.codeflix.catalog.db.e2e:
-    container_name: catalog.db.e2e
-    hostname: catalogdb
+  catalogdbe2e:
+    container_name: catalogdb-e2e
+    hostname: catalogdb-e2e
     image: mysql
     ports:
-      - 33060:3306
+      - "33060:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./../../.docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
   
   rabbitmq:
     container_name: adm_videos_rabbitmq_e2e
@@ -16,8 +18,8 @@ services:
       - RABBITMQ_DEFAULT_USER=adm_videos
       - RABBITMQ_DEFAULT_PASS=123456
     ports:
-      - 25672:15672
-      - 56720:5672
+      - "25672:15672"
+      - "56720:5672"
 
   localstack:
     image: localstack/localstack:latest
@@ -30,7 +32,7 @@ services:
       - AWS_SECRET_ACCESS_KEY=localstack
       - AWS_DEFAULT_REGION=us-east-1
     ports:
-      - "4566:4566"
+      - "4567:4566"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -46,3 +48,24 @@ services:
       - AWS_ENDPOINT=http://localstack:4566
     depends_on:
       - localstack
+  
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    hostname: keycloak
+    restart: unless-stopped
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=mysql
+      - KC_DB_URL_HOST=catalogdbe2e
+      - KC_DB_URL_PORT=3306
+      - KC_DB_SCHEMA=keycloak
+      - KC_DB_USERNAME=root
+      - KC_DB_PASSWORD=root
+    volumes:
+      - ./../../.docker/keycloak:/opt/keycloak/data/import
+    ports:
+      - "8444:8080"
+    command: ["start-dev", "--import-realm"]
+    depends_on:
+      - catalogdbe2e
