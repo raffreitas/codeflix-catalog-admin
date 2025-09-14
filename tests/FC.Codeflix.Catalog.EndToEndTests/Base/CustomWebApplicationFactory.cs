@@ -21,9 +21,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public string VideoEncodedRoutingKey => "video.encoded";
     public string VideoCreatedQueue => "video.created.queue";
 
-    public Mock<IStorageService> StorageClient { get; private set; }
-    public IModel RabbitMQChannel { get; private set; }
-    public RabbitMqConfiguration RabbitMQConfiguration { get; private set; }
+    public Mock<IStorageService>? StorageClient { get; private set; }
+    public IModel? RabbitMQChannel { get; private set; }
+    public RabbitMqConfiguration? RabbitMQConfiguration { get; private set; }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -43,13 +43,18 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 return StorageClient.Object;
             });
 
-            using var serviceProvider = services.BuildServiceProvider();
-            using var dbContext = serviceProvider.GetRequiredService<CodeflixCatalogDbContext>();
+            // Build a service provider to get required services for test setup.
+            // Do NOT dispose this serviceProvider here: disposing it would close the RabbitMQ connection
+            // and invalidate the channel we keep for setup/teardown.
+            var serviceProvider = services.BuildServiceProvider();
+            var dbContext = serviceProvider.GetRequiredService<CodeflixCatalogDbContext>();
             RabbitMQChannel = serviceProvider.GetRequiredService<ChannelManager>().GetChannel()!;
             RabbitMQConfiguration = serviceProvider.GetRequiredService<IOptions<RabbitMqConfiguration>>().Value;
             SetupRabbitMq();
             dbContext.Database.EnsureDeleted();
             dbContext.Database.EnsureCreated();
+            // Note: serviceProvider is intentionally not disposed here to keep the RabbitMQ connection open
+            // for the lifetime of the test factory.
         });
 
         base.ConfigureWebHost(builder);
@@ -69,12 +74,15 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
     private void TearDownRabbitMq()
     {
-        var channel = RabbitMQChannel!;
-        var exchange = RabbitMQConfiguration!.Exchange;
+        var channel = RabbitMQChannel;
+        var exchange = RabbitMQConfiguration?.Exchange;
+        if (channel == null || exchange == null)
+            return;
+
         channel.QueueUnbind(VideoCreatedQueue, exchange, VideoCreatedRoutingKey, null);
         channel.QueueDelete(VideoCreatedQueue, false, false);
-        channel.QueueUnbind(RabbitMQConfiguration.VideoEncodedQueue, exchange, VideoEncodedRoutingKey, null);
-        channel.QueueDelete(RabbitMQConfiguration.VideoEncodedQueue, false, false);
+        channel.QueueUnbind(RabbitMQConfiguration!.VideoEncodedQueue, exchange, VideoEncodedRoutingKey, null);
+        channel.QueueDelete(RabbitMQConfiguration!.VideoEncodedQueue, false, false);
         channel.ExchangeDelete(exchange, false);
     }
 
