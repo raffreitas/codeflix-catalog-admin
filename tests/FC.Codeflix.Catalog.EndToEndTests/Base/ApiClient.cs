@@ -7,6 +7,7 @@ using FC.Codeflix.Catalog.Application.UseCases.Videos.Common;
 using Keycloak.AuthServices.Authentication;
 
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 
 using Newtonsoft.Json;
 
@@ -23,11 +24,26 @@ public class ApiClient
 
     private readonly HttpClient _httpClient;
     private readonly KeycloakAuthenticationOptions _keycloakOptions;
+    private readonly IConfiguration _configuration;
+    private readonly string _tokenEndpoint;
 
-    public ApiClient(HttpClient httpClient, KeycloakAuthenticationOptions keycloakOptions)
+    public ApiClient(HttpClient httpClient, KeycloakAuthenticationOptions keycloakOptions, IConfiguration configuration)
     {
         _httpClient = httpClient;
-        _keycloakOptions = keycloakOptions;
+        _keycloakOptions = keycloakOptions ?? throw new ArgumentNullException(nameof(keycloakOptions));
+        _configuration = configuration;
+
+        var realm = !string.IsNullOrWhiteSpace(_keycloakOptions?.Realm)
+            ? _keycloakOptions.Realm
+            : _configuration["Keycloak:realm"];
+        var authServerUrl = !string.IsNullOrWhiteSpace(_keycloakOptions?.AuthServerUrl)
+            ? _keycloakOptions.AuthServerUrl
+            : _configuration["Keycloak:auth-server-url"];
+
+        if (string.IsNullOrWhiteSpace(authServerUrl) || string.IsNullOrWhiteSpace(realm))
+            throw new InvalidOperationException("Keycloak configuration is missing 'auth-server-url' or 'realm'.");
+
+        _tokenEndpoint = $"{authServerUrl.TrimEnd('/')}/realms/{realm!.Trim('/')}/protocol/openid-connect/token";
         AddAuthorizationHeader();
     }
 
@@ -43,15 +59,15 @@ public class ApiClient
     public async Task<string> GetAccessTokenAsync(string user, string password)
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(
-            HttpMethod.Post,
-            $"{_keycloakOptions.KeycloakUrlRealm}protocol/openid-connect/token"
-        );
+        var request = new HttpRequestMessage(HttpMethod.Post, _tokenEndpoint);
         var collection = new List<KeyValuePair<string, string>>
         {
             new("grant_type", "password"),
-            new("client_id", _keycloakOptions.Resource),
-            new("client_secret", _keycloakOptions.Credentials.Secret),
+            new("client_id", !string.IsNullOrWhiteSpace(_keycloakOptions?.Resource)
+                ? _keycloakOptions.Resource
+                : _configuration["Keycloak:resource"] ?? string.Empty),
+            new("client_secret", _keycloakOptions?.Credentials?.Secret
+                                 ?? _configuration["Keycloak:credentials:secret"] ?? string.Empty),
             new("username", user),
             new("password", password)
         };

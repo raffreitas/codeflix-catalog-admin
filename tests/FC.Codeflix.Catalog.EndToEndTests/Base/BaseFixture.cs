@@ -26,7 +26,7 @@ public abstract class BaseFixture : IDisposable
         var configuration = WebAppFactory.Services.GetRequiredService<IConfiguration>();
         var keycloakOptions = configuration.GetSection(KeycloakAuthenticationOptions.Section)
             .Get<KeycloakAuthenticationOptions>();
-        ApiClient = new ApiClient(HttpClient, keycloakOptions!);
+        ApiClient = new ApiClient(HttpClient, keycloakOptions!, configuration);
         _dbConnectionString = configuration.GetConnectionString("CatalogDb")!;
     }
 
