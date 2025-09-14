@@ -1,0 +1,22 @@
+﻿@Host = http://localhost:8443
+@Realm = fc3-codeflix
+
+### GET OpenID Configuration
+GET {{Host}}/realms/{{Realm}}/.well-known/openid-configuration
+
+### POST Get Token
+@ClientId = fc3-catalog-admin
+@ClientSecret = e2LBJ6s0vvRJsUcyf0omemfPPFeJn3IK
+@Username = videos
+@Password = 123456
+@GrantType = password
+
+POST {{Host}}/realms/{{Realm}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id = {{ClientId}} &
+client_secret = {{ClientSecret}} &
+username = {{Username}} &
+password = {{Password}} &
+grant_type = {{GrantType}}
+

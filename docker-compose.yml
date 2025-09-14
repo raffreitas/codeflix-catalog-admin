@@ -1,5 +1,5 @@
 services:
-  fc.codeflix.catalog.db:
+  catalogdb:
     container_name: catalog.db
     hostname: catalogdb
     image: mysql
@@ -7,8 +7,6 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
-    networks:
-      - service_catalog
   
   rabbitmq:
     container_name: adm_videos_rabbitmq
@@ -49,9 +47,27 @@ services:
       - AWS_ENDPOINT=http://localstack:4566
     depends_on:
       - localstack
+  
+  keycloak:
+    container_name: adm_videos_keycloak
+    image: quay.io/keycloak/keycloak:latest
+    hostname: keycloak
+    restart: unless-stopped
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=mysql
+      - KC_DB_URL_HOST=catalogdb
+      - KC_DB_URL_PORT=3306
+      - KC_DB_SCHEMA=keycloak
+      - KC_DB_USERNAME=root
+      - KC_DB_PASSWORD=root
+    ports:
+      - "8443:8080"
+    command:
+      - start-dev
+    depends_on:
+      - catalogdb
 
 volumes:
   localstack-data:
-networks:
-  service_catalog:
-    external: true
