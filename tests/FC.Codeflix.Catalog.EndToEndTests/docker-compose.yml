@@ -21,33 +21,13 @@ services:
       - "25672:15672"
       - "56720:5672"
 
-  localstack:
-    image: localstack/localstack:latest
-    environment:
-      - SERVICES=s3
-      - DEBUG=1
-      - DATA_DIR=/tmp/localstack/data
-      - DOCKER_HOST=unix:///var/run/docker.sock
-      - AWS_ACCESS_KEY_ID=localstack
-      - AWS_SECRET_ACCESS_KEY=localstack
-      - AWS_DEFAULT_REGION=us-east-1
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: adm_videos_azurite
     ports:
-      - "4567:4566"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-
-  localstack-setup:
-    image: amazon/aws-cli
-    volumes:
-      - ./../../.docker:/scripts
-    entrypoint: [ "/scripts/init-localstack.sh" ]
-    environment:
-      - AWS_ACCESS_KEY_ID=localstack
-      - AWS_SECRET_ACCESS_KEY=localstack
-      - AWS_DEFAULT_REGION=us-east-1
-      - AWS_ENDPOINT=http://localstack:4566
-    depends_on:
-      - localstack
+      - "10000:10000" # Blob service
+      - "10001:10001" # Queue service
+      - "10002:10002" # Table service
   
   keycloak:
     image: quay.io/keycloak/keycloak:latest
@@ -66,6 +46,6 @@ services:
       - ./../../.docker/keycloak:/opt/keycloak/data/import
     ports:
       - "8444:8080"
-    command: ["start-dev", "--import-realm"]
+    command: [ "start-dev", "--import-realm" ]
     depends_on:
       - catalogdbe2e

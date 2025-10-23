@@ -1,4 +1,4 @@
-﻿using Amazon.S3;
+﻿using Azure.Storage.Blobs;
 
 using FC.Codeflix.Catalog.Application.Interfaces;
 using FC.Codeflix.Catalog.Infra.Storage.Services;
@@ -17,17 +17,9 @@ public static class StorageConfiguration
         var settings = configuration.GetSection(StorageSettings.ConfigurationSection).Get<StorageSettings>() ??
                        throw new InvalidOperationException("Storage settings not found");
 
-        var config = new AmazonS3Config();
-        if (!string.IsNullOrWhiteSpace(settings.ServiceUrl))
-        {
-            config.ServiceURL = settings.ServiceUrl;
-            config.ForcePathStyle = true;
-            config.AuthenticationRegion = "us-east-1";
-        }
+        services.AddSingleton(_ => new BlobServiceClient(settings.ConnectionString));
+        services.AddScoped<IStorageService, AzureBlobStorageService>();
 
-        services.AddSingleton<IAmazonS3>(_ => new AmazonS3Client(settings.AccessKey, settings.SecretKey, config));
-        services.Configure<StorageSettings>(configuration.GetSection(StorageSettings.ConfigurationSection));
-        services.AddScoped<IStorageService, AmazonS3StorageService>();
         return services;
     }
 }
