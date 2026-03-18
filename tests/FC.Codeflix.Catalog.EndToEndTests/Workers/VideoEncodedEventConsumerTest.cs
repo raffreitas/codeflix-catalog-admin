@@ -21,9 +21,9 @@ public sealed class VideoEncodedEventConsumerTest : IDisposable
         await _fixture.VideoPersistence.InsertList(exampleVideos);
         var video = exampleVideos[2];
         var encodedFilePath = _fixture.GetValidMediaPath();
-        var exampleEvent = new VideoEncodedMessageDTO
+        var exampleEvent = new VideoEncodedMessageDto
         {
-            Video = new VideoEncodedMetadataDTO
+            Video = new VideoEncodedMetadataDto
             {
                 EncodedVideoFolder = encodedFilePath,
                 FilePath = video.Media!.FilePath,
@@ -49,9 +49,9 @@ public sealed class VideoEncodedEventConsumerTest : IDisposable
         var exampleVideos = _fixture.GetVideoCollection(5);
         await _fixture.VideoPersistence.InsertList(exampleVideos);
         var video = exampleVideos[2];
-        var exampleEvent = new VideoEncodedMessageDTO
+        var exampleEvent = new VideoEncodedMessageDto
         {
-            Message = new VideoEncodedMetadataDTO
+            Message = new VideoEncodedMetadataDto
             {
                 FilePath = video.Media!.FilePath, ResourceId = video.Id.ToString()
             },
@@ -75,9 +75,9 @@ public sealed class VideoEncodedEventConsumerTest : IDisposable
     {
         var exampleVideos = _fixture.GetVideoCollection(5);
         await _fixture.VideoPersistence.InsertList(exampleVideos);
-        var exampleEvent = new VideoEncodedMessageDTO
+        var exampleEvent = new VideoEncodedMessageDto
         {
-            Message = new VideoEncodedMetadataDTO
+            Message = new VideoEncodedMetadataDto
             {
                 FilePath = _fixture.GetValidMediaPath(), ResourceId = Guid.NewGuid().ToString()
             },

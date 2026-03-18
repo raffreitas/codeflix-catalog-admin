@@ -41,15 +41,21 @@ public sealed class VideoBaseFixture : GenreBaseFixture
         var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
         var message = JsonSerializer.SerializeToUtf8Bytes(
             exampleEvent, jsonOptions);
-        WebAppFactory.RabbitMQChannel.BasicPublish(
+        WebAppFactory.RabbitMQChannel!.BasicPublishAsync(
             exchange: exchange,
             routingKey: WebAppFactory.VideoEncodedRoutingKey,
-            body: message);
+            body: message,
+            cancellationToken: CancellationToken.None)
+            .GetAwaiter()
+            .GetResult();
     }
 
     public (T?, uint) ReadMessageFromRabbitMQ<T>() where T : class
     {
-        var consumingResult = WebAppFactory.RabbitMQChannel.BasicGet(WebAppFactory.VideoCreatedQueue, true);
+        var consumingResult = WebAppFactory.RabbitMQChannel!
+            .BasicGetAsync(WebAppFactory.VideoCreatedQueue, true)
+            .GetAwaiter()
+            .GetResult();
         if (consumingResult == null) return (null, 0);
         var rawMessage = consumingResult.Body.ToArray();
         var stringMessage = Encoding.UTF8.GetString(rawMessage);
@@ -60,9 +66,13 @@ public sealed class VideoBaseFixture : GenreBaseFixture
 
     public void PurgeRabbitMQQueues()
     {
-        IModel channel = WebAppFactory.RabbitMQChannel;
-        channel.QueuePurge(WebAppFactory.VideoCreatedQueue);
-        channel.QueuePurge(WebAppFactory.RabbitMQConfiguration.VideoEncodedQueue);
+        var channel = WebAppFactory.RabbitMQChannel!;
+        channel.QueuePurgeAsync(WebAppFactory.VideoCreatedQueue)
+            .GetAwaiter()
+            .GetResult();
+        channel.QueuePurgeAsync(WebAppFactory.RabbitMQConfiguration.VideoEncodedQueue)
+            .GetAwaiter()
+            .GetResult();
     }
 
     #region Video

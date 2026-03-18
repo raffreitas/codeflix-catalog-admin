@@ -32,16 +32,10 @@ public sealed class VideoEncodedEventConsumer(
     private readonly JsonSerializerOptions _jsonOptions =
         new() { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
 
-    public override void Dispose()
-    {
-        channel.DisposeAsync().AsTask().GetAwaiter().GetResult();
-        base.Dispose();
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var consumer = new AsyncEventingBasicConsumer(channel);
-        consumer.ReceivedAsync += OnMessageReceived;
+        consumer.ReceivedAsync += OnMessageReceivedAsync;
         await channel.BasicConsumeAsync(_queue, false, consumer, stoppingToken);
 
         while (!stoppingToken.IsCancellationRequested)
@@ -50,23 +44,25 @@ public sealed class VideoEncodedEventConsumer(
         }
     }
 
-    private async Task OnMessageReceived(object? sender, BasicDeliverEventArgs eventArgs)
+    private async Task OnMessageReceivedAsync(object? sender, BasicDeliverEventArgs eventArgs)
     {
         string messageString = string.Empty;
         try
         {
             using var scope = serviceProvider.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-            var rawMessage = eventArgs.Body.ToArray();
-            messageString = Encoding.UTF8.GetString(rawMessage);
-            logger.LogDebug(messageString);
-            var message = JsonSerializer.Deserialize<VideoEncodedMessageDTO>(messageString, _jsonOptions);
+            ReadOnlyMemory<Byte> rawMessage = eventArgs.Body.ToArray();
+
+            messageString = Encoding.UTF8.GetString(rawMessage.Span);
+
+            logger.LogDebug("Received Message: {Message}", messageString);
+
+            var message = JsonSerializer.Deserialize<VideoEncodedMessageDto>(messageString, _jsonOptions);
             var input = GetUpdateMediaStatusInput(message!);
             await mediator.Send(input, CancellationToken.None);
             await channel.BasicAckAsync(eventArgs.DeliveryTag, false);
         }
-        catch (Exception ex)
-            when (ex is EntityValidationException or NotFoundException)
+        catch (Exception ex) when (ex is EntityValidationException or NotFoundException)
         {
             logger.LogError(ex,
                 "There was a business error in the message processing: {DeliveryTag}, {Message}",
@@ -82,7 +78,7 @@ public sealed class VideoEncodedEventConsumer(
         }
     }
 
-    private static UpdateMediaStatusInput GetUpdateMediaStatusInput(VideoEncodedMessageDTO message)
+    private static UpdateMediaStatusInput GetUpdateMediaStatusInput(VideoEncodedMessageDto message)
     {
         if (message.Video is not null)
             return new UpdateMediaStatusInput(
@@ -96,5 +92,11 @@ public sealed class VideoEncodedEventConsumer(
             MediaStatus.Error,
             ErrorMessage: message.Error!
         );
+    }
+
+    public override void Dispose()
+    {
+        channel.DisposeAsync().AsTask().GetAwaiter().GetResult();
+        base.Dispose();
     }
 }
