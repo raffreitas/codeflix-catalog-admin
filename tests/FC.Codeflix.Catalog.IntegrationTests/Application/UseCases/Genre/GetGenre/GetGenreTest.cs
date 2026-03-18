@@ -8,24 +8,19 @@ using FluentAssertions;
 namespace FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.Genre.GetGenre;
 
 [Collection(nameof(GetGenreTestFixture))]
-public class GetGenreTest
+public class GetGenreTest(GetGenreTestFixture fixture)
 {
-    private readonly GetGenreTestFixture _fixture;
-
-    public GetGenreTest(GetGenreTestFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(GetGenre))]
     [Trait("Integration/Application", "GetGenre - Use Cases")]
     public async Task GetGenre()
     {
-        var genresExampleList = _fixture.GetExampleListGenres();
+        var genresExampleList = fixture.GetExampleListGenres();
         var expectedGenre = genresExampleList[5];
-        var dbArrangeContext = _fixture.CreateDbContext();
+        var dbArrangeContext = fixture.CreateDbContext();
         await dbArrangeContext.Genres.AddRangeAsync(genresExampleList);
         await dbArrangeContext.SaveChangesAsync();
 
-        var dbActContext = _fixture.CreateDbContext(true);
+        var dbActContext = fixture.CreateDbContext(true);
         var categoryRepository = new CategoryRepository(dbArrangeContext);
         var genreRepository = new GenreRepository(dbActContext);
         var useCase = new GetGenreUseCase(genreRepository, categoryRepository);
@@ -44,12 +39,12 @@ public class GetGenreTest
     [Trait("Integration/Application", "GetGenre - Use Cases")]
     public async Task GetGenreThrowsWhenNotFound()
     {
-        var genresExampleList = _fixture.GetExampleListGenres();
+        var genresExampleList = fixture.GetExampleListGenres();
         var randomGuid = Guid.NewGuid();
-        var dbArrangeContext = _fixture.CreateDbContext();
+        var dbArrangeContext = fixture.CreateDbContext();
         await dbArrangeContext.Genres.AddRangeAsync(genresExampleList);
         await dbArrangeContext.SaveChangesAsync();
-        var dbActContext = _fixture.CreateDbContext(true);
+        var dbActContext = fixture.CreateDbContext(true);
         var categoryRepository = new CategoryRepository(dbArrangeContext);
         var genreRepository = new GenreRepository(dbActContext);
         var useCase = new GetGenreUseCase(genreRepository, categoryRepository);
@@ -65,12 +60,12 @@ public class GetGenreTest
     [Trait("Integration/Application", "GetGenre - Use Cases")]
     public async Task GetGenreWithCategoryRelations()
     {
-        var genresExampleList = _fixture.GetExampleListGenres();
-        var categoriesExampleList = _fixture.GetExampleCategoriesList(5);
+        var genresExampleList = fixture.GetExampleListGenres();
+        var categoriesExampleList = fixture.GetExampleCategoriesList(5);
         var expectedGenre = genresExampleList[5];
         categoriesExampleList.ForEach(category => expectedGenre.AddCategory(category.Id)
         );
-        var dbArrangeContext = _fixture.CreateDbContext();
+        var dbArrangeContext = fixture.CreateDbContext();
         await dbArrangeContext.Categories.AddRangeAsync(categoriesExampleList);
         await dbArrangeContext.Genres.AddRangeAsync(genresExampleList);
         await dbArrangeContext.GenresCategories.AddRangeAsync(
@@ -81,7 +76,7 @@ public class GetGenreTest
             )
         );
         await dbArrangeContext.SaveChangesAsync();
-        var dbActContext = _fixture.CreateDbContext(true);
+        var dbActContext = fixture.CreateDbContext(true);
         var categoryRepository = new CategoryRepository(dbArrangeContext);
         var genreRepository = new GenreRepository(dbActContext);
         var useCase = new GetGenreUseCase(genreRepository, categoryRepository);

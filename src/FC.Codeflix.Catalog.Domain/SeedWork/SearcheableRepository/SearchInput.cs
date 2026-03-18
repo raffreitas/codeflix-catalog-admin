@@ -1,19 +1,10 @@
 ﻿namespace FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 
-public record SearchInput
+public record SearchInput(int Page, int PerPage, string Search, string OrderBy, SearchOrder Order)
 {
-    public int Page { get; set; }
-    public int PerPage { get; set; }
-    public string Search { get; set; }
-    public string OrderBy { get; set; }
-    public SearchOrder Order { get; set; }
-
-    public SearchInput(int page, int perPage, string search, string orderBy, SearchOrder order)
-    {
-        Page = page;
-        PerPage = perPage;
-        Search = search;
-        OrderBy = orderBy;
-        Order = order;
-    }
+    public int Page { get; set; } = Page;
+    public int PerPage { get; set; } = PerPage;
+    public string Search { get; set; } = Search;
+    public string OrderBy { get; set; } = OrderBy;
+    public SearchOrder Order { get; set; } = Order;
 }

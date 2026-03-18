@@ -9,24 +9,19 @@ using UseCase = FC.Codeflix.Catalog.Application.UseCases.CastMembers.GetCastMemb
 namespace FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.CastMembers.GetCastMember;
 
 [Collection(nameof(CastMemberUseCasesBaseFixture))]
-public class GetCastMemberTest
+public class GetCastMemberTest(CastMemberUseCasesBaseFixture fixture)
 {
-    private readonly CastMemberUseCasesBaseFixture _fixture;
-
-    public GetCastMemberTest(CastMemberUseCasesBaseFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(GetCastMember))]
     [Trait("Integration/Application", "GetCastMember - Use Cases")]
     public async Task GetCastMember()
     {
-        var examples = _fixture.GetExampleCastMembersList(10);
+        var examples = fixture.GetExampleCastMembersList(10);
         var example = examples[5];
-        var arrangeDbContext = _fixture.CreateDbContext();
+        var arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(examples);
         await arrangeDbContext.SaveChangesAsync();
         var useCase = new UseCase.GetCastMember(
-            new CastMemberRepository(_fixture.CreateDbContext(true))
+            new CastMemberRepository(fixture.CreateDbContext(true))
         );
         var input = new UseCase.GetCastMemberInput(example.Id);
 
@@ -44,7 +39,7 @@ public class GetCastMemberTest
     public async Task ThrowWhenNotFound()
     {
         var useCase = new UseCase.GetCastMember(
-            new CastMemberRepository(_fixture.CreateDbContext())
+            new CastMemberRepository(fixture.CreateDbContext())
         );
         var randomGuid = Guid.NewGuid();
         var input = new UseCase.GetCastMemberInput(randomGuid);

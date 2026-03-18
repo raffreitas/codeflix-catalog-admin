@@ -14,19 +14,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace FC.Codeflix.Catalog.EndToEndTests.Api.Videos.CreateVideo;
 
 [Trait("EndToEnd/Api", "Video/CreateVideo - Endpoints")]
-public sealed class CreateVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
+public sealed class CreateVideoApiTest(VideoBaseFixture fixture) : IClassFixture<VideoBaseFixture>, IDisposable
 {
-    private readonly VideoBaseFixture _fixture;
-
-    public CreateVideoApiTest(VideoBaseFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(CreateBasicVideo))]
     public async Task CreateBasicVideo()
     {
-        CreateVideoApiInput input = _fixture.GetBasicCreateVideoInput();
+        CreateVideoApiInput input = fixture.GetBasicCreateVideoInput();
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Post<ApiResponse<VideoModelOutput>>("/videos", input);
 
         response.Should().NotBeNull();
@@ -42,7 +37,7 @@ public sealed class CreateVideoApiTest : IClassFixture<VideoBaseFixture>, IDispo
         output.Data.Published.Should().Be(input.Published);
         output.Data.Duration.Should().Be(input.Duration);
         output.Data.Rating.Should().Be(input.Rating);
-        var videoFromDb = await _fixture.VideoPersistence.GetById(output.Data.Id);
+        var videoFromDb = await fixture.VideoPersistence.GetById(output.Data.Id);
         videoFromDb.Should().NotBeNull();
         videoFromDb.Id.Should().NotBeEmpty();
         videoFromDb.Title.Should().Be(input.Title);
@@ -58,21 +53,21 @@ public sealed class CreateVideoApiTest : IClassFixture<VideoBaseFixture>, IDispo
     [Trait("EndToEnd/Api", "Video/CreateVideo - Endpoints")]
     public async Task CreateVideoWithRelationships()
     {
-        var categories = _fixture.GetExampleCategoriesList();
-        await _fixture.CategoryPersistence.InsertList(categories);
+        var categories = fixture.GetExampleCategoriesList();
+        await fixture.CategoryPersistence.InsertList(categories);
 
-        var genres = _fixture.GetExampleListGenres();
-        await _fixture.GenrePersistence.InsertList(genres);
+        var genres = fixture.GetExampleListGenres();
+        await fixture.GenrePersistence.InsertList(genres);
 
-        var castMembers = _fixture.GetExampleCastMembersList();
-        await _fixture.CastMemberPersistence.InsertList(castMembers);
+        var castMembers = fixture.GetExampleCastMembersList();
+        await fixture.CastMemberPersistence.InsertList(castMembers);
 
-        CreateVideoApiInput input = _fixture.GetBasicCreateVideoInput();
+        CreateVideoApiInput input = fixture.GetBasicCreateVideoInput();
         input.CategoriesIds = categories.Select(c => c.Id).ToList();
         input.GenresIds = genres.Select(c => c.Id).ToList();
         input.CastMembersIds = castMembers.Select(c => c.Id).ToList();
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Post<ApiResponse<VideoModelOutput>>("/videos", input);
 
         response.Should().NotBeNull();
@@ -97,7 +92,7 @@ public sealed class CreateVideoApiTest : IClassFixture<VideoBaseFixture>, IDispo
         var outputCastMemberIds = output.Data.CastMembers.Select(c => c.Id).ToList();
         outputCastMemberIds.Should().NotBeEmpty();
         outputCastMemberIds.Should().BeEquivalentTo(input.CastMembersIds);
-        var videoFromDb = await _fixture.VideoPersistence.GetById(output.Data.Id);
+        var videoFromDb = await fixture.VideoPersistence.GetById(output.Data.Id);
         videoFromDb.Should().NotBeNull();
         videoFromDb.Id.Should().NotBeEmpty();
         videoFromDb.Title.Should().Be(input.Title);
@@ -107,17 +102,17 @@ public sealed class CreateVideoApiTest : IClassFixture<VideoBaseFixture>, IDispo
         videoFromDb.Published.Should().Be(input.Published);
         videoFromDb.Duration.Should().Be(input.Duration);
         videoFromDb.Rating.Should().Be(input.Rating!.ToRating());
-        var categoriesFromDb = await _fixture.VideoPersistence
+        var categoriesFromDb = await fixture.VideoPersistence
             .GetVideosCategories(videoFromDb.Id);
         categoriesFromDb.Should().NotBeNull();
         var categoriesIdsFromDb = categoriesFromDb.Select(x => x.CategoryId);
         categoriesIdsFromDb.Should().BeEquivalentTo(input.CategoriesIds);
-        var genresFromDb = await _fixture.VideoPersistence
+        var genresFromDb = await fixture.VideoPersistence
             .GetVideosGenres(videoFromDb.Id);
         genresFromDb.Should().NotBeNull();
         var genresIdsFromDb = genresFromDb.Select(x => x.GenreId);
         genresIdsFromDb.Should().BeEquivalentTo(input.GenresIds);
-        var castMembersFromDb = await _fixture.VideoPersistence
+        var castMembersFromDb = await fixture.VideoPersistence
             .GetVideosCastMembers(videoFromDb.Id);
         castMembersFromDb.Should().NotBeNull();
         var castMembersIdsFromDb = castMembersFromDb.Select(x => x.CastMemberId);
@@ -129,10 +124,10 @@ public sealed class CreateVideoApiTest : IClassFixture<VideoBaseFixture>, IDispo
     public async Task CreateVideoWithInvalidGenreId()
     {
         var invalidGenreId = Guid.NewGuid();
-        CreateVideoApiInput input = _fixture.GetBasicCreateVideoInput();
+        CreateVideoApiInput input = fixture.GetBasicCreateVideoInput();
         input.GenresIds = new List<Guid> { invalidGenreId };
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Post<ProblemDetails>("/videos", input);
 
         response.Should().NotBeNull();
@@ -147,10 +142,10 @@ public sealed class CreateVideoApiTest : IClassFixture<VideoBaseFixture>, IDispo
     public async Task CreateVideoWithInvalidCategoryId()
     {
         var invalidCategoryId = Guid.NewGuid();
-        CreateVideoApiInput input = _fixture.GetBasicCreateVideoInput();
+        CreateVideoApiInput input = fixture.GetBasicCreateVideoInput();
         input.CategoriesIds = new List<Guid> { invalidCategoryId };
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Post<ProblemDetails>("/videos", input);
 
         response.Should().NotBeNull();
@@ -165,10 +160,10 @@ public sealed class CreateVideoApiTest : IClassFixture<VideoBaseFixture>, IDispo
     public async Task CreateVideoWithInvalidCastMemberId()
     {
         var invalidCastMemberId = Guid.NewGuid();
-        CreateVideoApiInput input = _fixture.GetBasicCreateVideoInput();
+        CreateVideoApiInput input = fixture.GetBasicCreateVideoInput();
         input.CastMembersIds = [invalidCastMemberId];
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Post<ProblemDetails>("/videos", input);
 
         response.Should().NotBeNull();
@@ -179,5 +174,5 @@ public sealed class CreateVideoApiTest : IClassFixture<VideoBaseFixture>, IDispo
     }
 
 
-    public void Dispose() => _fixture.CleanPersistence();
+    public void Dispose() => fixture.CleanPersistence();
 }

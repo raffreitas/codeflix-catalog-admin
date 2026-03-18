@@ -8,20 +8,15 @@ using Moq;
 namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.DeleteCategory;
 
 [Collection(nameof(DeleteCategoryTestFixture))]
-public class DeleteCategoryTest
+public class DeleteCategoryTest(DeleteCategoryTestFixture fixture)
 {
-    private readonly DeleteCategoryTestFixture _fixture;
-
-    public DeleteCategoryTest(DeleteCategoryTestFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(DeleteCategory))]
     [Trait("Application", "DeleteCategory - Use Cases")]
     public async Task DeleteCategory()
     {
-        var categoryExample = _fixture.GetExampleCategory();
-        var repositoryMock = _fixture.GetCategoryRepositoryMock();
-        var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
+        var categoryExample = fixture.GetExampleCategory();
+        var repositoryMock = fixture.GetCategoryRepositoryMock();
+        var unitOfWorkMock = fixture.GetUnitOfWorkMock();
 
         repositoryMock.Setup(repositoryMock => repositoryMock
             .Get(
@@ -54,8 +49,8 @@ public class DeleteCategoryTest
     public async Task ThrowWhenCategoryNotFound()
     {
         var exampleGuid = Guid.Empty;
-        var repositoryMock = _fixture.GetCategoryRepositoryMock();
-        var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
+        var repositoryMock = fixture.GetCategoryRepositoryMock();
+        var unitOfWorkMock = fixture.GetUnitOfWorkMock();
 
         repositoryMock.Setup(repositoryMock => repositoryMock
             .Get(

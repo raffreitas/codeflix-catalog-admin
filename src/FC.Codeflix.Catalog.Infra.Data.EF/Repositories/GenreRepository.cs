@@ -95,9 +95,9 @@ public class GenreRepository(CodeflixCatalogDbContext context) : IGenreRepositor
         });
 
         return new SearchOutput<Genre>(
-            currentPage: input.Page,
-            perPage: input.PerPage,
-            total: total,
+            CurrentPage: input.Page,
+            PerPage: input.PerPage,
+            Total: total,
             genres
         );
     }

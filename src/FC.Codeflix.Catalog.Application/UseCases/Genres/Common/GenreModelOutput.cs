@@ -2,31 +2,26 @@
 
 namespace FC.Codeflix.Catalog.Application.UseCases.Genres.Common;
 
-public record GenreModelOutput
+public record GenreModelOutput(
+    Guid Id,
+    string Name,
+    bool IsActive,
+    DateTime CreatedAt,
+    IReadOnlyList<GenreModelOutputCategory> Categories)
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-    public bool IsActive { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public IReadOnlyList<GenreModelOutputCategory> Categories { get; set; }
-
-    public GenreModelOutput(Guid id, string name, bool isActive, DateTime createdAt,
-        IReadOnlyList<GenreModelOutputCategory> categories)
-    {
-        Id = id;
-        Name = name;
-        IsActive = isActive;
-        CreatedAt = createdAt;
-        Categories = categories;
-    }
+    public Guid Id { get; set; } = Id;
+    public string Name { get; set; } = Name;
+    public bool IsActive { get; set; } = IsActive;
+    public DateTime CreatedAt { get; set; } = CreatedAt;
+    public IReadOnlyList<GenreModelOutputCategory> Categories { get; set; } = Categories;
 
     public static GenreModelOutput FromGenre(Genre genre)
         => new(
-            id: genre.Id,
-            name: genre.Name,
-            isActive: genre.IsActive,
-            createdAt: genre.CreatedAt,
-            categories: genre.Categories.Select(categoryId => new GenreModelOutputCategory(categoryId)
+            Id: genre.Id,
+            Name: genre.Name,
+            IsActive: genre.IsActive,
+            CreatedAt: genre.CreatedAt,
+            Categories: genre.Categories.Select(categoryId => new GenreModelOutputCategory(categoryId)
             ).ToList().AsReadOnly()
         );
 }

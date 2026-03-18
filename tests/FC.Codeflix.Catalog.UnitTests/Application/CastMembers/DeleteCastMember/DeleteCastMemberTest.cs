@@ -12,20 +12,15 @@ using DomainEntity = FC.Codeflix.Catalog.Domain.Entities;
 namespace FC.Codeflix.Catalog.UnitTests.Application.CastMembers.DeleteCastMember;
 
 [Collection(nameof(DeleteCastMemberFixture))]
-public class DeleteCastMemberTest
+public class DeleteCastMemberTest(DeleteCastMemberFixture fixture)
 {
-    private readonly DeleteCastMemberFixture _fixture;
-
-    public DeleteCastMemberTest(DeleteCastMemberFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(DeleteCastMember))]
     [Trait("Application", "DeleteCastMember - Use Cases")]
     public async Task DeleteCastMember()
     {
         var repositoryMock = new Mock<ICastMemberRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
-        var castMemberExample = _fixture.GetExampleCastMember();
+        var castMemberExample = fixture.GetExampleCastMember();
         repositoryMock
             .Setup(x => x.Get(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(castMemberExample);

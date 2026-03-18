@@ -5,11 +5,9 @@ using FluentAssertions;
 namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.GetCategory;
 
 [Collection(nameof(GetCategoryTestFixture))]
-public class GetCategoryInputValidatorTest
+public class GetCategoryInputValidatorTest(GetCategoryTestFixture fixture)
 {
-    private readonly GetCategoryTestFixture _fixture;
-    public GetCategoryInputValidatorTest(GetCategoryTestFixture fixture)
-        => _fixture = fixture;
+    private readonly GetCategoryTestFixture _fixture = fixture;
 
     [Fact(DisplayName = nameof(ValidationOk))]
     [Trait("Application", "GetCategory - Validator")]

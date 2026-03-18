@@ -12,34 +12,29 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FC.Codeflix.Catalog.EndToEndTests.Api.Videos.UpdateVideo;
 
-public class UpdateVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
+public class UpdateVideoApiTest(VideoBaseFixture fixture) : IClassFixture<VideoBaseFixture>, IDisposable
 {
-    private readonly VideoBaseFixture _fixture;
-
-    public UpdateVideoApiTest(VideoBaseFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(UpdateVideo))]
     [Trait("EndToEnd/Api", "Video/UpdateVideo - Endpoints")]
     public async Task UpdateVideo()
     {
-        var exampleVideos = _fixture.GetVideoCollection(10);
-        await _fixture.VideoPersistence.InsertList(exampleVideos);
+        var exampleVideos = fixture.GetVideoCollection(10);
+        await fixture.VideoPersistence.InsertList(exampleVideos);
 
         var targetVideoId = exampleVideos.ElementAt(5).Id;
 
         var input = new UpdateVideoApiInput
         {
-            Title = _fixture.GetValidTitle(),
-            Description = _fixture.GetValidDescription(),
-            Duration = _fixture.GetValidDuration(),
-            Opened = _fixture.GetRandomBoolean(),
-            Published = _fixture.GetRandomBoolean(),
-            Rating = _fixture.GetRandomRating().ToStringSignal(),
-            YearLaunched = _fixture.GetValidYearLaunched()
+            Title = fixture.GetValidTitle(),
+            Description = fixture.GetValidDescription(),
+            Duration = fixture.GetValidDuration(),
+            Opened = fixture.GetRandomBoolean(),
+            Published = fixture.GetRandomBoolean(),
+            Rating = fixture.GetRandomRating().ToStringSignal(),
+            YearLaunched = fixture.GetValidYearLaunched()
         };
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Put<TestApiResponse<VideoModelOutput>>(
                 $"/videos/{targetVideoId}",
                 input);
@@ -55,7 +50,7 @@ public class UpdateVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
         output.Data.Opened.Should().Be(input.Opened);
         output.Data.Published.Should().Be(input.Published);
         output.Data.Duration.Should().Be(input.Duration);
-        var videoFromDb = await _fixture.VideoPersistence.GetById(targetVideoId);
+        var videoFromDb = await fixture.VideoPersistence.GetById(targetVideoId);
         videoFromDb.Should().NotBeNull();
         videoFromDb.Id.Should().Be(targetVideoId);
         videoFromDb.Title.Should().Be(input.Title);
@@ -71,10 +66,10 @@ public class UpdateVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
     [Trait("EndToEnd/Api", "Video/UpdateVideo - Endpoints")]
     public async Task UpdateVideoWithRelationships()
     {
-        var exampleCategories = _fixture.GetExampleCategoriesList(3);
-        var exampleGenres = _fixture.GetExampleListGenres(4);
-        var exampleCastMembers = _fixture.GetExampleCastMembersList(5);
-        var exampleVideos = _fixture.GetVideoCollection(10);
+        var exampleCategories = fixture.GetExampleCategoriesList(3);
+        var exampleGenres = fixture.GetExampleListGenres(4);
+        var exampleCastMembers = fixture.GetExampleCastMembersList(5);
+        var exampleVideos = fixture.GetVideoCollection(10);
 
         exampleVideos.ForEach(video =>
         {
@@ -85,10 +80,10 @@ public class UpdateVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
                 => video.AddCastMember(castMember.Id));
         });
 
-        await _fixture.CategoryPersistence.InsertList(exampleCategories);
-        await _fixture.GenrePersistence.InsertList(exampleGenres);
-        await _fixture.CastMemberPersistence.InsertList(exampleCastMembers);
-        await _fixture.VideoPersistence.InsertList(exampleVideos);
+        await fixture.CategoryPersistence.InsertList(exampleCategories);
+        await fixture.GenrePersistence.InsertList(exampleGenres);
+        await fixture.CastMemberPersistence.InsertList(exampleCastMembers);
+        await fixture.VideoPersistence.InsertList(exampleVideos);
 
         var targetVideoId = exampleVideos.ElementAt(5).Id;
         var targetCategories = new[] { exampleCategories.ElementAt(1) };
@@ -100,19 +95,19 @@ public class UpdateVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
 
         var input = new UpdateVideoApiInput
         {
-            Title = _fixture.GetValidTitle(),
-            Description = _fixture.GetValidDescription(),
-            Duration = _fixture.GetValidDuration(),
-            Opened = _fixture.GetRandomBoolean(),
-            Published = _fixture.GetRandomBoolean(),
-            Rating = _fixture.GetRandomRating().ToStringSignal(),
-            YearLaunched = _fixture.GetValidYearLaunched(),
+            Title = fixture.GetValidTitle(),
+            Description = fixture.GetValidDescription(),
+            Duration = fixture.GetValidDuration(),
+            Opened = fixture.GetRandomBoolean(),
+            Published = fixture.GetRandomBoolean(),
+            Rating = fixture.GetRandomRating().ToStringSignal(),
+            YearLaunched = fixture.GetValidYearLaunched(),
             CategoriesIds = targetCategories.Select(x => x.Id).ToList(),
             GenresIds = targetGenres.Select(x => x.Id).ToList(),
             CastMembersIds = targetCastMembers.Select(x => x.Id).ToList()
         };
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Put<TestApiResponse<VideoModelOutput>>(
                 $"/videos/{targetVideoId}",
                 input);
@@ -137,7 +132,7 @@ public class UpdateVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
         var expectedCastMembers = targetCastMembers
             .Select(castMember => new VideoModelOutputRelatedAggregate(castMember.Id));
         output.Data.CastMembers.Should().BeEquivalentTo(expectedCastMembers);
-        var videoFromDb = await _fixture.VideoPersistence.GetById(targetVideoId);
+        var videoFromDb = await fixture.VideoPersistence.GetById(targetVideoId);
         videoFromDb.Should().NotBeNull();
         videoFromDb.Id.Should().Be(targetVideoId);
         videoFromDb.Title.Should().Be(input.Title);
@@ -147,15 +142,15 @@ public class UpdateVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
         videoFromDb.Published.Should().Be(input.Published);
         videoFromDb.Duration.Should().Be(input.Duration);
         videoFromDb.Rating.Should().Be(input.Rating.ToRating());
-        var categoriesFromDb = await _fixture.VideoPersistence
+        var categoriesFromDb = await fixture.VideoPersistence
             .GetVideosCategories(targetVideoId);
         var categoriesIdsFromDb = categoriesFromDb.Select(x => x.CategoryId);
         input.CategoriesIds.Should().BeEquivalentTo(categoriesIdsFromDb);
-        var genresFromDb = await _fixture.VideoPersistence
+        var genresFromDb = await fixture.VideoPersistence
             .GetVideosGenres(targetVideoId);
         var genresIdsFromDb = genresFromDb.Select(x => x.GenreId);
         input.GenresIds.Should().BeEquivalentTo(genresIdsFromDb);
-        var castMembersFromDb = await _fixture.VideoPersistence
+        var castMembersFromDb = await fixture.VideoPersistence
             .GetVideosCastMembers(targetVideoId);
         var castMembersIdsFromDb = castMembersFromDb.Select(x => x.CastMemberId);
         input.CastMembersIds.Should().BeEquivalentTo(castMembersIdsFromDb);
@@ -165,22 +160,22 @@ public class UpdateVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
     [Trait("EndToEnd/Api", "Video/UpdateVideo - Endpoints")]
     public async Task Error404WhenVideoIdNotFound()
     {
-        var exampleVideos = _fixture.GetVideoCollection(10);
-        await _fixture.VideoPersistence.InsertList(exampleVideos);
+        var exampleVideos = fixture.GetVideoCollection(10);
+        await fixture.VideoPersistence.InsertList(exampleVideos);
 
         var videoId = Guid.NewGuid();
         var input = new UpdateVideoApiInput
         {
-            Title = _fixture.GetValidTitle(),
-            Description = _fixture.GetValidDescription(),
-            Duration = _fixture.GetValidDuration(),
-            Opened = _fixture.GetRandomBoolean(),
-            Published = _fixture.GetRandomBoolean(),
-            Rating = _fixture.GetRandomRating().ToStringSignal(),
-            YearLaunched = _fixture.GetValidYearLaunched()
+            Title = fixture.GetValidTitle(),
+            Description = fixture.GetValidDescription(),
+            Duration = fixture.GetValidDuration(),
+            Opened = fixture.GetRandomBoolean(),
+            Published = fixture.GetRandomBoolean(),
+            Rating = fixture.GetRandomRating().ToStringSignal(),
+            YearLaunched = fixture.GetValidYearLaunched()
         };
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Put<ProblemDetails>($"/videos/{videoId}", input);
 
         response.Should().NotBeNull();
@@ -194,24 +189,24 @@ public class UpdateVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
     [Trait("EndToEnd/Api", "Video/UpdateVideo - Endpoints")]
     public async Task Error422WhenCategoryIdNotFound()
     {
-        var exampleVideos = _fixture.GetVideoCollection(10);
-        await _fixture.VideoPersistence.InsertList(exampleVideos);
+        var exampleVideos = fixture.GetVideoCollection(10);
+        await fixture.VideoPersistence.InsertList(exampleVideos);
 
         var videoId = exampleVideos.ElementAt(4).Id;
         var categoryId = Guid.NewGuid();
         var input = new UpdateVideoApiInput
         {
-            Title = _fixture.GetValidTitle(),
-            Description = _fixture.GetValidDescription(),
-            Duration = _fixture.GetValidDuration(),
-            Opened = _fixture.GetRandomBoolean(),
-            Published = _fixture.GetRandomBoolean(),
-            Rating = _fixture.GetRandomRating().ToStringSignal(),
-            YearLaunched = _fixture.GetValidYearLaunched(),
+            Title = fixture.GetValidTitle(),
+            Description = fixture.GetValidDescription(),
+            Duration = fixture.GetValidDuration(),
+            Opened = fixture.GetRandomBoolean(),
+            Published = fixture.GetRandomBoolean(),
+            Rating = fixture.GetRandomRating().ToStringSignal(),
+            YearLaunched = fixture.GetValidYearLaunched(),
             CategoriesIds = new List<Guid> { categoryId }
         };
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Put<ProblemDetails>($"/videos/{videoId}", input);
 
         response.Should().NotBeNull();
@@ -221,5 +216,5 @@ public class UpdateVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
         output.Detail.Should().Be($"Related category id (or ids) not found: {categoryId}.");
     }
 
-    public void Dispose() => _fixture.CleanPersistence();
+    public void Dispose() => fixture.CleanPersistence();
 }

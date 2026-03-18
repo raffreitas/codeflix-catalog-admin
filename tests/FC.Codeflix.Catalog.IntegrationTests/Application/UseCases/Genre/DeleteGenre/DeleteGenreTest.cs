@@ -14,23 +14,18 @@ using Microsoft.Extensions.Logging;
 namespace FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.Genre.DeleteGenre;
 
 [Collection(nameof(DeleteGenreTestFixture))]
-public class DeleteGenreTest
+public class DeleteGenreTest(DeleteGenreTestFixture fixture)
 {
-    private readonly DeleteGenreTestFixture _fixture;
-
-    public DeleteGenreTest(DeleteGenreTestFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(DeleteGenre))]
     [Trait("Integration/Application", "DeleteGenre - Use Cases")]
     public async Task DeleteGenre()
     {
-        var genresExampleList = _fixture.GetExampleListGenres();
+        var genresExampleList = fixture.GetExampleListGenres();
         var targetGenre = genresExampleList[5];
-        var dbArrangeContext = _fixture.CreateDbContext();
+        var dbArrangeContext = fixture.CreateDbContext();
         await dbArrangeContext.Genres.AddRangeAsync(genresExampleList);
         await dbArrangeContext.SaveChangesAsync();
-        var actDbContext = _fixture.CreateDbContext(true);
+        var actDbContext = fixture.CreateDbContext(true);
 
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging();
@@ -49,7 +44,7 @@ public class DeleteGenreTest
 
         await useCase.Handle(input, CancellationToken.None);
 
-        var assertDbContext = _fixture.CreateDbContext(true);
+        var assertDbContext = fixture.CreateDbContext(true);
         var genreFromDb = await assertDbContext.Genres.FindAsync(targetGenre.Id);
         genreFromDb.Should().BeNull();
     }
@@ -58,10 +53,10 @@ public class DeleteGenreTest
     [Trait("Integration/Application", "DeleteGenre - Use Cases")]
     public async Task DeleteGenreWithRelations()
     {
-        var genresExampleList = _fixture.GetExampleListGenres();
+        var genresExampleList = fixture.GetExampleListGenres();
         var targetGenre = genresExampleList[5];
-        var exampleCategories = _fixture.GetExampleCategoriesList(5);
-        var dbArrangeContext = _fixture.CreateDbContext();
+        var exampleCategories = fixture.GetExampleCategoriesList(5);
+        var dbArrangeContext = fixture.CreateDbContext();
         await dbArrangeContext.Genres.AddRangeAsync(genresExampleList);
         await dbArrangeContext.Categories.AddRangeAsync(exampleCategories);
         await dbArrangeContext.GenresCategories.AddRangeAsync(
@@ -73,7 +68,7 @@ public class DeleteGenreTest
             )
         );
         await dbArrangeContext.SaveChangesAsync();
-        var actDbContext = _fixture.CreateDbContext(true);
+        var actDbContext = fixture.CreateDbContext(true);
 
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging();
@@ -92,7 +87,7 @@ public class DeleteGenreTest
 
         await useCase.Handle(input, CancellationToken.None);
 
-        var assertDbContext = _fixture.CreateDbContext(true);
+        var assertDbContext = fixture.CreateDbContext(true);
         var genreFromDb = await assertDbContext.Genres.FindAsync(targetGenre.Id);
         genreFromDb.Should().BeNull();
         var relations = await assertDbContext.GenresCategories.AsNoTracking()
@@ -105,11 +100,11 @@ public class DeleteGenreTest
     [Trait("Integration/Application", "DeleteGenre - Use Cases")]
     public async Task DeleteGenreThrowsWhenNotFound()
     {
-        var genresExampleList = _fixture.GetExampleListGenres();
-        var dbArrangeContext = _fixture.CreateDbContext();
+        var genresExampleList = fixture.GetExampleListGenres();
+        var dbArrangeContext = fixture.CreateDbContext();
         await dbArrangeContext.Genres.AddRangeAsync(genresExampleList);
         await dbArrangeContext.SaveChangesAsync();
-        var actDbContext = _fixture.CreateDbContext(true);
+        var actDbContext = fixture.CreateDbContext(true);
 
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging();

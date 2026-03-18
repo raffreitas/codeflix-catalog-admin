@@ -8,19 +8,14 @@ using Moq;
 namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.GetCategory;
 
 [Collection(nameof(GetCategoryTestFixture))]
-public class GetCategoryTest
+public class GetCategoryTest(GetCategoryTestFixture fixture)
 {
-    private readonly GetCategoryTestFixture _fixture;
-
-    public GetCategoryTest(GetCategoryTestFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(GetCategory))]
     [Trait("Application", "GetCategory - Use Cases")]
     public async Task GetCategory()
     {
-        var exampleCategory = _fixture.GetExampleCategory();
-        var repositoryMock = _fixture.GetCategoryRepositoryMock();
+        var exampleCategory = fixture.GetExampleCategory();
+        var repositoryMock = fixture.GetCategoryRepositoryMock();
         repositoryMock.Setup(x => x.Get(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(exampleCategory);
         var input = new GetCategoryInput(exampleCategory.Id);
@@ -43,7 +38,7 @@ public class GetCategoryTest
     public async Task NotFoundExceptionWhenCategoryDoesntExists()
     {
         var exampleGuid = Guid.NewGuid();
-        var repositoryMock = _fixture.GetCategoryRepositoryMock();
+        var repositoryMock = fixture.GetCategoryRepositoryMock();
         repositoryMock.Setup(x => x.Get(
             It.IsAny<Guid>(),
             It.IsAny<CancellationToken>()

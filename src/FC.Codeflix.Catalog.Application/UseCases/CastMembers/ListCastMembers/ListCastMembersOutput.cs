@@ -6,13 +6,9 @@ using DomainEntity = FC.Codeflix.Catalog.Domain.Entities;
 
 namespace FC.Codeflix.Catalog.Application.UseCases.CastMembers.ListCastMembers;
 
-public record ListCastMembersOutput : PaginatedListOutput<CastMemberModelOutput>
+public record ListCastMembersOutput(int Page, int PerPage, int Total, IReadOnlyList<CastMemberModelOutput> Items)
+    : PaginatedListOutput<CastMemberModelOutput>(Page, PerPage, Total, Items)
 {
-    public ListCastMembersOutput(int page, int perPage, int total, IReadOnlyList<CastMemberModelOutput> items)
-        : base(page, perPage, total, items)
-    {
-    }
-
     public static ListCastMembersOutput FromSearchOutput(
         SearchOutput<DomainEntity.CastMember> searchOutput
     ) => new(

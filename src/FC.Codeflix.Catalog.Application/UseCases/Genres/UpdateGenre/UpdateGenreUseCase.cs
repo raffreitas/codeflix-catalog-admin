@@ -4,22 +4,15 @@ using FC.Codeflix.Catalog.Application.UseCases.Genres.Common;
 using FC.Codeflix.Catalog.Domain.Repositories;
 
 namespace FC.Codeflix.Catalog.Application.UseCases.Genres.UpdateGenre;
-public class UpdateGenreUseCase : IUpdateGenreUseCase
+public class UpdateGenreUseCase(
+    IGenreRepository genreRepository,
+    IUnitOfWork unitOfWork,
+    ICategoryRepository categoryRepository)
+    : IUpdateGenreUseCase
 {
-    private readonly IGenreRepository _genreRepository;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ICategoryRepository _categoryRepository;
-
-    public UpdateGenreUseCase(IGenreRepository genreRepository, IUnitOfWork unitOfWork, ICategoryRepository categoryRepository)
-    {
-        _genreRepository = genreRepository;
-        _unitOfWork = unitOfWork;
-        _categoryRepository = categoryRepository;
-    }
-
     public async Task<GenreModelOutput> Handle(UpdateGenreInput request, CancellationToken cancellationToken)
     {
-        var genre = await _genreRepository.Get(request.Id, cancellationToken);
+        var genre = await genreRepository.Get(request.Id, cancellationToken);
 
         genre.Update(request.Name);
 
@@ -39,15 +32,15 @@ public class UpdateGenreUseCase : IUpdateGenreUseCase
             }
         }
 
-        await _genreRepository.Update(genre, cancellationToken);
-        await _unitOfWork.Commit(cancellationToken);
+        await genreRepository.Update(genre, cancellationToken);
+        await unitOfWork.Commit(cancellationToken);
 
         return GenreModelOutput.FromGenre(genre);
     }
 
     private async Task ValidateCategoryIds(List<Guid> categoryIds, CancellationToken cancellationToken)
     {
-        var idsInPersistence = await _categoryRepository.GetIdsListByIds(categoryIds, cancellationToken);
+        var idsInPersistence = await categoryRepository.GetIdsListByIds(categoryIds, cancellationToken);
         if (idsInPersistence.Count < categoryIds.Count)
         {
             var notFoundIds = categoryIds

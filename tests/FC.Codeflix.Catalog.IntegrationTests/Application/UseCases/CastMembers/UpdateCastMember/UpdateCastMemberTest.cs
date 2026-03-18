@@ -14,25 +14,20 @@ using UseCase = FC.Codeflix.Catalog.Application.UseCases.CastMembers.UpdateCastM
 namespace FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.CastMembers.UpdateCastMember;
 
 [Collection(nameof(CastMemberUseCasesBaseFixture))]
-public class UpdateCastMemberTest
+public class UpdateCastMemberTest(CastMemberUseCasesBaseFixture fixture)
 {
-    private readonly CastMemberUseCasesBaseFixture _fixture;
-
-    public UpdateCastMemberTest(CastMemberUseCasesBaseFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(Update))]
     [Trait("Integration/Application", "UpdateCastMember - Use Cases")]
     public async Task Update()
     {
-        var examples = _fixture.GetExampleCastMembersList(10);
+        var examples = fixture.GetExampleCastMembersList(10);
         var example = examples[5];
-        var arrangeDbContext = _fixture.CreateDbContext();
+        var arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(examples);
         await arrangeDbContext.SaveChangesAsync();
-        var newName = _fixture.GetValidName();
-        var newType = _fixture.GetRandomCastMemberType();
-        var actDbContext = _fixture.CreateDbContext(true);
+        var newName = fixture.GetValidName();
+        var newType = fixture.GetRandomCastMemberType();
+        var actDbContext = fixture.CreateDbContext(true);
         var repository = new CastMemberRepository(actDbContext);
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging();
@@ -52,7 +47,7 @@ public class UpdateCastMemberTest
         output.Id.Should().Be(example.Id);
         output.Name.Should().Be(newName);
         output.Type.Should().Be(newType);
-        var item = await _fixture.CreateDbContext(true)
+        var item = await fixture.CreateDbContext(true)
             .CastMembers
             .FindAsync(example.Id);
         item.Should().NotBeNull();
@@ -65,9 +60,9 @@ public class UpdateCastMemberTest
     public async Task ThrowWhenNotFound()
     {
         var randomGuid = Guid.NewGuid();
-        var newName = _fixture.GetValidName();
-        var newType = _fixture.GetRandomCastMemberType();
-        var actDbContext = _fixture.CreateDbContext(true);
+        var newName = fixture.GetValidName();
+        var newType = fixture.GetRandomCastMemberType();
+        var actDbContext = fixture.CreateDbContext(true);
         var repository = new CastMemberRepository(actDbContext);
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging();

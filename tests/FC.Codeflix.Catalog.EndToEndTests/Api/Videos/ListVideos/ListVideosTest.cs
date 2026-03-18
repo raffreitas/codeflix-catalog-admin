@@ -11,21 +11,16 @@ using FluentAssertions;
 
 namespace FC.Codeflix.Catalog.EndToEndTests.Api.Videos.ListVideos;
 
-public sealed class ListVideosApiTest : IClassFixture<VideoBaseFixture>, IDisposable
+public sealed class ListVideosApiTest(VideoBaseFixture fixture) : IClassFixture<VideoBaseFixture>, IDisposable
 {
-    private readonly VideoBaseFixture _fixture;
-
-    public ListVideosApiTest(VideoBaseFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(ListVideos))]
     [Trait("EndToEnd/Api", "Video/ListVideos - Endpoints")]
     public async Task ListVideos()
     {
-        var exampleCategories = _fixture.GetExampleCategoriesList(3);
-        var exampleGenres = _fixture.GetExampleListGenres(4);
-        var exampleCastMembers = _fixture.GetExampleCastMembersList(5);
-        var exampleVideos = _fixture.GetVideoCollection(10);
+        var exampleCategories = fixture.GetExampleCategoriesList(3);
+        var exampleGenres = fixture.GetExampleListGenres(4);
+        var exampleCastMembers = fixture.GetExampleCastMembersList(5);
+        var exampleVideos = fixture.GetVideoCollection(10);
 
         exampleVideos.ForEach(video =>
         {
@@ -36,13 +31,13 @@ public sealed class ListVideosApiTest : IClassFixture<VideoBaseFixture>, IDispos
                 => video.AddCastMember(castMember.Id));
         });
 
-        await _fixture.CategoryPersistence.InsertList(exampleCategories);
-        await _fixture.GenrePersistence.InsertList(exampleGenres);
-        await _fixture.CastMemberPersistence.InsertList(exampleCastMembers);
-        await _fixture.VideoPersistence.InsertList(exampleVideos);
+        await fixture.CategoryPersistence.InsertList(exampleCategories);
+        await fixture.GenrePersistence.InsertList(exampleGenres);
+        await fixture.CastMemberPersistence.InsertList(exampleCastMembers);
+        await fixture.VideoPersistence.InsertList(exampleVideos);
 
         var input = new ListVideosInput { Page = 1, PerPage = exampleVideos.Count };
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<VideoModelOutput>>("/videos", input);
 
         response.Should().NotBeNull();
@@ -86,7 +81,7 @@ public sealed class ListVideosApiTest : IClassFixture<VideoBaseFixture>, IDispos
     public async Task ReturnsEmptyWhenThereIsNoVideo()
     {
         var input = new ListVideosInput { Page = 1, PerPage = 10 };
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<VideoModelOutput>>("/videos", input);
 
         response.Should().NotBeNull();
@@ -112,11 +107,11 @@ public sealed class ListVideosApiTest : IClassFixture<VideoBaseFixture>, IDispos
         int perPage,
         int expectedQuantityItems)
     {
-        var exampleVideos = _fixture.GetVideoCollection(quantityToGenerate);
-        await _fixture.VideoPersistence.InsertList(exampleVideos);
+        var exampleVideos = fixture.GetVideoCollection(quantityToGenerate);
+        await fixture.VideoPersistence.InsertList(exampleVideos);
         var input = new ListVideosInput { Page = page, PerPage = perPage };
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<VideoModelOutput>>("/videos", input);
 
         response.Should().NotBeNull();
@@ -159,8 +154,8 @@ public sealed class ListVideosApiTest : IClassFixture<VideoBaseFixture>, IDispos
         string order
     )
     {
-        var exampleVideos = _fixture.GetVideoCollection(10);
-        await _fixture.VideoPersistence.InsertList(exampleVideos);
+        var exampleVideos = fixture.GetVideoCollection(10);
+        await fixture.VideoPersistence.InsertList(exampleVideos);
 
         var input = new ListVideosInput
         {
@@ -170,7 +165,7 @@ public sealed class ListVideosApiTest : IClassFixture<VideoBaseFixture>, IDispos
             Dir = order == "asc" ? SearchOrder.Asc : SearchOrder.Desc
         };
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<VideoModelOutput>>("/videos", input);
 
         response.Should().NotBeNull();
@@ -178,7 +173,7 @@ public sealed class ListVideosApiTest : IClassFixture<VideoBaseFixture>, IDispos
         output.Should().NotBeNull();
         output.Meta.Should().NotBeNull();
         output.Data.Should().NotBeNull();
-        var expectedVideos = _fixture.CloneVideosOrdered(
+        var expectedVideos = fixture.CloneVideosOrdered(
             exampleVideos, orderBy, input.Dir);
         output.Data.Should().Equal(expectedVideos, (v1, v2) => v1.Id == v2.Id);
     }
@@ -201,12 +196,12 @@ public sealed class ListVideosApiTest : IClassFixture<VideoBaseFixture>, IDispos
             "007: Dr. No", "007: Casino Royale", "007: GoldFinger", "007: Skyfall", "Star Wars: Return of the Jedi",
             "Star Wars: The Empire Strikes Back", "Interstellar"
         };
-        var exampleVideos = _fixture.GetVideoCollection(moviesNames);
+        var exampleVideos = fixture.GetVideoCollection(moviesNames);
 
-        await _fixture.VideoPersistence.InsertList(exampleVideos);
+        await fixture.VideoPersistence.InsertList(exampleVideos);
         var input = new ListVideosInput { Page = page, PerPage = perPage, Search = searchTerm };
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<VideoModelOutput>>("/videos", input);
 
         response.Should().NotBeNull();
@@ -222,5 +217,5 @@ public sealed class ListVideosApiTest : IClassFixture<VideoBaseFixture>, IDispos
             => video.Title.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase));
     }
 
-    public void Dispose() => _fixture.CleanPersistence();
+    public void Dispose() => fixture.CleanPersistence();
 }

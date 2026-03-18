@@ -43,10 +43,10 @@ public class CategoryRepository(CodeflixCatalogDbContext context) : ICategoryRep
             .ToListAsync(cancellationToken);
 
         return new SearchOutput<Category>(
-            currentPage: input.Page,
-            perPage: input.PerPage,
-            total: total,
-            items: items
+            CurrentPage: input.Page,
+            PerPage: input.PerPage,
+            Total: total,
+            Items: items
         );
     }
 

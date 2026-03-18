@@ -2,12 +2,9 @@
 
 namespace FC.Codeflix.Catalog.Domain.ValueObjects;
 
-public sealed class Image : ValueObject
+public sealed class Image(string path) : ValueObject
 {
-    public string Path { get; }
-
-    public Image(string path)
-        => Path = path;
+    public string Path { get; } = path;
 
     public override bool Equals(ValueObject? other)
         => other is Image otherImage

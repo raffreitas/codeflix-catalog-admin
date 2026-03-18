@@ -3,18 +3,12 @@ using FC.Codeflix.Catalog.Application.UseCases.Categories.Common;
 using FC.Codeflix.Catalog.Domain.Repositories;
 
 namespace FC.Codeflix.Catalog.Application.UseCases.Categories.UpdateCategory;
-public class UpdateCategoryUseCase : IUpdateCategoryUseCase
+public class UpdateCategoryUseCase(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
+    : IUpdateCategoryUseCase
 {
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly IUnitOfWork _unitOfWork;
-    public UpdateCategoryUseCase(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
-    {
-        _categoryRepository = categoryRepository;
-        _unitOfWork = unitOfWork;
-    }
     public async Task<CategoryModelOutput> Handle(UpdateCategoryInput request, CancellationToken cancellationToken)
     {
-        var category = await _categoryRepository.Get(request.Id, cancellationToken);
+        var category = await categoryRepository.Get(request.Id, cancellationToken);
 
         category.Update(request.Name, request.Description);
 
@@ -26,8 +20,8 @@ public class UpdateCategoryUseCase : IUpdateCategoryUseCase
             else category.Deactivate();
         }
 
-        await _categoryRepository.Update(category, cancellationToken);
-        await _unitOfWork.Commit(cancellationToken);
+        await categoryRepository.Update(category, cancellationToken);
+        await unitOfWork.Commit(cancellationToken);
 
         return CategoryModelOutput.FromCategory(category);
     }

@@ -4,15 +4,10 @@ using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 using MediatR;
 
 namespace FC.Codeflix.Catalog.Application.UseCases.Genres.ListGenres;
-public record ListGenresInput : PaginatedListInput, IRequest<ListGenresOutput>
-{
-    public ListGenresInput(
-        int page = 1, 
-        int perPage= 15, 
-        string search = "", 
-        string sort = "", 
-        SearchOrder dir = SearchOrder.Asc
-    ) : base(page, perPage, search, sort, dir)
-    {
-    }
-}
+public record ListGenresInput(
+    int Page = 1,
+    int PerPage = 15,
+    string Search = "",
+    string Sort = "",
+    SearchOrder Dir = SearchOrder.Asc)
+    : PaginatedListInput(Page, PerPage, Search, Sort, Dir), IRequest<ListGenresOutput>;

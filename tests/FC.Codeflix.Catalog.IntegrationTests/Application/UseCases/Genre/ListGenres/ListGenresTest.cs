@@ -10,22 +10,17 @@ using FluentAssertions;
 namespace FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.Genre.ListGenres;
 
 [Collection(nameof(ListGenresTestFixture))]
-public class ListGenresTest
+public class ListGenresTest(ListGenresTestFixture fixture)
 {
-    private readonly ListGenresTestFixture _fixture;
-
-    public ListGenresTest(ListGenresTestFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(ListGenres))]
     [Trait("Integration/Application", "ListGenres - UseCases")]
     public async Task ListGenres()
     {
-        List<Domain.Entities.Genre> exampleGenres = _fixture.GetExampleListGenres();
-        CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
+        List<Domain.Entities.Genre> exampleGenres = fixture.GetExampleListGenres();
+        CodeflixCatalogDbContext arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(exampleGenres);
         await arrangeDbContext.SaveChangesAsync();
-        CodeflixCatalogDbContext actDbContext = _fixture.CreateDbContext(true);
+        CodeflixCatalogDbContext actDbContext = fixture.CreateDbContext(true);
         ListGenresUseCase useCase = new ListGenresUseCase(
             new GenreRepository(actDbContext),
             new CategoryRepository(actDbContext)
@@ -56,7 +51,7 @@ public class ListGenresTest
     [Trait("Integration/Application", "ListGenres - UseCases")]
     public async Task ListGenresReturnsEmptyWhenPersistenceIsEmpty()
     {
-        CodeflixCatalogDbContext actDbContext = _fixture.CreateDbContext();
+        CodeflixCatalogDbContext actDbContext = fixture.CreateDbContext();
         ListGenresUseCase useCase = new ListGenresUseCase(
             new GenreRepository(actDbContext),
             new CategoryRepository(actDbContext)
@@ -79,8 +74,8 @@ public class ListGenresTest
     [Trait("Integration/Application", "ListGenres - UseCases")]
     public async Task ListGenresVerifyRelations()
     {
-        List<Domain.Entities.Genre> exampleGenres = _fixture.GetExampleListGenres();
-        List<Category> exampleCategories = _fixture.GetExampleCategoriesList();
+        List<Domain.Entities.Genre> exampleGenres = fixture.GetExampleListGenres();
+        List<Category> exampleCategories = fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {
@@ -99,12 +94,12 @@ public class ListGenresTest
                 )
             )
         );
-        CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
+        CodeflixCatalogDbContext arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(exampleGenres);
         await arrangeDbContext.AddRangeAsync(exampleCategories);
         await arrangeDbContext.AddRangeAsync(genresCategories);
         await arrangeDbContext.SaveChangesAsync();
-        CodeflixCatalogDbContext actDbContext = _fixture.CreateDbContext(true);
+        CodeflixCatalogDbContext actDbContext = fixture.CreateDbContext(true);
         ListGenresUseCase useCase = new ListGenresUseCase(
             new GenreRepository(actDbContext),
             new CategoryRepository(actDbContext)
@@ -153,8 +148,8 @@ public class ListGenresTest
         int expectedQuantityItems
     )
     {
-        List<Domain.Entities.Genre> exampleGenres = _fixture.GetExampleListGenres(quantityToGenerate);
-        List<Category> exampleCategories = _fixture.GetExampleCategoriesList();
+        List<Domain.Entities.Genre> exampleGenres = fixture.GetExampleListGenres(quantityToGenerate);
+        List<Category> exampleCategories = fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {
@@ -173,12 +168,12 @@ public class ListGenresTest
                 )
             )
         );
-        CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
+        CodeflixCatalogDbContext arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(exampleGenres);
         await arrangeDbContext.AddRangeAsync(exampleCategories);
         await arrangeDbContext.AddRangeAsync(genresCategories);
         await arrangeDbContext.SaveChangesAsync();
-        CodeflixCatalogDbContext actDbContext = _fixture.CreateDbContext(true);
+        CodeflixCatalogDbContext actDbContext = fixture.CreateDbContext(true);
         ListGenresUseCase useCase = new ListGenresUseCase(
             new GenreRepository(actDbContext),
             new CategoryRepository(actDbContext)
@@ -232,7 +227,7 @@ public class ListGenresTest
         int expectedQuantityTotalItems
     )
     {
-        var exampleGenres = _fixture.GetExampleListGenresByNames(
+        var exampleGenres = fixture.GetExampleListGenresByNames(
             new List<string>
             {
                 "Action",
@@ -246,7 +241,7 @@ public class ListGenresTest
                 "Sci-fi Future"
             }
         );
-        List<Category> exampleCategories = _fixture.GetExampleCategoriesList();
+        List<Category> exampleCategories = fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {
@@ -265,12 +260,12 @@ public class ListGenresTest
                 )
             )
         );
-        CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
+        CodeflixCatalogDbContext arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(exampleGenres);
         await arrangeDbContext.AddRangeAsync(exampleCategories);
         await arrangeDbContext.AddRangeAsync(genresCategories);
         await arrangeDbContext.SaveChangesAsync();
-        CodeflixCatalogDbContext actDbContext = _fixture.CreateDbContext(true);
+        CodeflixCatalogDbContext actDbContext = fixture.CreateDbContext(true);
         ListGenresUseCase useCase = new ListGenresUseCase(
             new GenreRepository(actDbContext),
             new CategoryRepository(actDbContext)
@@ -321,8 +316,8 @@ public class ListGenresTest
         string order
     )
     {
-        List<Domain.Entities.Genre> exampleGenres = _fixture.GetExampleListGenres();
-        List<Category> exampleCategories = _fixture.GetExampleCategoriesList();
+        List<Domain.Entities.Genre> exampleGenres = fixture.GetExampleListGenres();
+        List<Category> exampleCategories = fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {
@@ -341,19 +336,19 @@ public class ListGenresTest
                 )
             )
         );
-        CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
+        CodeflixCatalogDbContext arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(exampleGenres);
         await arrangeDbContext.AddRangeAsync(exampleCategories);
         await arrangeDbContext.AddRangeAsync(genresCategories);
         await arrangeDbContext.SaveChangesAsync();
-        CodeflixCatalogDbContext actDbContext = _fixture.CreateDbContext(true);
+        CodeflixCatalogDbContext actDbContext = fixture.CreateDbContext(true);
         ListGenresUseCase useCase = new ListGenresUseCase(
             new GenreRepository(actDbContext),
             new CategoryRepository(actDbContext)
         );
         var orderEnum = order == "asc" ? SearchOrder.Asc : SearchOrder.Desc;
         ListGenresInput input = new ListGenresInput(
-            1, 20, sort: orderBy, dir: orderEnum
+            1, 20, Sort: orderBy, Dir: orderEnum
         );
 
         ListGenresOutput output = await useCase.Handle(
@@ -366,7 +361,7 @@ public class ListGenresTest
         output.PerPage.Should().Be(input.PerPage);
         output.Total.Should().Be(exampleGenres.Count);
         output.Items.Should().HaveCount(exampleGenres.Count);
-        var expectedOrderedList = _fixture.CloneGenreListOrdered(
+        var expectedOrderedList = fixture.CloneGenreListOrdered(
             exampleGenres, orderBy, orderEnum
         );
         for (int index = 0; index < expectedOrderedList.Count; index++)

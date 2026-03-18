@@ -1,11 +1,6 @@
 ﻿namespace FC.Codeflix.Catalog.Api.Models.Responses;
 
-public record ApiResponse<TData>
+public record ApiResponse<TData>(TData Data)
 {
-    public ApiResponse(TData data)
-    {
-        Data = data;
-    }
-
-    public TData Data { get; set; }
+    public TData Data { get; set; } = Data;
 }

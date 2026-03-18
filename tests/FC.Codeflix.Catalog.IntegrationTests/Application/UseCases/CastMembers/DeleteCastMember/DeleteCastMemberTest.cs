@@ -15,22 +15,17 @@ using UseCase = FC.Codeflix.Catalog.Application.UseCases.CastMembers.DeleteCastM
 namespace FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.CastMembers.DeleteCastMember;
 
 [Collection(nameof(CastMemberUseCasesBaseFixture))]
-public class DeleteCastMemberTest
+public class DeleteCastMemberTest(CastMemberUseCasesBaseFixture fixture)
 {
-    private readonly CastMemberUseCasesBaseFixture _fixture;
-
-    public DeleteCastMemberTest(CastMemberUseCasesBaseFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(Delete))]
     [Trait("Integration/Application", "DeleteCastMember - Use Cases")]
     public async Task Delete()
     {
-        var example = _fixture.GetExampleCastMember();
-        var arrangeDbContext = _fixture.CreateDbContext();
+        var example = fixture.GetExampleCastMember();
+        var arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddAsync(example);
         await arrangeDbContext.SaveChangesAsync();
-        var actDbContext = _fixture.CreateDbContext(true);
+        var actDbContext = fixture.CreateDbContext(true);
         var repository = new CastMemberRepository(actDbContext);
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging();
@@ -46,7 +41,7 @@ public class DeleteCastMemberTest
 
         await useCase.Handle(input, CancellationToken.None);
 
-        var assertDbContext = _fixture.CreateDbContext(true);
+        var assertDbContext = fixture.CreateDbContext(true);
         var list = await assertDbContext.CastMembers.AsNoTracking().ToListAsync();
         list.Should().HaveCount(0);
     }
@@ -55,7 +50,7 @@ public class DeleteCastMemberTest
     [Trait("Integration/Application", "DeleteCastMember - Use Cases")]
     public async Task ThrowWhenNotFound()
     {
-        var actDbContext = _fixture.CreateDbContext(true);
+        var actDbContext = fixture.CreateDbContext(true);
         var repository = new CastMemberRepository(actDbContext);
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging();

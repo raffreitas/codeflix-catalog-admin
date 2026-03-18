@@ -3,12 +3,9 @@ using FC.Codeflix.Catalog.Application.UseCases.Categories.Common;
 
 namespace FC.Codeflix.Catalog.Application.UseCases.Categories.ListCategories;
 
-public record ListCategoriesOutput : PaginatedListOutput<CategoryModelOutput>
-{
-    public ListCategoriesOutput(
-        int page,
-        int perPage,
-        int total,
-        IReadOnlyList<CategoryModelOutput> items) : base(page, perPage, total, items)
-    { }
-}
+public record ListCategoriesOutput(
+    int Page,
+    int PerPage,
+    int Total,
+    IReadOnlyList<CategoryModelOutput> Items)
+    : PaginatedListOutput<CategoryModelOutput>(Page, PerPage, Total, Items);

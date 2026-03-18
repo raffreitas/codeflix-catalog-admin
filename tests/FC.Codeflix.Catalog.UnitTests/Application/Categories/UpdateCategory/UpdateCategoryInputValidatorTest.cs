@@ -5,17 +5,13 @@ using FluentAssertions;
 namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.UpdateCategory;
 
 [Collection(nameof(UpdateCategoryTestFixtureCollection))]
-public class UpdateCategoryInputValidatorTest
+public class UpdateCategoryInputValidatorTest(UpdateCategoryTestFixture fixture)
 {
-    private readonly UpdateCategoryTestFixture _fixture;
-    public UpdateCategoryInputValidatorTest(UpdateCategoryTestFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(DontValidateWhenEmptyGuid))]
     [Trait("Application", "UpdateCategoryInputValidator - Use Cases")]
     public void DontValidateWhenEmptyGuid()
     {
-        var input = _fixture.GetValidInput(Guid.Empty);
+        var input = fixture.GetValidInput(Guid.Empty);
         var validator = new UpdateCategoryInputValidator();
 
         var result = validator.Validate(input);
@@ -30,7 +26,7 @@ public class UpdateCategoryInputValidatorTest
     [Trait("Application", "UpdateCategoryInputValidator - Use Cases")]
     public void ValidateWhenValid()
     {
-        var input = _fixture.GetValidInput();
+        var input = fixture.GetValidInput();
         var validator = new UpdateCategoryInputValidator();
 
         var result = validator.Validate(input);

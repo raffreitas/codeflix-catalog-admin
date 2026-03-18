@@ -16,19 +16,14 @@ using Microsoft.Extensions.Logging;
 namespace FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.Genre.CreateGenre;
 
 [Collection(nameof(CreateGenreTestFixture))]
-public class CreateGenreTest
+public class CreateGenreTest(CreateGenreTestFixture fixture)
 {
-    private readonly CreateGenreTestFixture _fixture;
-
-    public CreateGenreTest(CreateGenreTestFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(CreateGenre))]
     [Trait("Integration/Application", "CreateGenre - Use Cases")]
     public async Task CreateGenre()
     {
-        CreateGenreInput input = _fixture.GetExampleInput();
-        CodeflixCatalogDbContext actDbContext = _fixture.CreateDbContext();
+        CreateGenreInput input = fixture.GetExampleInput();
+        CodeflixCatalogDbContext actDbContext = fixture.CreateDbContext();
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging();
         await using var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -54,7 +49,7 @@ public class CreateGenreTest
         output.IsActive.Should().Be(input.IsActive);
         output.CreatedAt.Should().NotBe(default(DateTime));
         output.Categories.Should().HaveCount(0);
-        CodeflixCatalogDbContext assertDbContext = _fixture.CreateDbContext(true);
+        CodeflixCatalogDbContext assertDbContext = fixture.CreateDbContext(true);
         Domain.Entities.Genre? genreFromDb =
             await assertDbContext.Genres.FindAsync(output.Id);
         genreFromDb.Should().NotBeNull();
@@ -66,14 +61,14 @@ public class CreateGenreTest
     [Trait("Integration/Application", "CreateGenre - Use Cases")]
     public async Task CreateGenreWithCategoriesRelations()
     {
-        List<Category> exampleCategories = _fixture.GetExampleCategoriesList(5);
-        CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
+        List<Category> exampleCategories = fixture.GetExampleCategoriesList(5);
+        CodeflixCatalogDbContext arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.Categories.AddRangeAsync(exampleCategories);
         await arrangeDbContext.SaveChangesAsync();
-        CreateGenreInput input = _fixture.GetExampleInput();
+        CreateGenreInput input = fixture.GetExampleInput();
         input.CategoriesIds = exampleCategories
             .Select(category => category.Id).ToList();
-        CodeflixCatalogDbContext actDbContext = _fixture.CreateDbContext(true);
+        CodeflixCatalogDbContext actDbContext = fixture.CreateDbContext(true);
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging();
         await using var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -102,7 +97,7 @@ public class CreateGenreTest
         List<Guid> relatedCategoriesIdsFromOutput = output.Categories
             .Select(relation => relation.Id).ToList();
         relatedCategoriesIdsFromOutput.Should().BeEquivalentTo(input.CategoriesIds);
-        CodeflixCatalogDbContext assertDbContext = _fixture.CreateDbContext(true);
+        CodeflixCatalogDbContext assertDbContext = fixture.CreateDbContext(true);
         Domain.Entities.Genre? genreFromDb =
             await assertDbContext.Genres.FindAsync(output.Id);
         genreFromDb.Should().NotBeNull();
@@ -122,16 +117,16 @@ public class CreateGenreTest
     [Trait("Integration/Application", "CreateGenre - Use Cases")]
     public async Task CreateGenreThrowsWhenCategoryDoesntExists()
     {
-        List<Category> exampleCategories = _fixture.GetExampleCategoriesList(5);
-        CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
+        List<Category> exampleCategories = fixture.GetExampleCategoriesList(5);
+        CodeflixCatalogDbContext arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.Categories.AddRangeAsync(exampleCategories);
         await arrangeDbContext.SaveChangesAsync();
-        CreateGenreInput input = _fixture.GetExampleInput();
+        CreateGenreInput input = fixture.GetExampleInput();
         input.CategoriesIds = exampleCategories
             .Select(category => category.Id).ToList();
         Guid randomGuid = Guid.NewGuid();
         input.CategoriesIds.Add(randomGuid);
-        CodeflixCatalogDbContext actDbContext = _fixture.CreateDbContext(true);
+        CodeflixCatalogDbContext actDbContext = fixture.CreateDbContext(true);
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging();
         await using var serviceProvider = serviceCollection.BuildServiceProvider();

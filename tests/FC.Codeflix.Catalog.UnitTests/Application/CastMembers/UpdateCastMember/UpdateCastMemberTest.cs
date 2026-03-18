@@ -14,22 +14,17 @@ using DomainEntity = FC.Codeflix.Catalog.Domain.Entities;
 namespace FC.Codeflix.Catalog.UnitTests.Application.CastMembers.UpdateCastMember;
 
 [Collection(nameof(UpdateCastMemberTestFixture))]
-public class UpdateCastMemberTest
+public class UpdateCastMemberTest(UpdateCastMemberTestFixture fixture)
 {
-    private readonly UpdateCastMemberTestFixture _fixture;
-
-    public UpdateCastMemberTest(UpdateCastMemberTestFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(Update))]
     [Trait("Application", "UpdateCastMember - UseCases")]
     public async Task Update()
     {
         var repositoryMock = new Mock<ICastMemberRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
-        var castMemberExample = _fixture.GetExampleCastMember();
-        var newName = _fixture.GetValidName();
-        var newType = _fixture.GetRandomCastMemberType();
+        var castMemberExample = fixture.GetExampleCastMember();
+        var newName = fixture.GetValidName();
+        var newType = fixture.GetRandomCastMemberType();
         repositoryMock
             .Setup(x => x.Get(
                 It.Is<Guid>(x => x == castMemberExample.Id),
@@ -90,8 +85,8 @@ public class UpdateCastMemberTest
             .ThrowsAsync(new NotFoundException("error"));
         var input = new UseCase.UpdateCastMemberInput(
             Guid.NewGuid(),
-            _fixture.GetValidName(),
-            _fixture.GetRandomCastMemberType()
+            fixture.GetValidName(),
+            fixture.GetRandomCastMemberType()
         );
         var useCase = new UseCase.UpdateCastMember(
             repositoryMock.Object,
@@ -110,7 +105,7 @@ public class UpdateCastMemberTest
     {
         var repositoryMock = new Mock<ICastMemberRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
-        var castMemberExample = _fixture.GetExampleCastMember();
+        var castMemberExample = fixture.GetExampleCastMember();
         repositoryMock
             .Setup(x => x.Get(
                 It.IsAny<Guid>(),
@@ -120,7 +115,7 @@ public class UpdateCastMemberTest
         var input = new UseCase.UpdateCastMemberInput(
             Guid.NewGuid(),
             null!,
-            _fixture.GetRandomCastMemberType()
+            fixture.GetRandomCastMemberType()
         );
         var useCase = new UseCase.UpdateCastMember(
             repositoryMock.Object,

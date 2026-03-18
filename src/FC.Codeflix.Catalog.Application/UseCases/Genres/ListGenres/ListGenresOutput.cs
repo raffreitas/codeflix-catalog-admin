@@ -5,17 +5,13 @@ using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 
 namespace FC.Codeflix.Catalog.Application.UseCases.Genres.ListGenres;
 
-public record ListGenresOutput : PaginatedListOutput<GenreModelOutput>
+public record ListGenresOutput(
+    int Page,
+    int PerPage,
+    int Total,
+    IReadOnlyList<GenreModelOutput> Items)
+    : PaginatedListOutput<GenreModelOutput>(Page, PerPage, Total, Items)
 {
-    public ListGenresOutput(
-        int page,
-        int perPage,
-        int total,
-        IReadOnlyList<GenreModelOutput> items
-    ) : base(page, perPage, total, items)
-    {
-    }
-
     public static ListGenresOutput FromSearchOutput(SearchOutput<Genre> searchOutput)
         => new(
             searchOutput.CurrentPage,

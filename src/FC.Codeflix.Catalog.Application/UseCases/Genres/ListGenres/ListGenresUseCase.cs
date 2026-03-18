@@ -2,20 +2,12 @@
 
 namespace FC.Codeflix.Catalog.Application.UseCases.Genres.ListGenres;
 
-public class ListGenresUseCase : IListGenresUseCase
+public class ListGenresUseCase(IGenreRepository genreRepository, ICategoryRepository categoryRepository)
+    : IListGenresUseCase
 {
-    private readonly IGenreRepository _genreRepository;
-    private readonly ICategoryRepository _categoryRepository;
-
-    public ListGenresUseCase(IGenreRepository genreRepository, ICategoryRepository categoryRepository)
-    {
-        _genreRepository = genreRepository;
-        _categoryRepository = categoryRepository;
-    }
-
     public async Task<ListGenresOutput> Handle(ListGenresInput request, CancellationToken cancellationToken)
     {
-        var searchOutput = await _genreRepository.Search(request.ToSearchInput(), cancellationToken);
+        var searchOutput = await genreRepository.Search(request.ToSearchInput(), cancellationToken);
         var output = ListGenresOutput.FromSearchOutput(searchOutput);
         
         var relatedCategoriesIds = output.Items
@@ -26,7 +18,7 @@ public class ListGenresUseCase : IListGenresUseCase
         
         if (relatedCategoriesIds.Count > 0)
         {
-            var categories = await _categoryRepository.GetListByIds(relatedCategoriesIds, cancellationToken);
+            var categories = await categoryRepository.GetListByIds(relatedCategoriesIds, cancellationToken);
             output.FillWithCategoryNames(categories);
         }
         

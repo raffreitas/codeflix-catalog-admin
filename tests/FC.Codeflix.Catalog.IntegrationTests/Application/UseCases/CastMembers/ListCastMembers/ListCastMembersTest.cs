@@ -9,22 +9,17 @@ using UseCase = FC.Codeflix.Catalog.Application.UseCases.CastMembers.ListCastMem
 namespace FC.Codeflix.Catalog.IntegrationTests.Application.UseCases.CastMembers.ListCastMembers;
 
 [Collection(nameof(CastMemberUseCasesBaseFixture))]
-public class ListCastMembersTest
+public class ListCastMembersTest(CastMemberUseCasesBaseFixture fixture)
 {
-    private readonly CastMemberUseCasesBaseFixture _fixture;
-
-    public ListCastMembersTest(CastMemberUseCasesBaseFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(SimpleList))]
     [Trait("Integration/Application", "ListCastMembers - Use Cases")]
     public async Task SimpleList()
     {
-        var examples = _fixture.GetExampleCastMembersList(10);
-        var arrangeDbContext = _fixture.CreateDbContext();
+        var examples = fixture.GetExampleCastMembersList(10);
+        var arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(examples);
         await arrangeDbContext.SaveChangesAsync();
-        var repository = new CastMemberRepository(_fixture.CreateDbContext(true));
+        var repository = new CastMemberRepository(fixture.CreateDbContext(true));
         var useCase = new UseCase.ListCastMembers(repository);
         var input = new UseCase.ListCastMembersInput(1, 10, "", "", SearchOrder.Asc);
 
@@ -45,7 +40,7 @@ public class ListCastMembersTest
     [Trait("Integration/Application", "ListCastMembers - Use Cases")]
     public async Task Empty()
     {
-        var repository = new CastMemberRepository(_fixture.CreateDbContext());
+        var repository = new CastMemberRepository(fixture.CreateDbContext());
         var useCase = new UseCase.ListCastMembers(repository);
         var input = new UseCase.ListCastMembersInput(1, 10, "", "", SearchOrder.Asc);
 
@@ -70,11 +65,11 @@ public class ListCastMembersTest
         int expectedQuantityItems
     )
     {
-        var examples = _fixture.GetExampleCastMembersList(quantityToGenerate);
-        var arrangeDbContext = _fixture.CreateDbContext();
+        var examples = fixture.GetExampleCastMembersList(quantityToGenerate);
+        var arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(examples);
         await arrangeDbContext.SaveChangesAsync();
-        var repository = new CastMemberRepository(_fixture.CreateDbContext(true));
+        var repository = new CastMemberRepository(fixture.CreateDbContext(true));
         var useCase = new UseCase.ListCastMembers(repository);
         var input = new UseCase.ListCastMembersInput(page, perPage, "", "", SearchOrder.Asc);
 
@@ -121,11 +116,11 @@ public class ListCastMembersTest
             "Sci-fi Robots",
             "Sci-fi Future"
         };
-        var examples = _fixture.GetExampleCastMembersListByNames(namesToGenerate);
-        var arrangeDbContext = _fixture.CreateDbContext();
+        var examples = fixture.GetExampleCastMembersListByNames(namesToGenerate);
+        var arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(examples);
         await arrangeDbContext.SaveChangesAsync();
-        var repository = new CastMemberRepository(_fixture.CreateDbContext(true));
+        var repository = new CastMemberRepository(fixture.CreateDbContext(true));
         var useCase = new UseCase.ListCastMembers(repository);
         var input = new UseCase.ListCastMembersInput(page, perPage, search, "", SearchOrder.Asc);
 
@@ -156,11 +151,11 @@ public class ListCastMembersTest
         string order
     )
     {
-        var examples = _fixture.GetExampleCastMembersList(10);
-        var arrangeDbContext = _fixture.CreateDbContext();
+        var examples = fixture.GetExampleCastMembersList(10);
+        var arrangeDbContext = fixture.CreateDbContext();
         await arrangeDbContext.AddRangeAsync(examples);
         await arrangeDbContext.SaveChangesAsync();
-        var repository = new CastMemberRepository(_fixture.CreateDbContext(true));
+        var repository = new CastMemberRepository(fixture.CreateDbContext(true));
         var searchOrder = order.Equals("asc", StringComparison.CurrentCultureIgnoreCase)
             ? SearchOrder.Asc
             : SearchOrder.Desc;
@@ -173,7 +168,7 @@ public class ListCastMembersTest
         output.Total.Should().Be(examples.Count);
         output.Page.Should().Be(input.Page);
         output.PerPage.Should().Be(input.PerPage);
-        var orderedList = _fixture.CloneListOrdered(
+        var orderedList = fixture.CloneListOrdered(
             examples,
             orderBy, searchOrder
         );

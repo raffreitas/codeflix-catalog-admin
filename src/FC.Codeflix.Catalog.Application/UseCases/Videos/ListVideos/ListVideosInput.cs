@@ -5,15 +5,10 @@ using MediatR;
 
 namespace FC.Codeflix.Catalog.Application.UseCases.Videos.ListVideos;
 
-public sealed record ListVideosInput : PaginatedListInput, IRequest<ListVideosOutput>
-{
-    public ListVideosInput(
-        int page = 1,
-        int perPage = 15,
-        string search = "",
-        string sort = "",
-        SearchOrder dir = SearchOrder.Asc)
-        : base(page, perPage, search, sort, dir)
-    {
-    }
-}
+public sealed record ListVideosInput(
+    int Page = 1,
+    int PerPage = 15,
+    string Search = "",
+    string Sort = "",
+    SearchOrder Dir = SearchOrder.Asc)
+    : PaginatedListInput(Page, PerPage, Search, Sort, Dir), IRequest<ListVideosOutput>;

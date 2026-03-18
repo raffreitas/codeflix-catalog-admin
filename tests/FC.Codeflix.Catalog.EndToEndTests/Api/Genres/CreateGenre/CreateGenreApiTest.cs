@@ -12,23 +12,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace FC.Codeflix.Catalog.EndToEndTests.Api.Genres.CreateGenre;
 
 [Collection(nameof(CreateGenreApiTestFixture))]
-public class CreateGenreApiTest : IDisposable
+public class CreateGenreApiTest(CreateGenreApiTestFixture fixture) : IDisposable
 {
-    private readonly CreateGenreApiTestFixture _fixture;
-
-    public CreateGenreApiTest(CreateGenreApiTestFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(CreateGenre))]
     [Trait("EndToEnd/Api", "Genre/CreateGenre - Endpoints")]
     public async Task CreateGenre()
     {
         var apiInput = new CreateGenreInput(
-            _fixture.GetValidCategoryName(),
-            _fixture.GetRandomBoolean()
+            fixture.GetValidCategoryName(),
+            fixture.GetRandomBoolean()
         );
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Post<ApiResponse<GenreModelOutput>>("/genres", apiInput);
 
         response.Should().NotBeNull();
@@ -39,7 +34,7 @@ public class CreateGenreApiTest : IDisposable
         output.Data.Name.Should().Be(apiInput.Name);
         output.Data.IsActive.Should().Be(apiInput.IsActive);
         output.Data.Categories.Should().HaveCount(0);
-        var genreFromDb = await _fixture.GenrePersistence.GetById(output.Data.Id);
+        var genreFromDb = await fixture.GenrePersistence.GetById(output.Data.Id);
         genreFromDb.Should().NotBeNull();
         genreFromDb.Name.Should().Be(apiInput.Name);
         genreFromDb.IsActive.Should().Be(apiInput.IsActive);
@@ -49,18 +44,18 @@ public class CreateGenreApiTest : IDisposable
     [Trait("EndToEnd/Api", "Genre/CreateGenre - Endpoints")]
     public async Task CreateGenreWithRelations()
     {
-        var exampleCategories = _fixture.GetExampleCategoriesList();
-        await _fixture.CategoryPersistence.InsertList(exampleCategories);
+        var exampleCategories = fixture.GetExampleCategoriesList();
+        await fixture.CategoryPersistence.InsertList(exampleCategories);
         var relatedCategories = exampleCategories
             .Skip(3).Take(3).Select(x => x.Id).ToList();
 
         var apiInput = new CreateGenreInput(
-            _fixture.GetValidCategoryName(),
-            _fixture.GetRandomBoolean(),
+            fixture.GetValidCategoryName(),
+            fixture.GetRandomBoolean(),
             relatedCategories
         );
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Post<ApiResponse<GenreModelOutput>>("/genres", apiInput);
 
         response.Should().NotBeNull();
@@ -73,11 +68,11 @@ public class CreateGenreApiTest : IDisposable
         output.Data.Categories.Should().HaveCount(relatedCategories.Count);
         var outputRelatedCategoryIds = output.Data.Categories.Select(x => x.Id).ToList();
         outputRelatedCategoryIds.Should().BeEquivalentTo(relatedCategories);
-        var genreFromDb = await _fixture.GenrePersistence.GetById(output.Data.Id);
+        var genreFromDb = await fixture.GenrePersistence.GetById(output.Data.Id);
         genreFromDb.Should().NotBeNull();
         genreFromDb.Name.Should().Be(apiInput.Name);
         genreFromDb.IsActive.Should().Be(apiInput.IsActive);
-        var relationsFromDb = await _fixture.GenrePersistence
+        var relationsFromDb = await fixture.GenrePersistence
             .GetGenresCategoriesRelationsByGenreId(output.Data.Id);
         relationsFromDb.Should().NotBeNull();
         relationsFromDb.Should().HaveCount(relatedCategories.Count);
@@ -90,19 +85,19 @@ public class CreateGenreApiTest : IDisposable
     [Trait("EndToEnd/Api", "Genre/CreateGenre - Endpoints")]
     public async Task ErrorWithInvalidRelations()
     {
-        var exampleCategories = _fixture.GetExampleCategoriesList();
-        await _fixture.CategoryPersistence.InsertList(exampleCategories);
+        var exampleCategories = fixture.GetExampleCategoriesList();
+        await fixture.CategoryPersistence.InsertList(exampleCategories);
         var relatedCategories = exampleCategories
             .Skip(3).Take(3).Select(x => x.Id).ToList();
         var invalidCategoryId = Guid.NewGuid();
         relatedCategories.Add(invalidCategoryId);
         var apiInput = new CreateGenreInput(
-            _fixture.GetValidCategoryName(),
-            _fixture.GetRandomBoolean(),
+            fixture.GetValidCategoryName(),
+            fixture.GetRandomBoolean(),
             relatedCategories
         );
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Post<ProblemDetails>("/genres", apiInput);
 
         response.Should().NotBeNull();
@@ -113,5 +108,5 @@ public class CreateGenreApiTest : IDisposable
         output.Detail.Should().Be($"Related category id (or ids) not found: {invalidCategoryId}");
     }
 
-    public void Dispose() => _fixture.CleanPersistence();
+    public void Dispose() => fixture.CleanPersistence();
 }

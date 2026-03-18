@@ -11,21 +11,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FC.Codeflix.Catalog.EndToEndTests.Api.Videos.GetVideo;
 
-public class GetVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
+public class GetVideoApiTest(VideoBaseFixture fixture) : IClassFixture<VideoBaseFixture>, IDisposable
 {
-    private readonly VideoBaseFixture _fixture;
-
-    public GetVideoApiTest(VideoBaseFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(GetVideo))]
     [Trait("EndToEnd/Api", "Video/GetVideo - Endpoints")]
     public async Task GetVideo()
     {
-        var exampleCategories = _fixture.GetExampleCategoriesList(3);
-        var exampleGenres = _fixture.GetExampleListGenres(4);
-        var exampleCastMembers = _fixture.GetExampleCastMembersList(5);
-        var exampleVideos = _fixture.GetVideoCollection(10);
+        var exampleCategories = fixture.GetExampleCategoriesList(3);
+        var exampleGenres = fixture.GetExampleListGenres(4);
+        var exampleCastMembers = fixture.GetExampleCastMembersList(5);
+        var exampleVideos = fixture.GetVideoCollection(10);
 
         exampleVideos.ForEach(video =>
         {
@@ -36,14 +31,14 @@ public class GetVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
                 => video.AddCastMember(castMember.Id));
         });
 
-        await _fixture.CategoryPersistence.InsertList(exampleCategories);
-        await _fixture.GenrePersistence.InsertList(exampleGenres);
-        await _fixture.CastMemberPersistence.InsertList(exampleCastMembers);
-        await _fixture.VideoPersistence.InsertList(exampleVideos);
+        await fixture.CategoryPersistence.InsertList(exampleCategories);
+        await fixture.GenrePersistence.InsertList(exampleGenres);
+        await fixture.CastMemberPersistence.InsertList(exampleCastMembers);
+        await fixture.VideoPersistence.InsertList(exampleVideos);
 
         var exampleItem = exampleVideos.ElementAt(5);
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<TestApiResponse<VideoModelOutput>>($"/videos/{exampleItem.Id}");
 
         response.Should().NotBeNull();
@@ -76,11 +71,11 @@ public class GetVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
     [Trait("EndToEnd/Api", "Video/GetVideo - Endpoints")]
     public async Task Error404WhenIdNotFound()
     {
-        var exampleVideos = _fixture.GetVideoCollection(10);
-        await _fixture.VideoPersistence.InsertList(exampleVideos);
+        var exampleVideos = fixture.GetVideoCollection(10);
+        await fixture.VideoPersistence.InsertList(exampleVideos);
         var exampleVideoId = Guid.NewGuid();
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<ProblemDetails>($"/videos/{exampleVideoId}");
 
         response.Should().NotBeNull();
@@ -90,5 +85,5 @@ public class GetVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
         output.Detail.Should().Be($"Video '{exampleVideoId}' not found.");
     }
 
-    public void Dispose() => _fixture.CleanPersistence();
+    public void Dispose() => fixture.CleanPersistence();
 }

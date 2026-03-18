@@ -9,19 +9,15 @@ using Moq;
 namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.CreateCategory;
 
 [Collection(nameof(CreateCategoryTestFixture))]
-public class CreateCategoryTest
+public class CreateCategoryTest(CreateCategoryTestFixture fixture)
 {
-    private readonly CreateCategoryTestFixture _fixture;
-    public CreateCategoryTest(CreateCategoryTestFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(CreateCategory))]
     [Trait("Application", "CreateCategory - Use Cases")]
     public async Task CreateCategory()
     {
-        var repositoryMock = _fixture.GetCategoryRepositoryMock();
-        var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
-        var input = _fixture.GetInput();
+        var repositoryMock = fixture.GetCategoryRepositoryMock();
+        var unitOfWorkMock = fixture.GetUnitOfWorkMock();
+        var input = fixture.GetInput();
         var useCase = new CreateCategoryUseCase(repositoryMock.Object, unitOfWorkMock.Object);
 
         var output = await useCase.Handle(input, CancellationToken.None);
@@ -53,8 +49,8 @@ public class CreateCategoryTest
     public async Task ThrowsWenCantInstantiateCategory(CreateCategoryInput input, string exceptionMessage)
     {
         var useCase = new CreateCategoryUseCase(
-            _fixture.GetCategoryRepositoryMock().Object,
-            _fixture.GetUnitOfWorkMock().Object
+            fixture.GetCategoryRepositoryMock().Object,
+            fixture.GetUnitOfWorkMock().Object
         );
 
         Func<Task> act = async () => await useCase.Handle(input, CancellationToken.None);
@@ -68,9 +64,9 @@ public class CreateCategoryTest
     [Trait("Application", "CreateCategory - Use Cases")]
     public async Task CreateCategoryWithOnlyName()
     {
-        var repositoryMock = _fixture.GetCategoryRepositoryMock();
-        var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
-        var input = new CreateCategoryInput(_fixture.GetValidCategoryName());
+        var repositoryMock = fixture.GetCategoryRepositoryMock();
+        var unitOfWorkMock = fixture.GetUnitOfWorkMock();
+        var input = new CreateCategoryInput(fixture.GetValidCategoryName());
 
         var useCase = new CreateCategoryUseCase(repositoryMock.Object, unitOfWorkMock.Object);
 
@@ -97,11 +93,11 @@ public class CreateCategoryTest
     [Trait("Application", "CreateCategory - Use Cases")]
     public async Task CreateCategoryWithOnlyNameAndDescription()
     {
-        var repositoryMock = _fixture.GetCategoryRepositoryMock();
-        var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
+        var repositoryMock = fixture.GetCategoryRepositoryMock();
+        var unitOfWorkMock = fixture.GetUnitOfWorkMock();
         var input = new CreateCategoryInput(
-            _fixture.GetValidCategoryName(),
-            _fixture.GetValidCategoryDescription());
+            fixture.GetValidCategoryName(),
+            fixture.GetValidCategoryDescription());
 
         var useCase = new CreateCategoryUseCase(repositoryMock.Object, unitOfWorkMock.Object);
 

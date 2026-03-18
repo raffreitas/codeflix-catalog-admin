@@ -14,22 +14,17 @@ using DomainEntity = FC.Codeflix.Catalog.Domain.Entities;
 namespace FC.Codeflix.Catalog.EndToEndTests.Api.Genres.GetGenre;
 
 [Collection(nameof(GetGenreApiTestFixture))]
-public class GetGenreApiTest : IDisposable
+public class GetGenreApiTest(GetGenreApiTestFixture fixture) : IDisposable
 {
-    private GetGenreApiTestFixture _fixture;
-
-    public GetGenreApiTest(GetGenreApiTestFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(GetGenre))]
     [Trait("EndToEnd/API", "Genre/GetGenre - Endpoints")]
     public async Task GetGenre()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
+        List<DomainEntity.Genre> exampleGenres = fixture.GetExampleListGenres();
         var targetGenre = exampleGenres[5];
-        await _fixture.GenrePersistence.InsertList(exampleGenres);
+        await fixture.GenrePersistence.InsertList(exampleGenres);
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<ApiResponse<GenreModelOutput>>($"/genres/{targetGenre.Id}");
 
         response.Should().NotBeNull();
@@ -44,11 +39,11 @@ public class GetGenreApiTest : IDisposable
     [Trait("EndToEnd/API", "Genre/GetGenre - Endpoints")]
     public async Task NotFound()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
+        List<DomainEntity.Genre> exampleGenres = fixture.GetExampleListGenres();
         var randomGuid = Guid.NewGuid();
-        await _fixture.GenrePersistence.InsertList(exampleGenres);
+        await fixture.GenrePersistence.InsertList(exampleGenres);
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<ProblemDetails>($"/genres/{randomGuid}");
 
         response.Should().NotBeNull();
@@ -62,9 +57,9 @@ public class GetGenreApiTest : IDisposable
     [Trait("EndToEnd/API", "Genre/GetGenre - Endpoints")]
     public async Task GetGenreWithRelations()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
+        List<DomainEntity.Genre> exampleGenres = fixture.GetExampleListGenres();
         var targetGenre = exampleGenres[5];
-        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList();
+        List<DomainEntity.Category> exampleCategories = fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {
@@ -83,11 +78,11 @@ public class GetGenreApiTest : IDisposable
                 )
             )
         );
-        await _fixture.GenrePersistence.InsertList(exampleGenres);
-        await _fixture.CategoryPersistence.InsertList(exampleCategories);
-        await _fixture.GenrePersistence.InsertGenresCategoriesRelationsList(genresCategories);
+        await fixture.GenrePersistence.InsertList(exampleGenres);
+        await fixture.CategoryPersistence.InsertList(exampleCategories);
+        await fixture.GenrePersistence.InsertGenresCategoriesRelationsList(genresCategories);
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<ApiResponse<GenreModelOutput>>($"/genres/{targetGenre.Id}");
 
         response.Should().NotBeNull();
@@ -103,5 +98,5 @@ public class GetGenreApiTest : IDisposable
         }
     }
 
-    public void Dispose() => _fixture.CleanPersistence();
+    public void Dispose() => fixture.CleanPersistence();
 }

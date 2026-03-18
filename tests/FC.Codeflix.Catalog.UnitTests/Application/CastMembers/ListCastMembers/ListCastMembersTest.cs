@@ -11,18 +11,14 @@ using UseCase = FC.Codeflix.Catalog.Application.UseCases.CastMembers.ListCastMem
 namespace FC.Codeflix.Catalog.UnitTests.Application.CastMembers.ListCastMembers;
 
 [Collection(nameof(ListCastMembersTestFixture))]
-public class ListCastMembersTest
+public class ListCastMembersTest(ListCastMembersTestFixture fixture)
 {
-    private readonly ListCastMembersTestFixture _fixture;
-
-    public ListCastMembersTest(ListCastMembersTestFixture fixture) => _fixture = fixture;
-
     [Fact(DisplayName = nameof(List))]
     [Trait("Application", "ListCastMembers - Use Cases")]
     public async Task List()
     {
         var repositoryMock = new Mock<ICastMemberRepository>();
-        var castMembersListExample = _fixture.GetExampleCastMembersList(3);
+        var castMembersListExample = fixture.GetExampleCastMembersList(3);
         var repositorySearchOutput = new SearchOutput<DomainEntity.CastMember>(
             1, 10, castMembersListExample.Count,
             castMembersListExample

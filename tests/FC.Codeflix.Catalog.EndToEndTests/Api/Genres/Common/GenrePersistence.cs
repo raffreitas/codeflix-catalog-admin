@@ -7,31 +7,26 @@ using DomainEntity = FC.Codeflix.Catalog.Domain.Entities;
 
 namespace FC.Codeflix.Catalog.EndToEndTests.Api.Genres.Common;
 
-public class GenrePersistence
+public class GenrePersistence(CodeflixCatalogDbContext context)
 {
-    private readonly CodeflixCatalogDbContext _context;
-
-    public GenrePersistence(CodeflixCatalogDbContext context)
-        => _context = context;
-
     public async Task InsertList(List<DomainEntity.Genre> genres)
     {
-        await _context.AddRangeAsync(genres);
-        await _context.SaveChangesAsync();
+        await context.AddRangeAsync(genres);
+        await context.SaveChangesAsync();
     }
 
     public async Task InsertGenresCategoriesRelationsList(List<GenresCategories> relations)
     {
-        await _context.AddRangeAsync(relations);
-        await _context.SaveChangesAsync();
+        await context.AddRangeAsync(relations);
+        await context.SaveChangesAsync();
     }
 
     public async Task<DomainEntity.Genre?> GetById(Guid id)
-        => await _context.Genres.AsNoTracking()
+        => await context.Genres.AsNoTracking()
             .FirstOrDefaultAsync(genre => genre.Id == id);
 
     internal async Task<List<GenresCategories>> GetGenresCategoriesRelationsByGenreId(Guid id)
-        => await _context.GenresCategories.AsNoTracking()
+        => await context.GenresCategories.AsNoTracking()
             .Where(relation => relation.GenreId == id)
             .ToListAsync();
 }

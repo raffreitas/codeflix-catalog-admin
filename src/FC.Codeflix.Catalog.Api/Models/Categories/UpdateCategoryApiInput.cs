@@ -1,18 +1,11 @@
 ﻿namespace FC.Codeflix.Catalog.Api.Models.Categories;
 
-public record UpdateCategoryApiInput
+public record UpdateCategoryApiInput(
+    string Name,
+    string? Description = null,
+    bool? IsActive = null)
 {
-    public string Name { get; set; }
-    public string? Description { get; set; }
-    public bool? IsActive { get; set; }
-
-    public UpdateCategoryApiInput(
-        string name, 
-        string? description = null, 
-        bool? isActive = null)
-    {
-        Name = name;
-        Description = description;
-        IsActive = isActive;
-    }
+    public string Name { get; set; } = Name;
+    public string? Description { get; set; } = Description;
+    public bool? IsActive { get; set; } = IsActive;
 }

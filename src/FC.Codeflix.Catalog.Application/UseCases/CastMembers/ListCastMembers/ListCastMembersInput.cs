@@ -5,16 +5,11 @@ using MediatR;
 
 namespace FC.Codeflix.Catalog.Application.UseCases.CastMembers.ListCastMembers;
 
-public record ListCastMembersInput
-    : PaginatedListInput, IRequest<ListCastMembersOutput>
+public record ListCastMembersInput(int Page, int PerPage, string Search, string Sort, SearchOrder Dir)
+    : PaginatedListInput(Page, PerPage, Search, Sort, Dir), IRequest<ListCastMembersOutput>
 {
-    public ListCastMembersInput(int page, int perPage, string search, string sort, SearchOrder dir)
-        : base(page, perPage, search, sort, dir)
-    {
-    }
-
     public ListCastMembersInput()
-        : base(1, 15, "", "", SearchOrder.Asc)
+        : this(1, 15, "", "", SearchOrder.Asc)
     {
     }
 }

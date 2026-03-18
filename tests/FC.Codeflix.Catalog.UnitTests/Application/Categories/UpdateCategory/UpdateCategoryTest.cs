@@ -11,13 +11,8 @@ using Moq;
 namespace FC.Codeflix.Catalog.UnitTests.Application.Categories.UpdateCategory;
 
 [Collection(nameof(UpdateCategoryTestFixtureCollection))]
-public class UpdateCategoryTest
+public class UpdateCategoryTest(UpdateCategoryTestFixture fixture)
 {
-    private readonly UpdateCategoryTestFixture _fixture;
-
-    public UpdateCategoryTest(UpdateCategoryTestFixture fixture)
-        => _fixture = fixture;
-
     [Theory(DisplayName = nameof(UpdateCategory))]
     [Trait("Application", "UpdateCategory - Use Cases")]
     [MemberData(
@@ -27,8 +22,8 @@ public class UpdateCategoryTest
     )]
     public async Task UpdateCategory(Category exampleCategory, UpdateCategoryInput input)
     {
-        var repositoryMock = _fixture.GetCategoryRepositoryMock();
-        var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
+        var repositoryMock = fixture.GetCategoryRepositoryMock();
+        var unitOfWorkMock = fixture.GetUnitOfWorkMock();
 
         repositoryMock.Setup(x => x.Get(exampleCategory.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(exampleCategory);
@@ -51,9 +46,9 @@ public class UpdateCategoryTest
     [Trait("Application", "UpdateCategory - Use Cases")]
     public async Task ThrowWhenCategoryNotFound()
     {
-        var repositoryMock = _fixture.GetCategoryRepositoryMock();
-        var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
-        var input = _fixture.GetValidInput();
+        var repositoryMock = fixture.GetCategoryRepositoryMock();
+        var unitOfWorkMock = fixture.GetUnitOfWorkMock();
+        var input = fixture.GetValidInput();
 
         repositoryMock.Setup(x => x.Get(input.Id, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException($"Category '{input.Id}' not found."));
@@ -83,8 +78,8 @@ public class UpdateCategoryTest
             exampleInput.Name
         );
 
-        var repositoryMock = _fixture.GetCategoryRepositoryMock();
-        var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
+        var repositoryMock = fixture.GetCategoryRepositoryMock();
+        var unitOfWorkMock = fixture.GetUnitOfWorkMock();
 
         repositoryMock.Setup(x => x.Get(exampleCategory.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(exampleCategory);
@@ -118,8 +113,8 @@ public class UpdateCategoryTest
             exampleInput.Description
         );
 
-        var repositoryMock = _fixture.GetCategoryRepositoryMock();
-        var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
+        var repositoryMock = fixture.GetCategoryRepositoryMock();
+        var unitOfWorkMock = fixture.GetUnitOfWorkMock();
 
         repositoryMock.Setup(x => x.Get(exampleCategory.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(exampleCategory);
@@ -147,9 +142,9 @@ public class UpdateCategoryTest
     )]
     public async Task ThrowWhenCantUpdateCategory(UpdateCategoryInput input, string exceptionMessage)
     {
-        var repositoryMock = _fixture.GetCategoryRepositoryMock();
-        var unitOfWorkMock = _fixture.GetUnitOfWorkMock();
-        var exampleCategory = _fixture.GetExampleCategory();
+        var repositoryMock = fixture.GetCategoryRepositoryMock();
+        var unitOfWorkMock = fixture.GetUnitOfWorkMock();
+        var exampleCategory = fixture.GetExampleCategory();
         input.Id = exampleCategory.Id;
 
         repositoryMock.Setup(x => x.Get(input.Id, It.IsAny<CancellationToken>()))

@@ -16,24 +16,19 @@ using DomainEntity = FC.Codeflix.Catalog.Domain.Entities;
 namespace FC.Codeflix.Catalog.EndToEndTests.Api.Genres.ListGenres;
 
 [Collection(nameof(ListGenresApiTestFixture))]
-public class ListGenresApiTest : IDisposable
+public class ListGenresApiTest(ListGenresApiTestFixture fixture) : IDisposable
 {
-    private readonly ListGenresApiTestFixture _fixture;
-
-    public ListGenresApiTest(ListGenresApiTestFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(List))]
     [Trait("EndToEnd/Api", "Genre/ListGenres - Endpoints")]
     public async Task List()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres();
-        await _fixture.GenrePersistence.InsertList(exampleGenres);
+        List<DomainEntity.Genre> exampleGenres = fixture.GetExampleListGenres();
+        await fixture.GenrePersistence.InsertList(exampleGenres);
         var input = new ListGenresInput();
         input.Page = 1;
         input.PerPage = exampleGenres.Count;
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         response.Should().NotBeNull();
@@ -60,8 +55,8 @@ public class ListGenresApiTest : IDisposable
     [Trait("EndToEnd/Api", "Genre/ListGenres - Endpoints")]
     public async Task ListWithRelations()
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(15);
-        List<DomainEntity.Category> exampleCategories = _fixture.GetExampleCategoriesList();
+        List<DomainEntity.Genre> exampleGenres = fixture.GetExampleListGenres(15);
+        List<DomainEntity.Category> exampleCategories = fixture.GetExampleCategoriesList();
         Random random = new Random();
         exampleGenres.ForEach(genre =>
         {
@@ -80,14 +75,14 @@ public class ListGenresApiTest : IDisposable
                 )
             )
         );
-        await _fixture.GenrePersistence.InsertList(exampleGenres);
-        await _fixture.CategoryPersistence.InsertList(exampleCategories);
-        await _fixture.GenrePersistence.InsertGenresCategoriesRelationsList(genresCategories);
+        await fixture.GenrePersistence.InsertList(exampleGenres);
+        await fixture.CategoryPersistence.InsertList(exampleCategories);
+        await fixture.GenrePersistence.InsertGenresCategoriesRelationsList(genresCategories);
         var input = new ListGenresInput();
         input.Page = 1;
         input.PerPage = exampleGenres.Count;
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         response.Should().NotBeNull();
@@ -129,7 +124,7 @@ public class ListGenresApiTest : IDisposable
         input.Page = 1;
         input.PerPage = 15;
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         response.Should().NotBeNull();
@@ -154,13 +149,13 @@ public class ListGenresApiTest : IDisposable
         int expectedQuantityItems
     )
     {
-        List<DomainEntity.Genre> exampleGenres = _fixture.GetExampleListGenres(quantityToGenerate);
-        await _fixture.GenrePersistence.InsertList(exampleGenres);
+        List<DomainEntity.Genre> exampleGenres = fixture.GetExampleListGenres(quantityToGenerate);
+        await fixture.GenrePersistence.InsertList(exampleGenres);
         var input = new ListGenresInput();
         input.Page = page;
         input.PerPage = perPage;
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         response.Should().NotBeNull();
@@ -201,7 +196,7 @@ public class ListGenresApiTest : IDisposable
         int expectedQuantityTotalItems
     )
     {
-        var exampleGenres = _fixture.GetExampleListGenresByNames(
+        var exampleGenres = fixture.GetExampleListGenresByNames(
             new List<string>
             {
                 "Action",
@@ -216,13 +211,13 @@ public class ListGenresApiTest : IDisposable
             }
         );
 
-        await _fixture.GenrePersistence.InsertList(exampleGenres);
+        await fixture.GenrePersistence.InsertList(exampleGenres);
         var input = new ListGenresInput();
         input.Page = page;
         input.PerPage = perPage;
         input.Search = search;
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         response.Should().NotBeNull();
@@ -259,9 +254,9 @@ public class ListGenresApiTest : IDisposable
         string order
     )
     {
-        var exampleGenres = _fixture.GetExampleListGenres();
+        var exampleGenres = fixture.GetExampleListGenres();
 
-        await _fixture.GenrePersistence.InsertList(exampleGenres);
+        await fixture.GenrePersistence.InsertList(exampleGenres);
         var input = new ListGenresInput();
         input.Page = 1;
         input.PerPage = 10;
@@ -269,7 +264,7 @@ public class ListGenresApiTest : IDisposable
         input.Dir = orderEnum;
         input.Sort = orderBy;
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<GenreModelOutput>>("/genres", input);
 
         response.Should().NotBeNull();
@@ -281,7 +276,7 @@ public class ListGenresApiTest : IDisposable
         output.Meta.CurrentPage.Should().Be(input.Page);
         output.Meta.PerPage.Should().Be(input.PerPage);
         output.Data!.Count.Should().Be(10);
-        var expectedOrderedList = _fixture.CloneGenreListOrdered(
+        var expectedOrderedList = fixture.CloneGenreListOrdered(
             exampleGenres, orderBy, orderEnum
         );
         for (int indice = 0; indice < expectedOrderedList.Count; indice++)
@@ -296,5 +291,5 @@ public class ListGenresApiTest : IDisposable
         }
     }
 
-    public void Dispose() => _fixture.CleanPersistence();
+    public void Dispose() => fixture.CleanPersistence();
 }

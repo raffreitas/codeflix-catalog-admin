@@ -58,11 +58,11 @@ public class ListCategoriesTestDataGenerator
                     yield return new object[]
                     {
                         new ListCategoriesInput(
-                            page: inputExample.Page,
-                            perPage: inputExample.PerPage,
-                            search: inputExample.Search,
-                            sort: inputExample.Sort,
-                            dir: SearchOrder.Desc
+                            Page: inputExample.Page,
+                            PerPage: inputExample.PerPage,
+                            Search: inputExample.Search,
+                            Sort: inputExample.Sort,
+                            Dir: SearchOrder.Desc
                         )
                     };
                     break;

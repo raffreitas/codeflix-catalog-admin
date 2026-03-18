@@ -69,7 +69,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
     {
         var exampleCategoriesList = fixture.GetExampleCategoriesList(20);
         await fixture.Persistence.InsertList(exampleCategoriesList);
-        var input = new ListCategoriesInput(page: 1, perPage: 5);
+        var input = new ListCategoriesInput(Page: 1, PerPage: 5);
 
         var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<CategoryModelOutput>>("/categories", input);
@@ -206,7 +206,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
         var searchOrder = order.Equals("asc", StringComparison.CurrentCultureIgnoreCase)
             ? SearchOrder.Asc
             : SearchOrder.Desc;
-        var input = new ListCategoriesInput(page: 1, perPage: 20, search: "", orderBy, searchOrder);
+        var input = new ListCategoriesInput(Page: 1, PerPage: 20, Search: "", orderBy, searchOrder);
 
         var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<CategoryModelOutput>>("/categories", input);
@@ -246,7 +246,7 @@ public class ListCategoriesTest(ListCategoriesTestFixture fixture)
         var exampleCategoriesList = fixture.GetExampleCategoriesList();
         await fixture.Persistence.InsertList(exampleCategoriesList);
         var searchOrder = order.ToLower() == "asc" ? SearchOrder.Asc : SearchOrder.Desc;
-        var input = new ListCategoriesInput(page: 1, perPage: 20, search: "", orderBy, searchOrder);
+        var input = new ListCategoriesInput(Page: 1, PerPage: 20, Search: "", orderBy, searchOrder);
 
         var (response, output) = await fixture.ApiClient
             .Get<TestApiResponseList<CategoryModelOutput>>("/categories", input);

@@ -12,20 +12,15 @@ using UseCase = FC.Codeflix.Catalog.Application.UseCases.CastMembers.CreateCastM
 namespace FC.Codeflix.Catalog.UnitTests.Application.CastMembers.CreateCastMember;
 
 [Collection(nameof(CreateCastMemberTestFixture))]
-public class CreateCastMemberTest
+public class CreateCastMemberTest(CreateCastMemberTestFixture fixture)
 {
-    private readonly CreateCastMemberTestFixture _fixture;
-
-    public CreateCastMemberTest(CreateCastMemberTestFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(Create))]
     [Trait("Application", "CreateCastMember - Use Cases")]
     public async Task Create()
     {
         var input = new UseCase.CreateCastMemberInput(
-            _fixture.GetValidName(),
-            _fixture.GetRandomCastMemberType()
+            fixture.GetValidName(),
+            fixture.GetRandomCastMemberType()
         );
         var repositoryMock = new Mock<ICastMemberRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
@@ -63,7 +58,7 @@ public class CreateCastMemberTest
     {
         var input = new UseCase.CreateCastMemberInput(
             name!,
-            _fixture.GetRandomCastMemberType()
+            fixture.GetRandomCastMemberType()
         );
         var repositoryMock = new Mock<ICastMemberRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();

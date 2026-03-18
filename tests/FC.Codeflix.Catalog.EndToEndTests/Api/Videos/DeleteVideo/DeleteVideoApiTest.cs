@@ -10,20 +10,15 @@ using Moq;
 
 namespace FC.Codeflix.Catalog.EndToEndTests.Api.Videos.DeleteVideo;
 
-public class DeleteVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
+public class DeleteVideoApiTest(VideoBaseFixture fixture) : IClassFixture<VideoBaseFixture>, IDisposable
 {
-    private readonly VideoBaseFixture _fixture;
-
-    public DeleteVideoApiTest(VideoBaseFixture fixture)
-        => _fixture = fixture;
-
     [Fact(DisplayName = nameof(DeleteVideo))]
     [Trait("EndToEnd/Api", "Video/DeleteVideo - Endpoints")]
     public async Task DeleteVideo()
     {
-        var examples = _fixture.GetVideoCollection(10);
-        await _fixture.VideoPersistence.InsertList(examples);
-        var mediaCount = await _fixture.VideoPersistence.GetMediaCount();
+        var examples = fixture.GetVideoCollection(10);
+        await fixture.VideoPersistence.InsertList(examples);
+        var mediaCount = await fixture.VideoPersistence.GetMediaCount();
         var expectedMediaCount = mediaCount - 2;
         var video = examples[7];
         var videoId = video.Id;
@@ -33,23 +28,23 @@ public class DeleteVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
             video.ThumbHalf!.Path
         };
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Delete<object>($"/videos/{videoId}");
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         output.Should().BeNull();
-        var videoFromDB = await _fixture.VideoPersistence
+        var videoFromDB = await fixture.VideoPersistence
             .GetById(videoId);
         videoFromDB.Should().BeNull();
-        var actualMediaCount = await _fixture.VideoPersistence
+        var actualMediaCount = await fixture.VideoPersistence
             .GetMediaCount();
         actualMediaCount.Should().Be(expectedMediaCount);
-        _fixture.WebAppFactory.StorageClient.Verify(x => x.Delete(
+        fixture.WebAppFactory.StorageClient.Verify(x => x.Delete(
                 It.Is<string>(fileName => allMedias.Contains(fileName)),
                 It.IsAny<CancellationToken>()),
             Times.Exactly(5));
-        _fixture.WebAppFactory.StorageClient.Verify(x => x.Delete(
+        fixture.WebAppFactory.StorageClient.Verify(x => x.Delete(
                 It.Is<string>(fileName => allMedias.Contains(fileName)),
                 It.IsAny<CancellationToken>()),
             Times.Exactly(5));
@@ -59,10 +54,10 @@ public class DeleteVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
     [Trait("EndToEnd/Api", "Video/DeleteVideo - Endpoints")]
     public async Task DeleteVideoWithRelationships()
     {
-        var exampleCategories = _fixture.GetExampleCategoriesList(3);
-        var exampleGenres = _fixture.GetExampleListGenres(4);
-        var exampleCastMembers = _fixture.GetExampleCastMembersList(5);
-        var exampleVideos = _fixture.GetVideoCollection(10);
+        var exampleCategories = fixture.GetExampleCategoriesList(3);
+        var exampleGenres = fixture.GetExampleListGenres(4);
+        var exampleCastMembers = fixture.GetExampleCastMembersList(5);
+        var exampleVideos = fixture.GetVideoCollection(10);
 
         exampleVideos.ForEach(video =>
         {
@@ -73,11 +68,11 @@ public class DeleteVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
                 => video.AddCastMember(castMember.Id));
         });
 
-        await _fixture.CategoryPersistence.InsertList(exampleCategories);
-        await _fixture.GenrePersistence.InsertList(exampleGenres);
-        await _fixture.CastMemberPersistence.InsertList(exampleCastMembers);
-        await _fixture.VideoPersistence.InsertList(exampleVideos);
-        var mediaCount = await _fixture.VideoPersistence.GetMediaCount();
+        await fixture.CategoryPersistence.InsertList(exampleCategories);
+        await fixture.GenrePersistence.InsertList(exampleGenres);
+        await fixture.CastMemberPersistence.InsertList(exampleCastMembers);
+        await fixture.VideoPersistence.InsertList(exampleVideos);
+        var mediaCount = await fixture.VideoPersistence.GetMediaCount();
         var expectedMediaCount = mediaCount - 2;
 
         var video = exampleVideos[7];
@@ -88,33 +83,33 @@ public class DeleteVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
             video.ThumbHalf!.Path
         };
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Delete<object>($"/videos/{videoId}");
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         output.Should().BeNull();
-        var videoFromDB = await _fixture.VideoPersistence
+        var videoFromDB = await fixture.VideoPersistence
             .GetById(videoId);
         videoFromDB.Should().BeNull();
-        var categoriesFromDB = await _fixture.VideoPersistence
+        var categoriesFromDB = await fixture.VideoPersistence
             .GetVideosCategories(videoId);
         categoriesFromDB.Should().BeEmpty();
-        var genresFromDB = await _fixture.VideoPersistence
+        var genresFromDB = await fixture.VideoPersistence
             .GetVideosGenres(videoId);
         genresFromDB.Should().BeEmpty();
-        var castMembersFromDB = await _fixture.VideoPersistence
+        var castMembersFromDB = await fixture.VideoPersistence
             .GetVideosCastMembers(videoId);
         castMembersFromDB.Should().BeEmpty();
-        var actualMediaCount = await _fixture.VideoPersistence
+        var actualMediaCount = await fixture.VideoPersistence
             .GetMediaCount();
         actualMediaCount.Should().Be(expectedMediaCount);
-        _fixture.WebAppFactory.StorageClient.Verify(
+        fixture.WebAppFactory.StorageClient.Verify(
             x => x.Delete(
                 It.Is<string>(fileName => allMedias.Contains(fileName)),
                 It.IsAny<CancellationToken>()),
             Times.Exactly(5));
-        _fixture.WebAppFactory.StorageClient.Verify(
+        fixture.WebAppFactory.StorageClient.Verify(
             x => x.Delete(
                 It.Is<string>(fileName => allMedias.Contains(fileName)),
                 It.IsAny<CancellationToken>()),
@@ -125,12 +120,12 @@ public class DeleteVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
     [Trait("EndToEnd/Api", "Video/DeleteVideo - Endpoints")]
     public async Task Error404WhenVideoIdNotFound()
     {
-        var examples = _fixture.GetVideoCollection(2);
-        await _fixture.VideoPersistence.InsertList(examples);
+        var examples = fixture.GetVideoCollection(2);
+        await fixture.VideoPersistence.InsertList(examples);
 
         var videoId = Guid.NewGuid();
 
-        var (response, output) = await _fixture.ApiClient
+        var (response, output) = await fixture.ApiClient
             .Delete<ProblemDetails>($"/videos/{videoId}");
 
         response.Should().NotBeNull();
@@ -140,5 +135,5 @@ public class DeleteVideoApiTest : IClassFixture<VideoBaseFixture>, IDisposable
         output.Detail.Should().Be($"Video '{videoId}' not found.");
     }
 
-    public void Dispose() => _fixture.CleanPersistence();
+    public void Dispose() => fixture.CleanPersistence();
 }

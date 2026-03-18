@@ -21,10 +21,10 @@ public class ListGenresTest(ListGenresTestFixture fixture)
 
         var input = fixture.GetExampleInput();
         var outputRepositorySearch = new SearchOutput<Genre>(
-            currentPage: input.Page,
-            perPage: input.PerPage,
-            items: genresExampleList,
-            total: new Random().Next(50, 200)
+            CurrentPage: input.Page,
+            PerPage: input.PerPage,
+            Items: genresExampleList,
+            Total: new Random().Next(50, 200)
         );
         repositoryMock.Setup(x => x.Search(
             It.Is<SearchInput>(searchInput =>
@@ -77,10 +77,10 @@ public class ListGenresTest(ListGenresTestFixture fixture)
         var categoryRepositoryMock = fixture.GetCategoryRepositoryMock();
         var input = fixture.GetExampleInput();
         var outputRepositorySearch = new SearchOutput<Genre>(
-            currentPage: input.Page,
-            perPage: input.PerPage,
-            items: [],
-            total: new Random().Next(50, 200)
+            CurrentPage: input.Page,
+            PerPage: input.PerPage,
+            Items: [],
+            Total: new Random().Next(50, 200)
         );
         repositoryMock.Setup(x => x.Search(
             It.Is<SearchInput>(searchInput =>
@@ -132,10 +132,10 @@ public class ListGenresTest(ListGenresTestFixture fixture)
         var repositoryMock = fixture.GetGenreRepositoryMock();
         var categoryRepositoryMock = fixture.GetCategoryRepositoryMock();
         var outputRepositorySearch = new SearchOutput<Genre>(
-            currentPage: 1,
-            perPage: 15,
-            items: [],
-            total: 0
+            CurrentPage: 1,
+            PerPage: 15,
+            Items: [],
+            Total: 0
         );
         repositoryMock.Setup(x => x.Search(
             It.IsAny<SearchInput>(),

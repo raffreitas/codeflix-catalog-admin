@@ -4,23 +4,16 @@ using FC.Codeflix.Catalog.Domain.Entities;
 using FC.Codeflix.Catalog.Domain.Repositories;
 
 namespace FC.Codeflix.Catalog.Application.UseCases.Categories.CreateCategory;
-public class CreateCategoryUseCase : ICreateCategoryUseCase
+
+public class CreateCategoryUseCase(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
+    : ICreateCategoryUseCase
 {
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public CreateCategoryUseCase(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
-    {
-        _categoryRepository = categoryRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task<CategoryModelOutput> Handle(CreateCategoryInput input, CancellationToken cancellationToken = default)
+    public async Task<CategoryModelOutput> Handle(CreateCategoryInput input, CancellationToken cancellationToken)
     {
         var category = new Category(input.Name, input.Description, input.IsActive);
 
-        await _categoryRepository.Insert(category, cancellationToken);
-        await _unitOfWork.Commit(cancellationToken);
+        await categoryRepository.Insert(category, cancellationToken);
+        await unitOfWork.Commit(cancellationToken);
 
         return CategoryModelOutput.FromCategory(category);
     }

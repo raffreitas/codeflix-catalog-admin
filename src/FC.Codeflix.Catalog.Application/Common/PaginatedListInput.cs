@@ -1,34 +1,25 @@
 ﻿using FC.Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
 
 namespace FC.Codeflix.Catalog.Application.Common;
-public abstract record PaginatedListInput
+public abstract record PaginatedListInput(
+    int Page,
+    int PerPage,
+    string Search,
+    string Sort,
+    SearchOrder Dir)
 {
-    public int Page { get; set; }
-    public int PerPage { get; set; }
-    public string Search { get; set; }
-    public string Sort { get; set; }
-    public SearchOrder Dir { get; set; }
-
-    protected PaginatedListInput(
-        int page,
-        int perPage,
-        string search,
-        string sort,
-        SearchOrder dir)
-    {
-        Page = page;
-        PerPage = perPage;
-        Search = search;
-        Sort = sort;
-        Dir = dir;
-    }
+    public int Page { get; set; } = Page;
+    public int PerPage { get; set; } = PerPage;
+    public string Search { get; set; } = Search;
+    public string Sort { get; set; } = Sort;
+    public SearchOrder Dir { get; set; } = Dir;
 
     public SearchInput ToSearchInput()
         => new(
-            page: Page,
-            perPage: PerPage,
-            search: Search,
-            orderBy: Sort,
-            order: Dir
+            Page: Page,
+            PerPage: PerPage,
+            Search: Search,
+            OrderBy: Sort,
+            Order: Dir
         );
 }
