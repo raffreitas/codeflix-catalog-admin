@@ -2,7 +2,7 @@
 
 using FC.Codeflix.Catalog.Api.Filters;
 
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace FC.Codeflix.Catalog.Api.Configurations;
 
@@ -26,10 +26,10 @@ public static class ControllersConfiguration
     private static IServiceCollection AddDocumentation(this IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(option =>
+        services.AddSwaggerGen(options =>
         {
-            option.SwaggerDoc("v1", new OpenApiInfo { Title = "FC3 Codeflix Catalog", Version = "v1" });
-            option.AddSecurityDefinition("Bearer",
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "FC3 Codeflix Catalog", Version = "v1" });
+            options.AddSecurityDefinition("Bearer",
                 new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
@@ -39,16 +39,8 @@ public static class ControllersConfiguration
                     BearerFormat = "JWT",
                     Scheme = "Bearer"
                 });
-            option.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-                    },
-                    []
-                }
-            });
+            options.AddSecurityRequirement(document =>
+                new OpenApiSecurityRequirement { [new OpenApiSecuritySchemeReference("Bearer", document)] = [] });
         });
         return services;
     }

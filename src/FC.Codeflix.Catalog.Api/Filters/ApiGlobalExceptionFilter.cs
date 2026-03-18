@@ -6,54 +6,46 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace FC.Codeflix.Catalog.Api.Filters;
 
-public class ApiGlobalExceptionFilter : IExceptionFilter
+internal sealed class ApiGlobalExceptionFilter(IHostEnvironment environment) : IExceptionFilter
 {
-    private readonly IHostEnvironment _environment;
-
-    public ApiGlobalExceptionFilter(IHostEnvironment environment)
-    {
-        _environment = environment;
-    }
-
     public void OnException(ExceptionContext context)
     {
         var details = new ProblemDetails();
         var exception = context.Exception;
 
-        if (_environment.IsDevelopment())
+        if (environment.IsDevelopment())
             details.Extensions.Add("StackTrace", exception.StackTrace);
 
-        if (exception is EntityValidationException entityValidationException)
+        switch (exception)
         {
-            details.Title = "One or more validation error occurred";
-            details.Type = "UnprocessableEntity";
-            details.Status = StatusCodes.Status422UnprocessableEntity;
-            details.Detail = entityValidationException.Message;
-            context.Result = new UnprocessableEntityObjectResult(details);
-        }
-        else if (exception is NotFoundException notFoundException)
-        {
-            details.Title = "Not Found";
-            details.Type = "NotFound";
-            details.Status = StatusCodes.Status404NotFound;
-            details.Detail = notFoundException.Message;
-            context.Result = new NotFoundObjectResult(details);
-        }
-        else if (exception is RelatedAggregateException relatedAggregateException)
-        {
-            details.Title = "One or more related aggregate error occurred";
-            details.Type = "RelatedAggregate";
-            details.Status = StatusCodes.Status422UnprocessableEntity;
-            details.Detail = relatedAggregateException.Message;
-            context.Result = new UnprocessableEntityObjectResult(details);
-        }
-        else
-        {
-            details.Title = "An unexpected error occurred";
-            details.Type = "InternalServerError";
-            details.Status = StatusCodes.Status500InternalServerError;
-            details.Detail = exception.Message;
-            context.Result = new ObjectResult(details);
+            case EntityValidationException entityValidationException:
+                details.Title = "One or more validation error occurred";
+                details.Type = "UnprocessableEntity";
+                details.Status = StatusCodes.Status422UnprocessableEntity;
+                details.Detail = entityValidationException.Message;
+                context.Result = new UnprocessableEntityObjectResult(details);
+                break;
+            case NotFoundException notFoundException:
+                details.Title = "Not Found";
+                details.Type = "NotFound";
+                details.Status = StatusCodes.Status404NotFound;
+                details.Detail = notFoundException.Message;
+                context.Result = new NotFoundObjectResult(details);
+                break;
+            case RelatedAggregateException relatedAggregateException:
+                details.Title = "One or more related aggregate error occurred";
+                details.Type = "RelatedAggregate";
+                details.Status = StatusCodes.Status422UnprocessableEntity;
+                details.Detail = relatedAggregateException.Message;
+                context.Result = new UnprocessableEntityObjectResult(details);
+                break;
+            default:
+                details.Title = "An unexpected error occurred";
+                details.Type = "InternalServerError";
+                details.Status = StatusCodes.Status500InternalServerError;
+                details.Detail = exception.Message;
+                context.Result = new ObjectResult(details);
+                break;
         }
 
         context.HttpContext.Response.StatusCode = (int)details.Status;
