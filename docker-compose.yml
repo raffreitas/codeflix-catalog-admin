@@ -47,6 +47,3 @@ services:
       - start-dev
     depends_on:
       - catalogdb
-
-volumes:
-  localstack-data:

@@ -32,6 +32,12 @@ public sealed class VideoEncodedEventConsumer(
     private readonly JsonSerializerOptions _jsonOptions =
         new() { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
 
+    public override void Dispose()
+    {
+        channel.DisposeAsync().AsTask().GetAwaiter().GetResult();
+        base.Dispose();
+    }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var consumer = new AsyncEventingBasicConsumer(channel);
@@ -42,9 +48,6 @@ public sealed class VideoEncodedEventConsumer(
         {
             await Task.Delay(10_000, stoppingToken);
         }
-
-        logger.LogWarning("Disposing Channel");
-        await channel.DisposeAsync();
     }
 
     private async Task OnMessageReceived(object? sender, BasicDeliverEventArgs eventArgs)
@@ -60,7 +63,7 @@ public sealed class VideoEncodedEventConsumer(
             var message = JsonSerializer.Deserialize<VideoEncodedMessageDTO>(messageString, _jsonOptions);
             var input = GetUpdateMediaStatusInput(message!);
             await mediator.Send(input, CancellationToken.None);
-            channel.BasicAck(eventArgs.DeliveryTag, false);
+            await channel.BasicAckAsync(eventArgs.DeliveryTag, false);
         }
         catch (Exception ex)
             when (ex is EntityValidationException or NotFoundException)
@@ -68,14 +71,14 @@ public sealed class VideoEncodedEventConsumer(
             logger.LogError(ex,
                 "There was a business error in the message processing: {DeliveryTag}, {Message}",
                 eventArgs.DeliveryTag, messageString);
-            channel.BasicNack(eventArgs.DeliveryTag, false, false);
+            await channel.BasicNackAsync(eventArgs.DeliveryTag, false, false);
         }
         catch (Exception ex)
         {
             logger.LogError(ex,
                 "There was a unexpected error in the message processing: {DeliveryTag}, {Message}",
                 eventArgs.DeliveryTag, messageString);
-            channel.BasicNack(eventArgs.DeliveryTag, false, true);
+            await channel.BasicNackAsync(eventArgs.DeliveryTag, false, true);
         }
     }
 

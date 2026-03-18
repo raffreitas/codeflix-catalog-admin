@@ -10,7 +10,7 @@ using RabbitMQ.Client;
 namespace FC.Codeflix.Catalog.Infra.Messaging.Producer;
 
 public sealed class RabbitMqProducer(
-    IModel channel,
+    ChannelManager channelManager,
     IOptions<RabbitMqConfiguration> options
 ) : IMessageProducer
 {
@@ -21,19 +21,20 @@ public sealed class RabbitMqProducer(
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
     };
 
-    public Task SendMessageAsync<T>(T message, CancellationToken cancellationToken = default)
+    public async Task SendMessageAsync<T>(T message, CancellationToken cancellationToken = default)
     {
         var routingKey = EventsMapping.GetRoutingKey<T>();
         var @event = JsonSerializer.SerializeToUtf8Bytes(message, _jsonSerializerOptions);
+        var channel = await channelManager.GetChannelAsync(cancellationToken);
 
-        channel.BasicPublish(
+        using var publishLock = await channelManager.AcquirePublishLockAsync(cancellationToken);
+
+        await channel.BasicPublishAsync(
             exchange: _exchange,
             routingKey: routingKey,
-            body: @event
+            mandatory: false,
+            body: @event,
+            cancellationToken: cancellationToken
         );
-
-        channel.WaitForConfirmsOrDie();
-
-        return Task.CompletedTask;
     }
 }

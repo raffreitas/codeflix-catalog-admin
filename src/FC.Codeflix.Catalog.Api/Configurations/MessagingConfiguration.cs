@@ -11,6 +11,28 @@ namespace FC.Codeflix.Catalog.Api.Configurations;
 
 public static class MessagingConfiguration
 {
+    private sealed record ProducerConnection(IConnection Connection) : IAsyncDisposable
+    {
+        public async ValueTask DisposeAsync()
+        {
+            if (Connection.IsOpen)
+                await Connection.CloseAsync();
+
+            await Connection.DisposeAsync();
+        }
+    }
+
+    private sealed record ConsumerConnection(IConnection Connection) : IAsyncDisposable
+    {
+        public async ValueTask DisposeAsync()
+        {
+            if (Connection.IsOpen)
+                await Connection.CloseAsync();
+
+            await Connection.DisposeAsync();
+        }
+    }
+
     public static IServiceCollection AddRabbitMq(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<RabbitMqConfiguration>(configuration.GetSection(RabbitMqConfiguration.ConfigurationSection));
@@ -18,17 +40,30 @@ public static class MessagingConfiguration
         services.AddSingleton(sp =>
         {
             RabbitMqConfiguration config = sp.GetRequiredService<IOptions<RabbitMqConfiguration>>().Value;
-            var factory = new ConnectionFactory
+            return new ConnectionFactory
             {
                 HostName = config.Hostname,
                 UserName = config.Username,
                 Password = config.Password,
                 Port = config.Port
             };
-            return factory.CreateConnection();
         });
 
-        services.AddSingleton<ChannelManager>();
+        services.AddSingleton<ProducerConnection>(sp =>
+        {
+            var factory = sp.GetRequiredService<ConnectionFactory>();
+            var connection = factory.CreateConnectionAsync("codeflix-catalog-producer").GetAwaiter().GetResult();
+            return new ProducerConnection(connection);
+        });
+
+        services.AddSingleton<ConsumerConnection>(sp =>
+        {
+            var factory = sp.GetRequiredService<ConnectionFactory>();
+            var connection = factory.CreateConnectionAsync("codeflix-catalog-consumer").GetAwaiter().GetResult();
+            return new ConsumerConnection(connection);
+        });
+
+        services.AddSingleton(sp => new ChannelManager(sp.GetRequiredService<ProducerConnection>().Connection));
 
         return services;
     }
@@ -39,7 +74,7 @@ public static class MessagingConfiguration
         {
             var channelManager = sp.GetRequiredService<ChannelManager>();
             var config = sp.GetRequiredService<IOptions<RabbitMqConfiguration>>();
-            return new RabbitMqProducer(channelManager.GetChannel()!, config);
+            return new RabbitMqProducer(channelManager, config);
         });
         return services;
     }
@@ -49,9 +84,10 @@ public static class MessagingConfiguration
         services.AddHostedService(sp =>
         {
             var cfg = sp.GetRequiredService<IOptions<RabbitMqConfiguration>>();
-            var connection = sp.GetRequiredService<IConnection>();
+            var connection = sp.GetRequiredService<ConsumerConnection>();
             var logger = sp.GetRequiredService<ILogger<VideoEncodedEventConsumer>>();
-            return new VideoEncodedEventConsumer(sp, logger, cfg, connection.CreateModel());
+            var channel = connection.Connection.CreateChannelAsync().GetAwaiter().GetResult();
+            return new VideoEncodedEventConsumer(sp, logger, cfg, channel);
         });
 
         return services;
