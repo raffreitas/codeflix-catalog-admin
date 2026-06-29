@@ -1,0 +1,11 @@
+﻿using Codeflix.Catalog.Application.UseCases.Genres.Common;
+
+using MediatR;
+
+namespace Codeflix.Catalog.Application.UseCases.Genres.UpdateGenre;
+public record UpdateGenreInput(
+    Guid Id,
+    string Name,
+    bool? IsActive = null,
+    List<Guid>? CategoriesIds = null
+) : IRequest<GenreModelOutput>;

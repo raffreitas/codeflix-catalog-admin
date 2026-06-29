@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/env/">
+    <File Path="docker-compose.yml" />
+    <File Path="keycloak-requests.http" />
+    <File Path=".github\workflows\ci.yml" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Codeflix.Catalog.Api/Codeflix.Catalog.Api.csproj" />
+    <Project Path="src/Codeflix.Catalog.Application/Codeflix.Catalog.Application.csproj" />
+    <Project Path="src/Codeflix.Catalog.Domain/Codeflix.Catalog.Domain.csproj" />
+    <Project Path="src/Codeflix.Catalog.Infra.Data.EF/Codeflix.Catalog.Infra.Data.EF.csproj" />
+    <Project Path="src/Codeflix.Catalog.Infra.Messaging/Codeflix.Catalog.Infra.Messaging.csproj" />
+    <Project Path="src/Codeflix.Catalog.Infra.Storage/Codeflix.Catalog.Infra.Storage.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Codeflix.Catalog.EndToEndTests/Codeflix.Catalog.EndToEndTests.csproj" />
+    <Project Path="tests/Codeflix.Catalog.IntegrationTests/Codeflix.Catalog.IntegrationTests.csproj" />
+    <Project Path="tests/Codeflix.Catalog.UnitTests/Codeflix.Catalog.UnitTests.csproj" />
+  </Folder>
+</Solution>

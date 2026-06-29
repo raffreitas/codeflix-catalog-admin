@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>29cf4fda-82e1-49e7-89c8-cce8c4541682</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <DockerfileContext>..\..</DockerfileContext>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Keycloak.AuthServices.Authentication" Version="3.0.0" />
+        <PackageReference Include="Keycloak.AuthServices.Authorization" Version="3.0.0" />
+        <PackageReference Include="MediatR" Version="14.1.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0"/>
+        <PackageReference Include="Refit.HttpClientFactory" Version="12.1.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Codeflix.Catalog.Application\Codeflix.Catalog.Application.csproj" />
+        <ProjectReference Include="..\Codeflix.Catalog.Infra.Data.EF\Codeflix.Catalog.Infra.Data.EF.csproj" />
+        <ProjectReference Include="..\Codeflix.Catalog.Infra.Messaging\Codeflix.Catalog.Infra.Messaging.csproj" />
+        <ProjectReference Include="..\Codeflix.Catalog.Infra.Storage\Codeflix.Catalog.Infra.Storage.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="..\..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
+    </ItemGroup>
+
+</Project>

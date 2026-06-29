@@ -29,7 +29,7 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Start containers
-        run: docker compose -f "tests/FC.Codeflix.Catalog.EndToEndTests/docker-compose.yml" up -d --build
+        run: docker compose -f "tests/Codeflix.Catalog.EndToEndTests/docker-compose.yml" up -d --build
 
       - name: Restore dependencies
         run: dotnet restore
@@ -86,6 +86,6 @@ jobs:
         uses: docker/build-push-action@v4.1.1
         with:
           context: .
-          file: ./src/FC.Codeflix.Catalog.Api/Dockerfile
+          file: ./src/Codeflix.Catalog.Api/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USER}}/${{ env.IMAGE_NAME }}:${{ env.BUILD_TAG }},${{ secrets.DOCKER_HUB_USER}}/${{ env.IMAGE_NAME }}:latest

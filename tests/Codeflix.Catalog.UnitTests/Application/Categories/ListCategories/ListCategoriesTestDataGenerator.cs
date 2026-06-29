@@ -1,0 +1,75 @@
+﻿using Codeflix.Catalog.Application.UseCases.Categories.ListCategories;
+using Codeflix.Catalog.Domain.SeedWork.SearcheableRepository;
+
+namespace Codeflix.Catalog.UnitTests.Application.Categories.ListCategories;
+public class ListCategoriesTestDataGenerator
+{
+    public static IEnumerable<object[]> GetInputsWithoutAllParameters(int times = 14)
+    {
+        var fixture = new ListCategoriesTestFixture();
+        var inputExample = fixture.GetExampleInput();
+        for (int index = 0; index < times; index++)
+        {
+            switch (index % 7)
+            {
+                case 0:
+                    yield return new object[]
+                    {
+                        new ListCategoriesInput()
+                    };
+                    break;
+                case 1:
+                    yield return new object[]
+                    {
+                        new ListCategoriesInput(inputExample.Page)
+                    };
+                    break;
+                case 2:
+                    yield return new object[]
+                    {
+                        new ListCategoriesInput(
+                           inputExample.Page,
+                           inputExample.PerPage
+                        )
+                    };
+                    break;
+                case 3:
+                    yield return new object[]
+                    {
+                        new ListCategoriesInput(
+                            inputExample.Page,
+                            inputExample.PerPage,
+                            inputExample.Search
+                        )
+                    };
+                    break;
+                case 4:
+                    yield return new object[]
+                    {
+                        new ListCategoriesInput(
+                            inputExample.Page,
+                            inputExample.PerPage,
+                            inputExample.Search,
+                            inputExample.Sort
+                        )
+                    };
+                    break;
+                case 5:
+                    yield return new object[]
+                    {
+                        new ListCategoriesInput(
+                            Page: inputExample.Page,
+                            PerPage: inputExample.PerPage,
+                            Search: inputExample.Search,
+                            Sort: inputExample.Sort,
+                            Dir: SearchOrder.Desc
+                        )
+                    };
+                    break;
+                case 6:
+                    yield return new object[] { inputExample }; 
+                    break;
+            }
+        }
+    }
+}
