@@ -14,12 +14,8 @@ public static class ConnectionsConfiguration
 
     private static IServiceCollection AddDbConnection(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("CatalogDb");
-        services.AddDbContext<CodeflixCatalogDbContext>(options => options.UseMySql(
-                connectionString,
-                ServerVersion.AutoDetect(connectionString)
-            )
-        );
+        var connectionString = configuration.GetConnectionString("CatalogDb")!;
+        services.AddDbContext<CodeflixCatalogDbContext>(options => options.UseMySQL(connectionString));
 
         return services;
     }
